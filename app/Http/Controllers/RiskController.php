@@ -113,38 +113,38 @@ class RiskController extends Controller
     /**
      * One-click "Adopt scenario" — tworzy ryzyko z biblioteki.
      */
-    public function adoptScenario(Request $request, ScenarioTemplate $template): RedirectResponse
+    public function adoptScenario(Request $request, ScenarioTemplate $scenario): RedirectResponse
     {
         $this->authorize('create', Risk::class);
 
-        $count = Risk::where('category_l1', $template->category_l1)->count() + 1;
-        $code = sprintf('R-%s-%03d', strtoupper(substr($template->category_l2, 0, 3)), $count);
+        $count = Risk::where('category_l1', $scenario->category_l1)->count() + 1;
+        $code = sprintf('R-%s-%03d', strtoupper(substr($scenario->category_l2, 0, 3)), $count);
 
-        $likelihood = (int) ($template->default_likelihood_pert['mode'] ?? 3);
-        $impact = (int) ($template->default_impact_pert['mode'] ?? 3);
+        $likelihood = (int) ($scenario->default_likelihood_pert['mode'] ?? 3);
+        $impact = (int) ($scenario->default_impact_pert['mode'] ?? 3);
 
-        $risk = DB::transaction(function () use ($template, $code, $likelihood, $impact) {
+        $risk = DB::transaction(function () use ($scenario, $code, $likelihood, $impact) {
             $risk = Risk::create([
                 'code' => $code,
-                'title' => $template->name,
-                'description' => $template->description,
-                'category_l1' => $template->category_l1,
-                'category_l2' => $template->category_l2,
-                'scenario_template_id' => $template->id,
-                'risk_scenario' => $template->description,
-                'threat_actors' => $template->default_threat_actors,
-                'mitre_attack_techniques' => $template->default_mitre_techniques,
+                'title' => $scenario->name,
+                'description' => $scenario->description,
+                'category_l1' => $scenario->category_l1,
+                'category_l2' => $scenario->category_l2,
+                'scenario_template_id' => $scenario->id,
+                'risk_scenario' => $scenario->description,
+                'threat_actors' => $scenario->default_threat_actors,
+                'mitre_attack_techniques' => $scenario->default_mitre_techniques,
                 'inherent_likelihood' => $likelihood,
                 'inherent_impact' => $impact,
                 'residual_likelihood' => max(1, $likelihood - 1),
                 'residual_impact' => max(1, $impact - 1),
-                'mapped_frameworks' => $template->recommended_controls,
+                'mapped_frameworks' => $scenario->recommended_controls,
                 'status' => 'Identified',
                 'owner_id' => auth()->id(),
                 'review_frequency' => 'quarterly',
                 'next_review_date' => now()->addQuarter(),
             ]);
-            $this->snapshotVersion($risk, 'adopted_from_scenario', "Adopted from {$template->code}");
+            $this->snapshotVersion($risk, 'adopted_from_scenario', "Adopted from {$scenario->code}");
 
             return $risk;
         });

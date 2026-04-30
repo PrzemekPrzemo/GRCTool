@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, "claude/**"]
+  pull_request:
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }} · Laravel · Pest
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.3", "8.4"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo, pdo_sqlite, pdo_mysql, mbstring, tokenizer, xml, ctype, curl, fileinfo, gd, openssl, zip, bcmath, intl
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Setup application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          mkdir -p database
+          touch database/database.sqlite
+
+      - name: Run migrations + seed
+        run: php artisan migrate --seed --force
+
+      - name: Smoke test — verify seed counts
+        run: |
+          php artisan tinker --execute="
+            \$counts = [
+              'Frameworks' => 10,
+              'FrameworkControls' => 159,
+              'ScenarioTemplates' => 42,
+              'Indicators' => 33,
+              'ReportTemplates' => 3,
+            ];
+            \$models = [
+              'Frameworks' => \App\Models\Framework::class,
+              'FrameworkControls' => \App\Models\FrameworkControl::class,
+              'ScenarioTemplates' => \App\Models\ScenarioTemplate::class,
+              'Indicators' => \App\Models\Indicator::class,
+              'ReportTemplates' => \App\Models\ReportTemplate::class,
+            ];
+            \$failed = false;
+            foreach (\$counts as \$name => \$expected) {
+              \$actual = \$models[\$name]::count();
+              if (\$actual < \$expected) {
+                echo \"FAIL: \$name expected >=\$expected, got \$actual\\n\";
+                \$failed = true;
+              } else {
+                echo \"OK: \$name = \$actual\\n\";
+              }
+            }
+            exit(\$failed ? 1 : 0);
+          "
+
+      - name: Run Pest tests
+        run: vendor/bin/pest --parallel --no-coverage
+
+  lint:
+    name: Laravel Pint (code style)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Run Pint
+        run: vendor/bin/pint --test
+
+  build-frontend:
+    name: Frontend build (Vite + Tailwind)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build

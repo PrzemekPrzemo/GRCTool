@@ -11,7 +11,7 @@ use Illuminate\View\View;
 
 class IndicatorController extends Controller
 {
-public function index(Request $request): View
+    public function index(Request $request): View
     {
         $q = Indicator::query()->with('latestMeasurement');
         if ($type = $request->string('type')->toString()) {

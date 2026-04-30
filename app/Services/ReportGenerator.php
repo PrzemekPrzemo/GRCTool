@@ -11,9 +11,9 @@ use App\Models\ReportInstance;
 use App\Models\ReportTemplate;
 use App\Models\Risk;
 use App\Models\Subprocessor;
-use App\Models\User;
 use App\Models\Vulnerability;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -21,8 +21,8 @@ class ReportGenerator
 {
     public function generate(ReportTemplate $template, array $params = []): ReportInstance
     {
-        $periodStart = isset($params['period_start']) ? \Carbon\Carbon::parse($params['period_start']) : now()->startOfQuarter();
-        $periodEnd = isset($params['period_end']) ? \Carbon\Carbon::parse($params['period_end']) : now()->endOfQuarter();
+        $periodStart = isset($params['period_start']) ? Carbon::parse($params['period_start']) : now()->startOfQuarter();
+        $periodEnd = isset($params['period_end']) ? Carbon::parse($params['period_end']) : now()->endOfQuarter();
 
         $data = $this->fetchData($template, $periodStart, $periodEnd, $params);
 

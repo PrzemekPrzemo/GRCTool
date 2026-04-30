@@ -19,8 +19,8 @@ class AssetController extends Controller
         if ($search = $request->string('q')->trim()->toString()) {
             $query->where(function ($q) use ($search): void {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('code', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%");
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
             });
         }
         if ($type = $request->string('type')->toString()) {

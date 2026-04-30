@@ -9,7 +9,7 @@ use Illuminate\View\View;
 
 class FindingController extends Controller
 {
-public function index(Request $request): View
+    public function index(Request $request): View
     {
         $q = Finding::query()->with('engagement', 'control', 'risk', 'owner');
         if ($s = $request->string('status')->toString()) {

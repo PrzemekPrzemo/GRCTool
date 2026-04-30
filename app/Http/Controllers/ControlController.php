@@ -13,7 +13,7 @@ use Illuminate\View\View;
 
 class ControlController extends Controller
 {
-public function index(Request $request): View
+    public function index(Request $request): View
     {
         $q = Control::query()->with(['owner', 'frameworkControls.frameworkVersion.framework']);
 
