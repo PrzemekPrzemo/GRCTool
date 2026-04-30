@@ -50,9 +50,22 @@ jobs:
       - name: Smoke test counts
         run: php artisan grc:smoke-counts
 
-      - name: Pest (REQUIRED — gate)
+      - name: Pest version + binary check
+        run: |
+          ls -la vendor/bin/ | head -20
+          vendor/bin/pest --version || echo "pest binary missing/broken"
+
+      - name: Pest (REQUIRED — gate, with full output)
         id: pest
-        run: vendor/bin/pest --no-coverage
+        run: |
+          set -o pipefail
+          vendor/bin/pest --no-coverage --display-errors --display-warnings 2>&1 | tee /tmp/pest.log
+          PEST_EXIT=${PIPESTATUS[0]}
+          echo "Pest exit: $PEST_EXIT"
+          echo ""
+          echo "=== Last 50 lines of Pest output ==="
+          tail -50 /tmp/pest.log
+          exit $PEST_EXIT
 
       - name: Pint (informational, allowed to fail)
         id: pint
