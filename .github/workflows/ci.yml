@@ -47,37 +47,10 @@ jobs:
         run: php artisan migrate --seed --force
 
       - name: Smoke test — verify seed counts
-        run: |
-          php artisan tinker --execute="
-            \$counts = [
-              'Frameworks' => 10,
-              'FrameworkControls' => 159,
-              'ScenarioTemplates' => 42,
-              'Indicators' => 33,
-              'ReportTemplates' => 3,
-            ];
-            \$models = [
-              'Frameworks' => \App\Models\Framework::class,
-              'FrameworkControls' => \App\Models\FrameworkControl::class,
-              'ScenarioTemplates' => \App\Models\ScenarioTemplate::class,
-              'Indicators' => \App\Models\Indicator::class,
-              'ReportTemplates' => \App\Models\ReportTemplate::class,
-            ];
-            \$failed = false;
-            foreach (\$counts as \$name => \$expected) {
-              \$actual = \$models[\$name]::count();
-              if (\$actual < \$expected) {
-                echo \"FAIL: \$name expected >=\$expected, got \$actual\\n\";
-                \$failed = true;
-              } else {
-                echo \"OK: \$name = \$actual\\n\";
-              }
-            }
-            exit(\$failed ? 1 : 0);
-          "
+        run: php artisan grc:smoke-counts
 
       - name: Run Pest tests
-        run: vendor/bin/pest --parallel --no-coverage
+        run: vendor/bin/pest --no-coverage
 
   lint:
     name: Laravel Pint (code style)
@@ -87,11 +60,18 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
+          extensions: mbstring, tokenizer, xml, ctype, fileinfo
+          coverage: none
           tools: composer:v2
+      - name: Cache composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-lint-${{ hashFiles('composer.lock') }}
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Run Pint
-        run: vendor/bin/pint --test
+        run: vendor/bin/pint --test -v
 
   build-frontend:
     name: Frontend build (Vite + Tailwind)
