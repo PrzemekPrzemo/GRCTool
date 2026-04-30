@@ -6,70 +6,59 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Laravel · Pest
+  hello:
+    name: Sanity check
     runs-on: ubuntu-latest
+    steps:
+      - name: Echo hello
+        run: |
+          echo "Hello from CI"
+          uname -a || echo "no uname"
+          which php composer node npm bash sh || echo "missing tools"
+          ls -la / || true
+
+  test:
+    name: Laravel tests
+    runs-on: ubuntu-latest
+    container:
+      image: php:8.3-cli
     steps:
       - uses: actions/checkout@v4
 
-      - name: Diagnostic — what's pre-installed
+      - name: Install deps inside container
         run: |
-          echo "=== System ==="
-          uname -a
-          cat /etc/os-release || true
-          echo "=== Tools ==="
-          which php composer node npm bash sh || true
-          php --version || echo "no php"
-          composer --version || echo "no composer"
-          echo "=== Files ==="
-          ls -la
-          echo "=== Done diag ==="
+          apt-get update -qq
+          apt-get install -y --no-install-recommends \
+            git unzip libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libcurl4-openssl-dev \
+            ca-certificates
+          docker-php-ext-install pdo_mysql mbstring tokenizer xml zip gd intl bcmath
+          curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+          php --version
+          composer --version
 
-      - name: Run pipeline (capture all output, never fail step)
-        id: pipeline
+      - name: Bootstrap .env + sqlite
         run: |
-          set +e
-          {
-            echo "=== cp .env ==="
-            cp .env.example .env && echo "OK"
-            echo "=== mkdir db ==="
-            mkdir -p database && touch database/database.sqlite && echo "OK"
-            echo "=== composer install ==="
-            composer install --prefer-dist --no-interaction --no-progress 2>&1
-            echo "exit=$?"
-            echo "=== artisan key:generate ==="
-            php artisan key:generate 2>&1
-            echo "exit=$?"
-            echo "=== artisan migrate ==="
-            php artisan migrate --seed --force 2>&1
-            echo "exit=$?"
-            echo "=== smoke ==="
-            php artisan grc:smoke-counts 2>&1
-            echo "exit=$?"
-            echo "=== pest ==="
-            vendor/bin/pest --no-coverage 2>&1
-            PEST_EXIT=$?
-            echo "exit=$PEST_EXIT"
-            echo "=== pint ==="
-            vendor/bin/pint --test -v 2>&1
-            PINT_EXIT=$?
-            echo "exit=$PINT_EXIT"
-            echo "PEST_FINAL=$PEST_EXIT" > /tmp/exit.env
-            echo "PINT_FINAL=$PINT_EXIT" >> /tmp/exit.env
-          } 2>&1 | tee /tmp/pipeline.log
+          cp .env.example .env
+          mkdir -p database
+          touch database/database.sqlite
 
-      - name: Verdict
-        run: |
-          source /tmp/exit.env 2>/dev/null || true
-          echo "Pest exit: ${PEST_FINAL:-?}"
-          echo "Pint exit: ${PINT_FINAL:-?}"
-          if [ "${PEST_FINAL:-1}" = "0" ] && [ "${PINT_FINAL:-1}" = "0" ]; then
-            echo "ALL GREEN"
-            exit 0
-          else
-            echo "FAILED — see Pipeline step above for details"
-            exit 1
-          fi
+      - name: Composer install
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: APP_KEY
+        run: php artisan key:generate
+
+      - name: Migrations + seed
+        run: php artisan migrate --seed --force
+
+      - name: Smoke test
+        run: php artisan grc:smoke-counts
+
+      - name: Pest
+        run: vendor/bin/pest --no-coverage
+
+      - name: Pint
+        run: vendor/bin/pint --test
 
   build-frontend:
     name: Frontend build (Vite + Tailwind)
