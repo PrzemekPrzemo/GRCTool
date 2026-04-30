@@ -22,19 +22,15 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: pdo, pdo_sqlite, pdo_mysql, mbstring, tokenizer, xml, ctype, curl, fileinfo, gd, openssl, zip, bcmath, intl
           coverage: none
-          tools: composer:v2
 
-      - name: Cache composer
-        uses: actions/cache@v4
-        with:
-          path: ~/.composer/cache
-          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ matrix.php }}-
+      - name: Print versions (diag)
+        run: |
+          php --version
+          composer --version
+          which php composer
+          ls -la
 
-      # MUST happen before composer install — post-autoload-dump runs
-      # `php artisan package:discover` which needs APP_KEY in .env.
       - name: Bootstrap .env + sqlite db
         run: |
           cp .env.example .env
@@ -64,15 +60,12 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: mbstring, tokenizer, xml, ctype, fileinfo
           coverage: none
-          tools: composer:v2
-      - name: Cache composer
-        uses: actions/cache@v4
-        with:
-          path: ~/.composer/cache
-          key: composer-lint-${{ hashFiles('composer.lock') }}
-      - name: Bootstrap .env (required by post-autoload-dump artisan calls)
+      - name: Print versions (diag)
+        run: |
+          php --version
+          composer --version
+      - name: Bootstrap .env
         run: cp .env.example .env
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
