@@ -33,15 +33,19 @@ jobs:
           key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ matrix.php }}-
 
+      # MUST happen before composer install — post-autoload-dump runs
+      # `php artisan package:discover` which needs APP_KEY in .env.
+      - name: Bootstrap .env + sqlite db
+        run: |
+          cp .env.example .env
+          mkdir -p database
+          touch database/database.sqlite
+
       - name: Install PHP dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Setup application
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-          mkdir -p database
-          touch database/database.sqlite
+      - name: Generate APP_KEY
+        run: php artisan key:generate
 
       - name: Run migrations + seed
         run: php artisan migrate --seed --force
@@ -68,6 +72,8 @@ jobs:
         with:
           path: ~/.composer/cache
           key: composer-lint-${{ hashFiles('composer.lock') }}
+      - name: Bootstrap .env (required by post-autoload-dump artisan calls)
+        run: cp .env.example .env
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
       - name: Run Pint
