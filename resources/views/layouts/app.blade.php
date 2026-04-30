@@ -26,6 +26,8 @@
                     <a href="{{ route('assets.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('assets.*') ? 'bg-slate-800' : '' }}">Aktywa</a>
                     <a href="{{ route('vulnerabilities.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vulnerabilities.*') ? 'bg-slate-800' : '' }}">Podatności</a>
                     <a href="{{ route('engagements.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('engagements.*') || request()->routeIs('findings.*') ? 'bg-slate-800' : '' }}">Audyty</a>
+                    <a href="{{ route('questionnaires.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('questionnaires.*') || request()->routeIs('answer-library.*') ? 'bg-slate-800' : '' }}">Ankiety</a>
+                    <a href="{{ route('vendor-assessments.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vendor-assessments.*') || request()->routeIs('mcr.*') ? 'bg-slate-800' : '' }}">TPRM</a>
                     <a href="{{ route('reports.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('reports.*') ? 'bg-slate-800' : '' }}">Raporty</a>
                 </nav>
                 @endauth

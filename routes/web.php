@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
 use App\Http\Controllers\Auth\LoginController;
@@ -8,14 +9,28 @@ use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FindingController;
+use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IndicatorController;
+use App\Http\Controllers\McrController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ScenarioController;
+use App\Http\Controllers\TrustCenterController;
+use App\Http\Controllers\VendorAssessmentController;
+use App\Http\Controllers\VendorPortalController;
 use App\Http\Controllers\VulnerabilityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
+
+// Public Trust Center — bez logowania
+Route::get('trust', [TrustCenterController::class, 'index'])->name('trust.public');
+Route::get('trust/policies/{policy}', [TrustCenterController::class, 'policy'])->name('trust.policy');
+
+// Vendor self-service portal — token-based, bez logowania
+Route::get('vendor-portal/{token}', [VendorPortalController::class, 'show'])->name('vendor-portal.show');
+Route::post('vendor-portal/{token}/responses/{mcrId}', [VendorPortalController::class, 'updateResponse'])->name('vendor-portal.update');
+Route::post('vendor-portal/{token}/submit', [VendorPortalController::class, 'submit'])->name('vendor-portal.submit');
 
 // Auth (guest)
 Route::middleware('guest')->group(function (): void {
@@ -90,6 +105,26 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('reports/{report}/download', [ReportController::class, 'download'])->name('reports.download');
     Route::post('reports/{report}/revoke', [ReportController::class, 'revoke'])->name('reports.revoke');
+
+    // AnswerLibrary
+    Route::resource('answer-library', AnswerLibraryController::class)->parameters(['answer-library' => 'answer'])->except(['destroy']);
+    Route::post('answer-library/{answer}/review', [AnswerLibraryController::class, 'review'])->name('answer-library.review');
+
+    // MCR
+    Route::resource('mcr', McrController::class)->except(['destroy']);
+
+    // Inbound questionnaires (od klientów)
+    Route::resource('questionnaires', InboundQuestionnaireController::class)->except(['destroy']);
+    Route::post('questionnaires/{questionnaire}/auto-fill', [InboundQuestionnaireController::class, 'autoFill'])->name('questionnaires.auto_fill');
+    Route::post('questionnaires/{questionnaire}/questions/{question}/answer', [InboundQuestionnaireController::class, 'updateQuestion'])->name('questionnaires.question.update');
+    Route::post('questionnaires/{questionnaire}/questions/{question}/approve', [InboundQuestionnaireController::class, 'approveQuestion'])->name('questionnaires.question.approve');
+    Route::post('questionnaires/{questionnaire}/export', [InboundQuestionnaireController::class, 'export'])->name('questionnaires.export');
+
+    // Vendor assessments (outbound)
+    Route::resource('vendor-assessments', VendorAssessmentController::class)->parameters(['vendor-assessments' => 'assessment'])->except(['destroy']);
+    Route::post('vendor-assessments/{assessment}/send', [VendorAssessmentController::class, 'send'])->name('vendor-assessments.send');
+    Route::post('vendor-assessments/{assessment}/responses/{response}/review', [VendorAssessmentController::class, 'reviewResponse'])->name('vendor-assessments.response.review');
+    Route::post('vendor-assessments/{assessment}/finalize', [VendorAssessmentController::class, 'finalize'])->name('vendor-assessments.finalize');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
