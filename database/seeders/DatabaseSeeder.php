@@ -14,6 +14,11 @@ class DatabaseSeeder extends Seeder
             ScenarioTemplatesSeeder::class,
             IndicatorsSeeder::class,
             ReportTemplatesSeeder::class,
+            // Trust + TPRM + Questionnaires
+            MinimumControlRequirementsSeeder::class,
+            QuestionnaireTemplatesSeeder::class,
+            AnswerLibrarySeeder::class,
+            // Admin user last (depends on roles)
             AdminUserSeeder::class,
         ]);
     }
