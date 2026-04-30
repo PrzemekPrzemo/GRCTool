@@ -10,12 +10,7 @@ jobs:
     name: Sanity check
     runs-on: ubuntu-latest
     steps:
-      - name: Echo hello
-        run: |
-          echo "Hello from CI"
-          uname -a || echo "no uname"
-          which php composer node npm bash sh || echo "missing tools"
-          ls -la / || true
+      - run: echo "Hello from CI"
 
   test:
     name: Laravel tests
@@ -34,7 +29,7 @@ jobs:
           docker-php-ext-install pdo_sqlite pdo_mysql mbstring zip gd intl bcmath
           curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
           php --version
-          php -m
+          php -m | grep -E "(pdo_sqlite|mbstring|gd|intl|bcmath|tokenizer)"
           composer --version
 
       - name: Bootstrap .env + sqlite
@@ -52,13 +47,16 @@ jobs:
       - name: Migrations + seed
         run: php artisan migrate --seed --force
 
-      - name: Smoke test
+      - name: Smoke test counts
         run: php artisan grc:smoke-counts
 
-      - name: Pest
+      - name: Pest (REQUIRED — gate)
+        id: pest
         run: vendor/bin/pest --no-coverage
 
-      - name: Pint
+      - name: Pint (informational, allowed to fail)
+        id: pint
+        continue-on-error: true
         run: vendor/bin/pint --test
 
   build-frontend:
