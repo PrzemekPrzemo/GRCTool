@@ -6,6 +6,7 @@ use App\Models\AnswerLibrary;
 use App\Models\AnswerLibraryVersion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -71,6 +72,75 @@ class AnswerLibraryController extends Controller
         });
 
         return redirect()->route('answer-library.show', $answer)->with('status', 'Zaktualizowano.');
+    }
+
+    public function export(Request $request): Response|\Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        abort_unless(auth()->user()->can('answer-library.view'), 403);
+
+        $format = $request->string('format')->lower()->toString() ?: 'json';
+        $minLevel = $request->string('level')->toString() ?: 'Internal';
+
+        $allowedLevels = match ($minLevel) {
+            'Public'   => ['Public'],
+            'Internal' => ['Public', 'Internal'],
+            default    => ['Public', 'Internal', 'NDA-only', 'Confidential'],
+        };
+
+        $entries = AnswerLibrary::where('is_active', true)
+            ->whereIn('confidentiality_level', $allowedLevels)
+            ->orderBy('code')
+            ->get(['code', 'canonical_question', 'aliases', 'canonical_answer_short', 'canonical_answer_long', 'tags', 'frameworks', 'confidentiality_level', 'version', 'last_reviewed_at']);
+
+        $timestamp = now()->format('Ymd_His');
+
+        if ($format === 'csv') {
+            $filename = "answer_library_{$timestamp}.csv";
+
+            return response()->streamDownload(function () use ($entries): void {
+                $out = fopen('php://output', 'w');
+                fputcsv($out, ['code', 'canonical_question', 'aliases', 'canonical_answer_short', 'canonical_answer_long', 'tags', 'frameworks', 'confidentiality_level', 'version', 'last_reviewed_at']);
+                foreach ($entries as $e) {
+                    fputcsv($out, [
+                        $e->code,
+                        $e->canonical_question,
+                        implode(' | ', $e->aliases ?? []),
+                        $e->canonical_answer_short ?? '',
+                        $e->canonical_answer_long ?? '',
+                        implode(', ', $e->tags ?? []),
+                        implode(', ', $e->frameworks ?? []),
+                        $e->confidentiality_level,
+                        $e->version,
+                        $e->last_reviewed_at?->format('Y-m-d') ?? '',
+                    ]);
+                }
+                fclose($out);
+            }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+        }
+
+        // JSON — NotebookLM / vector DB ready format
+        $payload = [
+            'exported_at'  => now()->toIso8601String(),
+            'total'        => $entries->count(),
+            'min_level'    => $minLevel,
+            'entries'      => $entries->map(fn ($e) => [
+                'id'                    => $e->code,
+                'question'              => $e->canonical_question,
+                'aliases'               => $e->aliases ?? [],
+                'answer_short'          => $e->canonical_answer_short,
+                'answer_full'           => $e->canonical_answer_long,
+                'tags'                  => $e->tags ?? [],
+                'frameworks'            => $e->frameworks ?? [],
+                'confidentiality_level' => $e->confidentiality_level,
+                'version'               => $e->version,
+                'last_reviewed_at'      => $e->last_reviewed_at?->format('Y-m-d'),
+            ])->values(),
+        ];
+
+        return response(json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), 200, [
+            'Content-Type'        => 'application/json; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"answer_library_{$timestamp}.json\"",
+        ]);
     }
 
     public function review(AnswerLibrary $answer): RedirectResponse

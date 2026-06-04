@@ -124,6 +124,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('reports/{report}/revoke', [ReportController::class, 'revoke'])->name('reports.revoke');
 
     // AnswerLibrary
+    Route::get('answer-library/export', [AnswerLibraryController::class, 'export'])->name('answer-library.export');
     Route::resource('answer-library', AnswerLibraryController::class)->parameters(['answer-library' => 'answer'])->except(['destroy']);
     Route::post('answer-library/{answer}/review', [AnswerLibraryController::class, 'review'])->name('answer-library.review');
 
