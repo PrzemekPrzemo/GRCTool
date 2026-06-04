@@ -27,6 +27,11 @@
                     <a href="{{ route('vulnerabilities.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vulnerabilities.*') ? 'bg-slate-800' : '' }}">Podatności</a>
                     <a href="{{ route('incidents.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('incidents.*') ? 'bg-slate-800' : '' }}">Incydenty</a>
                     <a href="{{ route('nis2.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('nis2.*') ? 'bg-slate-800' : '' }}">NIS2</a>
+                    <a href="{{ route('trainings.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('trainings.*') ? 'bg-slate-800' : '' }}">Szkolenia</a>
+                    <a href="{{ route('exceptions.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('exceptions.*') ? 'bg-slate-800' : '' }}">Wyjątki</a>
+                    <a href="{{ route('certificates.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('certificates.*') || request()->routeIs('crypto-keys.*') ? 'bg-slate-800' : '' }}">Certyfikaty</a>
+                    <a href="{{ route('bcp.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('bcp.*') ? 'bg-slate-800' : '' }}">BCP/DR</a>
+                    <a href="{{ route('org-metrics.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('org-metrics.*') ? 'bg-slate-800' : '' }}">Metryki</a>
                     <a href="{{ route('engagements.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('engagements.*') || request()->routeIs('findings.*') ? 'bg-slate-800' : '' }}">Audyty</a>
                     <a href="{{ route('questionnaires.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('questionnaires.*') || request()->routeIs('answer-library.*') ? 'bg-slate-800' : '' }}">Ankiety</a>
                     <a href="{{ route('vendor-assessments.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vendor-assessments.*') || request()->routeIs('mcr.*') ? 'bg-slate-800' : '' }}">TPRM</a>

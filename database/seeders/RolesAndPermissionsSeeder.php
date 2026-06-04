@@ -20,6 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'policy', 'third_party', 'subprocessor', 'questionnaire', 'client',
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
             'rcp', 'gdpr_breach', 'dpia', 'dsar',
+            'training', 'exception', 'certificate', 'crypto_key', 'bcp',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -59,6 +60,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'cap.*', 'report.*', 'evidence.*', 'policy.*', 'third_party.*',
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
+                        'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
                     ],
                 ],
                 'security_engineer' => [
@@ -68,6 +70,8 @@ class RolesAndPermissionsSeeder extends Seeder
                         'control.view', 'control.update', 'control.test', 'evidence.*',
                         'indicator.view', 'indicator.update', 'finding.view', 'finding.update',
                         'risk.view', 'audit_log.view',
+                        'training.view', 'exception.view', 'exception.create',
+                        'certificate.*', 'crypto_key.*',
                     ],
                 ],
                 'risk_owner' => [
@@ -91,6 +95,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'audit_engagement.*', 'evidence.request', 'evidence.*', 'finding.*',
                         'cap.*', 'control.view', 'risk.view', 'asset.view', 'report.view',
                         'report.generate',
+                        'training.view', 'exception.view', 'bcp.view',
                     ],
                 ],
                 'external_auditor' => [
@@ -104,6 +109,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'description' => 'Zarząd / Board. Tylko Executive Dashboard + raporty.',
                     'permissions' => [
                         'report.view', 'indicator.view', 'risk.view', 'audit_engagement.view',
+                        'training.view', 'exception.view', 'certificate.view', 'bcp.view',
                     ],
                 ],
                 'asset_owner' => [
@@ -128,6 +134,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'evidence.view', 'evidence.create',
                         'incident.view', 'nis2.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
+                        'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
                     ],
                 ],
                 'sales' => [

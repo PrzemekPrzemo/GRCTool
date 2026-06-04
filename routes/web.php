@@ -6,10 +6,14 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
+use App\Http\Controllers\BcpController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ControlController;
+use App\Http\Controllers\CryptoKeyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DpiaController;
 use App\Http\Controllers\DsarRequestController;
+use App\Http\Controllers\ExceptionController;
 use App\Http\Controllers\GdprBreachController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Nis2AssessmentController;
@@ -17,12 +21,14 @@ use App\Http\Controllers\FindingController;
 use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\McrController;
+use App\Http\Controllers\OrgMetricsController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ProcessingActivityController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ScenarioController;
 use App\Http\Controllers\ThirdPartyController;
+use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrustCenterController;
 use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
@@ -124,7 +130,6 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('reports/{report}/revoke', [ReportController::class, 'revoke'])->name('reports.revoke');
 
     // AnswerLibrary
-    Route::get('answer-library/export', [AnswerLibraryController::class, 'export'])->name('answer-library.export');
     Route::resource('answer-library', AnswerLibraryController::class)->parameters(['answer-library' => 'answer'])->except(['destroy']);
     Route::post('answer-library/{answer}/review', [AnswerLibraryController::class, 'review'])->name('answer-library.review');
 
@@ -167,6 +172,33 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('policies', PolicyController::class);
     Route::post('policies/{policy}/approve', [PolicyController::class, 'approve'])->name('policies.approve');
     Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
+
+    // Training & Awareness
+    Route::resource('trainings', TrainingController::class)->except(['destroy']);
+    Route::post('trainings/{training}/complete', [TrainingController::class, 'recordCompletion'])->name('trainings.complete');
+    Route::get('trainings-report', [TrainingController::class, 'report'])->name('trainings.report');
+
+    // Exception Management
+    Route::resource('exceptions', ExceptionController::class)->except(['destroy']);
+    Route::post('exceptions/{exception}/submit', [ExceptionController::class, 'submit'])->name('exceptions.submit');
+    Route::post('exceptions/{exception}/approve', [ExceptionController::class, 'approve'])->name('exceptions.approve');
+    Route::post('exceptions/{exception}/reject', [ExceptionController::class, 'reject'])->name('exceptions.reject');
+
+    // Certificate Inventory
+    Route::resource('certificates', CertificateController::class)->except(['destroy']);
+    Route::post('certificates/{certificate}/revoke', [CertificateController::class, 'revoke'])->name('certificates.revoke');
+
+    // Crypto Key Inventory
+    Route::resource('crypto-keys', CryptoKeyController::class)->parameters(['crypto-keys' => 'cryptoKey'])->except(['destroy']);
+    Route::post('crypto-keys/{cryptoKey}/rotate', [CryptoKeyController::class, 'rotate'])->name('crypto-keys.rotate');
+
+    // BCP / DR
+    Route::resource('bcp', BcpController::class)->except(['destroy']);
+    Route::post('bcp/{bcp}/approve', [BcpController::class, 'approve'])->name('bcp.approve');
+    Route::post('bcp/{bcp}/test', [BcpController::class, 'addTest'])->name('bcp.test');
+
+    // Org Metrics Dashboard
+    Route::get('org-metrics', [OrgMetricsController::class, 'index'])->name('org-metrics.index');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {

@@ -5,11 +5,16 @@ namespace App\Providers;
 use App\Models\AnswerLibrary;
 use App\Models\Asset;
 use App\Models\AuditEngagement;
+use App\Models\BcpPlan;
+use App\Models\BcpTest;
+use App\Models\CertificateInventory;
 use App\Models\Certification;
 use App\Models\Client;
+use App\Models\ComplianceException;
 use App\Models\Control;
 use App\Models\ControlTest;
 use App\Models\CorrectiveActionPlan;
+use App\Models\CryptoKey;
 use App\Models\Dpia;
 use App\Models\DsarRequest;
 use App\Models\EvidenceObject;
@@ -31,6 +36,8 @@ use App\Models\RtpAction;
 use App\Models\SecurityQuestionnaire;
 use App\Models\Subprocessor;
 use App\Models\ThirdParty;
+use App\Models\Training;
+use App\Models\UserTrainingCompletion;
 use App\Models\VendorAssessment;
 use App\Models\VendorAssessmentResponse;
 use App\Models\Vulnerability;
@@ -55,6 +62,9 @@ class AuditServiceProvider extends ServiceProvider
             AnswerLibrary::class, SecurityQuestionnaire::class, QuestionnaireQuestion::class,
             MinimumControlRequirement::class, VendorAssessment::class, VendorAssessmentResponse::class,
             Certification::class,
+            // New modules
+            Training::class, UserTrainingCompletion::class, ComplianceException::class,
+            CertificateInventory::class, CryptoKey::class, BcpPlan::class, BcpTest::class,
         ];
 
         foreach ($observable as $modelClass) {
