@@ -8,15 +8,21 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DpiaController;
+use App\Http\Controllers\DsarRequestController;
+use App\Http\Controllers\GdprBreachController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\Nis2AssessmentController;
 use App\Http\Controllers\FindingController;
 use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\McrController;
+use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\ProcessingActivityController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ScenarioController;
+use App\Http\Controllers\ThirdPartyController;
 use App\Http\Controllers\TrustCenterController;
 use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
@@ -136,6 +142,30 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('vendor-assessments/{assessment}/send', [VendorAssessmentController::class, 'send'])->name('vendor-assessments.send');
     Route::post('vendor-assessments/{assessment}/responses/{response}/review', [VendorAssessmentController::class, 'reviewResponse'])->name('vendor-assessments.response.review');
     Route::post('vendor-assessments/{assessment}/finalize', [VendorAssessmentController::class, 'finalize'])->name('vendor-assessments.finalize');
+
+    // RODO — RCP (Rejestr Czynności Przetwarzania, Art. 30 GDPR)
+    Route::resource('rcp', ProcessingActivityController::class);
+
+    // RODO — Naruszenia danych osobowych (Art. 33/34 GDPR)
+    Route::resource('gdpr-breaches', GdprBreachController::class)->parameters(['gdpr-breaches' => 'gdprBreach']);
+    Route::post('gdpr-breaches/{gdprBreach}/notify-uodo', [GdprBreachController::class, 'notifyUodo'])->name('gdpr-breaches.notify-uodo');
+
+    // RODO — DPIA (Art. 35 GDPR)
+    Route::resource('dpias', DpiaController::class);
+    Route::post('dpias/{dpia}/approve', [DpiaController::class, 'approve'])->name('dpias.approve');
+
+    // RODO — DSAR (Art. 15-22 GDPR)
+    Route::resource('dsar', DsarRequestController::class);
+    Route::post('dsar/{dsar}/complete', [DsarRequestController::class, 'complete'])->name('dsar.complete');
+    Route::post('dsar/{dsar}/extend', [DsarRequestController::class, 'extend'])->name('dsar.extend');
+
+    // Third Parties
+    Route::resource('third-parties', ThirdPartyController::class)->parameters(['third-parties' => 'thirdParty']);
+
+    // Policies
+    Route::resource('policies', PolicyController::class);
+    Route::post('policies/{policy}/approve', [PolicyController::class, 'approve'])->name('policies.approve');
+    Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {

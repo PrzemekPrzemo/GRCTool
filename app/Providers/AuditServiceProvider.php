@@ -10,14 +10,18 @@ use App\Models\Client;
 use App\Models\Control;
 use App\Models\ControlTest;
 use App\Models\CorrectiveActionPlan;
+use App\Models\Dpia;
+use App\Models\DsarRequest;
 use App\Models\EvidenceObject;
 use App\Models\EvidenceRequest;
 use App\Models\Finding;
+use App\Models\GdprBreach;
 use App\Models\Incident;
 use App\Models\Indicator;
 use App\Models\MinimumControlRequirement;
 use App\Models\Nis2Assessment;
 use App\Models\Policy;
+use App\Models\ProcessingActivity;
 use App\Models\QuestionnaireQuestion;
 use App\Models\ReportInstance;
 use App\Models\Risk;
@@ -43,6 +47,7 @@ class AuditServiceProvider extends ServiceProvider
             Control::class, ControlTest::class, Indicator::class,
             Vulnerability::class, VulnerabilityException::class, Incident::class,
             Nis2Assessment::class,
+            ProcessingActivity::class, GdprBreach::class, Dpia::class, DsarRequest::class,
             AuditEngagement::class, EvidenceRequest::class, Finding::class,
             CorrectiveActionPlan::class, EvidenceObject::class, ReportInstance::class,
             Policy::class, ThirdParty::class, Subprocessor::class, Client::class,
