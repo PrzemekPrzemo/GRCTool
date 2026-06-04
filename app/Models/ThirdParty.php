@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ThirdParty extends Model
@@ -28,4 +29,11 @@ class ThirdParty extends Model
         'next_assessment_due' => 'date',
         'is_active' => 'boolean',
     ];
+
+    public function processingActivities(): BelongsToMany
+    {
+        return $this->belongsToMany(ProcessingActivity::class, 'processing_activity_third_party')
+            ->withPivot('role', 'notes')
+            ->withTimestamps();
+    }
 }

@@ -19,6 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'incident', 'nis2', 'audit_engagement', 'finding', 'cap', 'report', 'evidence',
             'policy', 'third_party', 'subprocessor', 'questionnaire', 'client',
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
+            'rcp', 'gdpr_breach', 'dpia', 'dsar',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -57,6 +58,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'vulnerability.*', 'incident.*', 'nis2.*', 'audit_engagement.*', 'finding.*',
                         'cap.*', 'report.*', 'evidence.*', 'policy.*', 'third_party.*',
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
+                        'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                     ],
                 ],
                 'security_engineer' => [
@@ -73,6 +75,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'permissions' => [
                         'risk.view', 'risk.update', 'risk.create', 'asset.view', 'control.view',
                         'evidence.view', 'evidence.create', 'finding.view', 'incident.view', 'nis2.view',
+                        'rcp.view', 'gdpr_breach.view', 'dpia.view',
                     ],
                 ],
                 'control_owner' => [
@@ -118,12 +121,13 @@ class RolesAndPermissionsSeeder extends Seeder
                     ],
                 ],
                 'compliance_officer' => [
-                    'description' => 'Legal / Compliance. Polityki, DPA, subprocessor mgmt, regulatory reports.',
+                    'description' => 'Legal / Compliance / DPO. Polityki, DPA, subprocessor mgmt, regulatory reports, RODO.',
                     'permissions' => [
                         'policy.*', 'subprocessor.*', 'third_party.view', 'third_party.update',
                         'report.*', 'finding.view', 'audit_engagement.view',
                         'evidence.view', 'evidence.create',
                         'incident.view', 'nis2.*',
+                        'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                     ],
                 ],
                 'sales' => [
