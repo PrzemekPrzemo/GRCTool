@@ -16,6 +16,7 @@ use App\Models\Finding;
 use App\Models\Incident;
 use App\Models\Indicator;
 use App\Models\MinimumControlRequirement;
+use App\Models\Nis2Assessment;
 use App\Models\Policy;
 use App\Models\QuestionnaireQuestion;
 use App\Models\ReportInstance;
@@ -41,6 +42,7 @@ class AuditServiceProvider extends ServiceProvider
             Asset::class, Risk::class, RiskAcceptance::class, RiskTreatmentPlan::class, RtpAction::class,
             Control::class, ControlTest::class, Indicator::class,
             Vulnerability::class, VulnerabilityException::class, Incident::class,
+            Nis2Assessment::class,
             AuditEngagement::class, EvidenceRequest::class, Finding::class,
             CorrectiveActionPlan::class, EvidenceObject::class, ReportInstance::class,
             Policy::class, ThirdParty::class, Subprocessor::class, Client::class,

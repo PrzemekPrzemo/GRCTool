@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\Nis2AssessmentController;
 use App\Http\Controllers\FindingController;
 use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IndicatorController;
@@ -81,6 +83,15 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('indicators', IndicatorController::class)->except(['destroy']);
     Route::post('indicators/{indicator}/measurement', [IndicatorController::class, 'recordMeasurement'])->name('indicators.measurement');
     Route::post('indicators/{indicator}/import', [IndicatorController::class, 'importMeasurements'])->name('indicators.import');
+
+    // Incidents
+    Route::resource('incidents', IncidentController::class);
+    Route::post('incidents/{incident}/status', [IncidentController::class, 'updateStatus'])->name('incidents.status');
+    Route::post('incidents/{incident}/breach', [IncidentController::class, 'toggleBreach'])->name('incidents.breach');
+
+    // NIS2 Applicability Assessments
+    Route::resource('nis2', Nis2AssessmentController::class)->parameters(['nis2' => 'nis2']);
+    Route::post('nis2/{nis2}/finalize', [Nis2AssessmentController::class, 'finalize'])->name('nis2.finalize');
 
     // Vulnerabilities
     Route::get('vulnerabilities/import', [VulnerabilityController::class, 'showImport'])->name('vulnerabilities.import.show');

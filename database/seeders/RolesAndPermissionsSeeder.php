@@ -16,7 +16,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $modules = [
             'asset', 'risk', 'risk_acceptance', 'control', 'indicator', 'vulnerability',
-            'incident', 'audit_engagement', 'finding', 'cap', 'report', 'evidence',
+            'incident', 'nis2', 'audit_engagement', 'finding', 'cap', 'report', 'evidence',
             'policy', 'third_party', 'subprocessor', 'questionnaire', 'client',
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
         ];
@@ -54,7 +54,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'description' => 'CISO / Head of Security. Pełen odczyt + akceptacja ryzyk + zatwierdzanie raportów.',
                     'permissions' => [
                         '*.view', 'risk.*', 'risk_acceptance.*', 'control.*', 'indicator.*',
-                        'vulnerability.*', 'incident.*', 'audit_engagement.*', 'finding.*',
+                        'vulnerability.*', 'incident.*', 'nis2.*', 'audit_engagement.*', 'finding.*',
                         'cap.*', 'report.*', 'evidence.*', 'policy.*', 'third_party.*',
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
                     ],
@@ -62,16 +62,17 @@ class RolesAndPermissionsSeeder extends Seeder
                 'security_engineer' => [
                     'description' => 'Operacyjny zespół security. CRUD vuln/incidents/controls; brak akceptacji ryzyk.',
                     'permissions' => [
-                        'asset.*', 'vulnerability.*', 'incident.*', 'control.view', 'control.update',
-                        'control.test', 'evidence.*', 'indicator.view', 'indicator.update',
-                        'finding.view', 'finding.update', 'risk.view', 'audit_log.view',
+                        'asset.*', 'vulnerability.*', 'incident.*', 'nis2.view', 'nis2.create', 'nis2.update',
+                        'control.view', 'control.update', 'control.test', 'evidence.*',
+                        'indicator.view', 'indicator.update', 'finding.view', 'finding.update',
+                        'risk.view', 'audit_log.view',
                     ],
                 ],
                 'risk_owner' => [
                     'description' => 'Właściciel ryzyka (np. CTO, Head of Eng.). Edycja swoich ryzyk + zatw. RTP.',
                     'permissions' => [
                         'risk.view', 'risk.update', 'risk.create', 'asset.view', 'control.view',
-                        'evidence.view', 'evidence.create', 'finding.view', 'incident.view',
+                        'evidence.view', 'evidence.create', 'finding.view', 'incident.view', 'nis2.view',
                     ],
                 ],
                 'control_owner' => [
@@ -122,6 +123,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'policy.*', 'subprocessor.*', 'third_party.view', 'third_party.update',
                         'report.*', 'finding.view', 'audit_engagement.view',
                         'evidence.view', 'evidence.create',
+                        'incident.view', 'nis2.*',
                     ],
                 ],
                 'sales' => [
