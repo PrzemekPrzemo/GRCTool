@@ -27,6 +27,15 @@
                     <a href="{{ route('vulnerabilities.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vulnerabilities.*') ? 'bg-slate-800' : '' }}">Podatności</a>
                     <a href="{{ route('incidents.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('incidents.*') ? 'bg-slate-800' : '' }}">Incydenty</a>
                     <a href="{{ route('nis2.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('nis2.*') ? 'bg-slate-800' : '' }}">NIS2</a>
+                    @can('compliance.view')
+                    <div class="relative group">
+                        <button class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('compliance.*') ? 'bg-slate-800' : '' }}">Compliance ▾</button>
+                        <div class="absolute left-0 top-full mt-1 w-44 bg-slate-800 rounded shadow-lg py-1 hidden group-hover:block z-50 text-sm">
+                            <a href="{{ route('compliance.frameworks') }}" class="block px-4 py-1.5 hover:bg-slate-700 {{ request()->routeIs('compliance.frameworks') ? 'bg-slate-700' : '' }}">Frameworki</a>
+                            <a href="{{ route('compliance.index') }}" class="block px-4 py-1.5 hover:bg-slate-700 {{ request()->routeIs('compliance.index') || request()->routeIs('compliance.show') || request()->routeIs('compliance.create') ? 'bg-slate-700' : '' }}">Oceny</a>
+                        </div>
+                    </div>
+                    @endcan
                     <a href="{{ route('engagements.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('engagements.*') || request()->routeIs('findings.*') ? 'bg-slate-800' : '' }}">Audyty</a>
                     <a href="{{ route('questionnaires.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('questionnaires.*') || request()->routeIs('answer-library.*') ? 'bg-slate-800' : '' }}">Ankiety</a>
                     <a href="{{ route('vendor-assessments.index') }}" class="px-3 py-1.5 rounded hover:bg-slate-800 {{ request()->routeIs('vendor-assessments.*') || request()->routeIs('mcr.*') ? 'bg-slate-800' : '' }}">TPRM</a>

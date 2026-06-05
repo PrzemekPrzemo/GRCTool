@@ -20,6 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'policy', 'third_party', 'subprocessor', 'questionnaire', 'client',
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
             'rcp', 'gdpr_breach', 'dpia', 'dsar',
+            'compliance',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -59,6 +60,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'cap.*', 'report.*', 'evidence.*', 'policy.*', 'third_party.*',
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
+                        'compliance.*',
                     ],
                 ],
                 'security_engineer' => [
@@ -68,6 +70,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'control.view', 'control.update', 'control.test', 'evidence.*',
                         'indicator.view', 'indicator.update', 'finding.view', 'finding.update',
                         'risk.view', 'audit_log.view',
+                        'compliance.view', 'compliance.create', 'compliance.update',
                     ],
                 ],
                 'risk_owner' => [
@@ -128,6 +131,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'evidence.view', 'evidence.create',
                         'incident.view', 'nis2.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
+                        'compliance.*',
                     ],
                 ],
                 'sales' => [

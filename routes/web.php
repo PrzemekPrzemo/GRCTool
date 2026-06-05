@@ -27,6 +27,7 @@ use App\Http\Controllers\TrustCenterController;
 use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
 use App\Http\Controllers\VulnerabilityController;
+use App\Http\Controllers\ComplianceAssessmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -167,6 +168,14 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('policies', PolicyController::class);
     Route::post('policies/{policy}/approve', [PolicyController::class, 'approve'])->name('policies.approve');
     Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
+
+    // Compliance Management
+    Route::get('compliance/frameworks', [ComplianceAssessmentController::class, 'frameworks'])->name('compliance.frameworks');
+    Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
+    Route::post('compliance/{compliance}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
+    Route::post('compliance/{compliance}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
+    Route::get('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'showRespond'])->name('compliance.respond');
+    Route::post('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'respond'])->name('compliance.respond.save');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
