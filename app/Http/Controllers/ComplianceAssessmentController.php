@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ComplianceAssessmentController extends Controller
@@ -240,5 +241,136 @@ class ComplianceAssessmentController extends Controller
         AuditLogger::log('compliance.soa_published', $assessment);
 
         return back()->with('status', "Deklaracja stosowalności (SoA) dla {$assessment->code} została opublikowana.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Exports
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function exportCsv(ComplianceAssessment $assessment): Response
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $assessment->load(['framework.domains.requirements']);
+        $responses = $assessment->responses()->get()->keyBy('requirement_id');
+
+        $statusLabels = [
+            'compliant'      => 'Zgodne',
+            'partial'        => 'Częściowe',
+            'non_compliant'  => 'Niezgodne',
+            'not_applicable' => 'Nie dotyczy',
+            'not_assessed'   => 'Nie oceniono',
+        ];
+        $priorityLabels = [
+            'high'   => 'Wysoki',
+            'medium' => 'Średni',
+            'low'    => 'Niski',
+        ];
+
+        $rows = [];
+        $rows[] = ['Code', 'Domain', 'Requirement', 'Status', 'Evidence', 'Gap', 'Remediation', 'Priority', 'Target Date'];
+
+        foreach ($assessment->framework->domains as $domain) {
+            foreach ($domain->requirements as $req) {
+                $resp      = $responses->get($req->id);
+                $rows[]    = [
+                    $req->code,
+                    $domain->name,
+                    $req->name,
+                    $statusLabels[$resp?->status ?? 'not_assessed'] ?? ($resp?->status ?? 'Nie oceniono'),
+                    $resp?->evidence ?? '',
+                    $resp?->gap_description ?? '',
+                    $resp?->remediation_plan ?? '',
+                    isset($resp?->priority) ? ($priorityLabels[$resp->priority] ?? $resp->priority) : '',
+                    $resp?->target_date?->format('Y-m-d') ?? '',
+                ];
+            }
+        }
+
+        $csv    = '';
+        foreach ($rows as $row) {
+            $csv .= implode(',', array_map(function (string $cell): string {
+                $cell = str_replace('"', '""', $cell);
+
+                return '"' . $cell . '"';
+            }, $row)) . "\r\n";
+        }
+
+        $filename = "compliance_{$assessment->code}_" . now()->format('Ymd') . '.csv';
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
+    }
+
+    public function exportSoa(ComplianceAssessment $assessment): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $assessment->load([
+            'framework.domains.requirements',
+            'conductedBy',
+            'reviewedBy',
+        ]);
+
+        $responses = $assessment->responses()->get()->keyBy('requirement_id');
+
+        $total         = $assessment->compliant_count + $assessment->partial_count
+                       + $assessment->non_compliant_count + $assessment->not_assessed_count;
+        $totalWithNa   = $total + $assessment->na_count;
+
+        return view('compliance.exports.soa', compact('assessment', 'responses', 'totalWithNa'));
+    }
+
+    public function exportGap(ComplianceAssessment $assessment): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $assessment->load([
+            'framework.domains.requirements',
+            'conductedBy',
+        ]);
+
+        $responses = $assessment->responses()->get()->keyBy('requirement_id');
+
+        // Collect only non_compliant + partial, sorted
+        $gaps = collect();
+
+        foreach ($assessment->framework->domains as $domain) {
+            foreach ($domain->requirements as $req) {
+                $resp = $responses->get($req->id);
+                if (! $resp || ! in_array($resp->status, ['non_compliant', 'partial'])) {
+                    continue;
+                }
+                $gaps->push([
+                    'domain'          => $domain,
+                    'requirement'     => $req,
+                    'response'        => $resp,
+                ]);
+            }
+        }
+
+        // Sort: non_compliant first, then partial; within each group priority high > medium > low > null
+        $priorityOrder = ['high' => 0, 'medium' => 1, 'low' => 2, null => 3];
+        $gaps = $gaps->sort(function (array $a, array $b) use ($priorityOrder): int {
+            $statusA = $a['response']->status === 'non_compliant' ? 0 : 1;
+            $statusB = $b['response']->status === 'non_compliant' ? 0 : 1;
+            if ($statusA !== $statusB) {
+                return $statusA <=> $statusB;
+            }
+
+            $prioA = $priorityOrder[$a['response']->priority] ?? 3;
+            $prioB = $priorityOrder[$b['response']->priority] ?? 3;
+
+            return $prioA <=> $prioB;
+        })->values();
+
+        $nonCompliantCount = $gaps->filter(fn ($g) => $g['response']->status === 'non_compliant')->count();
+        $partialCount      = $gaps->filter(fn ($g) => $g['response']->status === 'partial')->count();
+
+        return view('compliance.exports.gap', compact(
+            'assessment', 'gaps', 'nonCompliantCount', 'partialCount'
+        ));
     }
 }

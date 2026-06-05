@@ -10,11 +10,12 @@ class ComplianceRequirement extends Model
 {
     protected $fillable = [
         'domain_id', 'code', 'name', 'description', 'guidance',
-        'control_type', 'is_mandatory', 'sort_order',
+        'control_type', 'is_mandatory', 'is_custom', 'sort_order',
     ];
 
     protected $casts = [
         'is_mandatory' => 'boolean',
+        'is_custom'    => 'boolean',
         'sort_order'   => 'integer',
     ];
 
