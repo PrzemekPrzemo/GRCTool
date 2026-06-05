@@ -35,6 +35,7 @@ use App\Http\Controllers\VendorPortalController;
 use App\Http\Controllers\VulnerabilityController;
 use App\Http\Controllers\AccessReviewController;
 use App\Http\Controllers\ComplianceAssessmentController;
+use App\Http\Controllers\ComplianceFrameworkAdminController;
 use App\Http\Controllers\SdlcController;
 use Illuminate\Support\Facades\Route;
 
@@ -224,6 +225,31 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('compliance/{compliance}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
     Route::get('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'showRespond'])->name('compliance.respond');
     Route::post('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'respond'])->name('compliance.respond.save');
+    Route::get('compliance/{assessment}/export/csv', [ComplianceAssessmentController::class, 'exportCsv'])->name('compliance.export.csv');
+    Route::get('compliance/{assessment}/export/soa', [ComplianceAssessmentController::class, 'exportSoa'])->name('compliance.export.soa');
+    Route::get('compliance/{assessment}/export/gap', [ComplianceAssessmentController::class, 'exportGap'])->name('compliance.export.gap');
+
+    // Compliance Framework Administration
+    Route::prefix('compliance/manage')->name('compliance.admin.')->group(function (): void {
+        Route::get('frameworks', [ComplianceFrameworkAdminController::class, 'index'])->name('frameworks');
+        Route::get('frameworks/create', [ComplianceFrameworkAdminController::class, 'create'])->name('frameworks.create');
+        Route::post('frameworks', [ComplianceFrameworkAdminController::class, 'store'])->name('frameworks.store');
+        Route::get('frameworks/{framework}/edit', [ComplianceFrameworkAdminController::class, 'edit'])->name('frameworks.edit');
+        Route::put('frameworks/{framework}', [ComplianceFrameworkAdminController::class, 'update'])->name('frameworks.update');
+        Route::delete('frameworks/{framework}', [ComplianceFrameworkAdminController::class, 'destroy'])->name('frameworks.destroy');
+        Route::get('frameworks/{framework}/domains', [ComplianceFrameworkAdminController::class, 'domains'])->name('frameworks.domains');
+        Route::get('frameworks/{framework}/domains/create', [ComplianceFrameworkAdminController::class, 'createDomain'])->name('domains.create');
+        Route::post('frameworks/{framework}/domains', [ComplianceFrameworkAdminController::class, 'storeDomain'])->name('domains.store');
+        Route::get('frameworks/{framework}/domains/{domain}/edit', [ComplianceFrameworkAdminController::class, 'editDomain'])->name('domains.edit');
+        Route::put('frameworks/{framework}/domains/{domain}', [ComplianceFrameworkAdminController::class, 'updateDomain'])->name('domains.update');
+        Route::delete('frameworks/{framework}/domains/{domain}', [ComplianceFrameworkAdminController::class, 'destroyDomain'])->name('domains.destroy');
+        Route::get('frameworks/{framework}/domains/{domain}/requirements', [ComplianceFrameworkAdminController::class, 'requirements'])->name('requirements.index');
+        Route::get('frameworks/{framework}/domains/{domain}/requirements/create', [ComplianceFrameworkAdminController::class, 'createRequirement'])->name('requirements.create');
+        Route::post('frameworks/{framework}/domains/{domain}/requirements', [ComplianceFrameworkAdminController::class, 'storeRequirement'])->name('requirements.store');
+        Route::get('frameworks/{framework}/domains/{domain}/requirements/{requirement}/edit', [ComplianceFrameworkAdminController::class, 'editRequirement'])->name('requirements.edit');
+        Route::put('frameworks/{framework}/domains/{domain}/requirements/{requirement}', [ComplianceFrameworkAdminController::class, 'updateRequirement'])->name('requirements.update');
+        Route::delete('frameworks/{framework}/domains/{domain}/requirements/{requirement}', [ComplianceFrameworkAdminController::class, 'destroyRequirement'])->name('requirements.destroy');
+    });
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {

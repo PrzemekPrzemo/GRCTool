@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             AnswerLibrarySeeder::class,
             // Compliance frameworks (ISO27001, NIS2, DORA, PCI-DSS, NIST-CSF, SOC2, OWASP-ASVS, ISO22301, ISO27017, NCA-ECC)
             ComplianceFrameworkSeeder::class,
+            // Middle East / KSA compliance frameworks (SAMA-CSF, NCA-CCC, UAE-IA, Qatar-NIAS, BH-PDL)
+            MiddleEastFrameworkSeeder::class,
             // Admin user last (depends on roles)
             AdminUserSeeder::class,
         ]);

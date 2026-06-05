@@ -10,11 +10,12 @@ class ComplianceFramework extends Model
 {
     protected $fillable = [
         'code', 'name', 'short_name', 'version', 'issuer',
-        'region', 'description', 'is_active', 'sort_order',
+        'region', 'description', 'is_active', 'is_custom', 'sort_order',
     ];
 
     protected $casts = [
         'is_active'  => 'boolean',
+        'is_custom'  => 'boolean',
         'sort_order' => 'integer',
     ];
 
