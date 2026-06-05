@@ -34,6 +34,7 @@ use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
 use App\Http\Controllers\VulnerabilityController;
 use App\Http\Controllers\AccessReviewController;
+use App\Http\Controllers\ComplianceAssessmentController;
 use App\Http\Controllers\SdlcController;
 use Illuminate\Support\Facades\Route;
 
@@ -215,6 +216,14 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('access-reviews/{campaign}/items', [AccessReviewController::class, 'addItem'])->name('access-reviews.item.add');
     Route::post('access-reviews/{campaign}/items/{item}/decide', [AccessReviewController::class, 'decide'])->name('access-reviews.item.decide');
     Route::post('access-reviews/{campaign}/bulk-approve', [AccessReviewController::class, 'bulkApprove'])->name('access-reviews.bulk_approve');
+
+    // Compliance Management
+    Route::get('compliance/frameworks', [ComplianceAssessmentController::class, 'frameworks'])->name('compliance.frameworks');
+    Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
+    Route::post('compliance/{compliance}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
+    Route::post('compliance/{compliance}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
+    Route::get('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'showRespond'])->name('compliance.respond');
+    Route::post('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'respond'])->name('compliance.respond.save');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {

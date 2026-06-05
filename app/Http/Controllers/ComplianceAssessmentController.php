@@ -1,0 +1,244 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ComplianceAssessment;
+use App\Models\ComplianceFramework;
+use App\Models\ComplianceResponse;
+use App\Models\User;
+use App\Services\AuditLogger;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class ComplianceAssessmentController extends Controller
+{
+    // ─────────────────────────────────────────────────────────────────────────
+    // Frameworks catalogue
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function frameworks(): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $frameworks = ComplianceFramework::where('is_active', true)
+            ->withCount('assessments')
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function (ComplianceFramework $fw): ComplianceFramework {
+                $fw->requirements_count_cached = $fw->requirementsCount();
+                $fw->active_assessments        = $fw->assessments()
+                    ->whereIn('status', ['draft', 'in_progress'])
+                    ->count();
+
+                return $fw;
+            });
+
+        return view('compliance.frameworks', compact('frameworks'));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Assessments CRUD
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function index(Request $request): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $query = ComplianceAssessment::with(['framework', 'conductedBy'])
+            ->orderByDesc('created_at');
+
+        if ($fwId = $request->integer('framework_id')) {
+            $query->where('framework_id', $fwId);
+        }
+        if ($status = $request->string('status')->toString()) {
+            $query->where('status', $status);
+        }
+
+        $assessments = $query->paginate(25)->withQueryString();
+        $frameworks  = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
+
+        return view('compliance.index', compact('assessments', 'frameworks'));
+    }
+
+    public function create(Request $request): View
+    {
+        abort_unless(auth()->user()->can('compliance.create'), 403);
+
+        $frameworks = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
+        $users      = User::orderBy('name')->get();
+        $selected   = $request->integer('framework') ?: null;
+
+        return view('compliance.create', compact('frameworks', 'users', 'selected'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('compliance.create'), 403);
+
+        $data = $request->validate([
+            'framework_id'    => ['required', 'exists:compliance_frameworks,id'],
+            'title'           => ['required', 'string', 'max:256'],
+            'scope'           => ['nullable', 'string'],
+            'conducted_by'    => ['nullable', 'exists:users,id'],
+            'assessment_date' => ['nullable', 'date'],
+            'notes'           => ['nullable', 'string'],
+        ]);
+
+        $data['code']   = ComplianceAssessment::nextCode();
+        $data['status'] = 'draft';
+
+        $assessment = ComplianceAssessment::create($data);
+        AuditLogger::log('compliance.assessment_created', $assessment);
+
+        return redirect()->route('compliance.show', $assessment)
+            ->with('status', "Ocena {$assessment->code} została utworzona.");
+    }
+
+    public function show(ComplianceAssessment $compliance): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $compliance->load([
+            'framework.domains.requirements',
+            'conductedBy',
+            'reviewedBy',
+        ]);
+
+        // Index responses by requirement_id for quick lookup
+        $responses = $compliance->responses()->get()->keyBy('requirement_id');
+
+        return view('compliance.show', compact('compliance', 'responses'));
+    }
+
+    public function edit(ComplianceAssessment $compliance): View
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        $frameworks = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
+        $users      = User::orderBy('name')->get();
+
+        return view('compliance.create', [
+            'assessment' => $compliance,
+            'frameworks' => $frameworks,
+            'users'      => $users,
+            'selected'   => $compliance->framework_id,
+        ]);
+    }
+
+    public function update(Request $request, ComplianceAssessment $compliance): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        $data = $request->validate([
+            'framework_id'    => ['required', 'exists:compliance_frameworks,id'],
+            'title'           => ['required', 'string', 'max:256'],
+            'scope'           => ['nullable', 'string'],
+            'conducted_by'    => ['nullable', 'exists:users,id'],
+            'assessment_date' => ['nullable', 'date'],
+            'notes'           => ['nullable', 'string'],
+        ]);
+
+        $compliance->update($data);
+        AuditLogger::log('compliance.assessment_updated', $compliance);
+
+        return redirect()->route('compliance.show', $compliance)
+            ->with('status', 'Ocena zaktualizowana.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Respond
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function showRespond(ComplianceAssessment $assessment): View
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        $assessment->load([
+            'framework.domains.requirements',
+        ]);
+
+        $responses = $assessment->responses()->get()->keyBy('requirement_id');
+
+        return view('compliance.respond', compact('assessment', 'responses'));
+    }
+
+    public function respond(ComplianceAssessment $assessment, Request $request): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        $data = $request->validate([
+            'responses'                          => ['required', 'array'],
+            'responses.*.status'                 => ['required', 'string', 'in:compliant,partial,non_compliant,not_applicable,not_assessed'],
+            'responses.*.evidence'               => ['nullable', 'string'],
+            'responses.*.gap_description'        => ['nullable', 'string'],
+            'responses.*.remediation_plan'       => ['nullable', 'string'],
+            'responses.*.priority'               => ['nullable', 'in:high,medium,low'],
+            'responses.*.target_date'            => ['nullable', 'date'],
+        ]);
+
+        $userId = auth()->id();
+        $now    = now();
+
+        foreach ($data['responses'] as $reqId => $row) {
+            ComplianceResponse::updateOrCreate(
+                ['assessment_id' => $assessment->id, 'requirement_id' => (int) $reqId],
+                [
+                    'status'           => $row['status'],
+                    'evidence'         => $row['evidence'] ?? null,
+                    'gap_description'  => $row['gap_description'] ?? null,
+                    'remediation_plan' => $row['remediation_plan'] ?? null,
+                    'priority'         => $row['priority'] ?? null,
+                    'target_date'      => $row['target_date'] ?? null,
+                    'responded_by'     => $userId,
+                    'responded_at'     => $now,
+                ]
+            );
+        }
+
+        // Auto-advance to in_progress
+        if ($assessment->status === 'draft') {
+            $assessment->update(['status' => 'in_progress']);
+        }
+
+        $assessment->recalculateScore();
+        AuditLogger::log('compliance.responses_saved', $assessment);
+
+        return redirect()->route('compliance.show', $assessment)
+            ->with('status', 'Odpowiedzi zostały zapisane.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // State transitions
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function complete(ComplianceAssessment $assessment): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        $assessment->recalculateScore();
+        $assessment->update([
+            'status'      => 'completed',
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ]);
+
+        AuditLogger::log('compliance.assessment_completed', $assessment);
+
+        return back()->with('status', "Ocena {$assessment->code} zakończona. Wynik: {$assessment->overall_score}%");
+    }
+
+    public function publish(ComplianceAssessment $assessment): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('compliance.update'), 403);
+
+        if ($assessment->status !== 'completed') {
+            return back()->with('error', 'Ocena musi być zakończona przed opublikowaniem SoA.');
+        }
+
+        $assessment->update(['is_published' => true]);
+        AuditLogger::log('compliance.soa_published', $assessment);
+
+        return back()->with('status', "Deklaracja stosowalności (SoA) dla {$assessment->code} została opublikowana.");
+    }
+}
