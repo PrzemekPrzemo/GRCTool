@@ -21,6 +21,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
             'rcp', 'gdpr_breach', 'dpia', 'dsar',
             'training', 'exception', 'certificate', 'crypto_key', 'bcp',
+            'sdlc', 'access_review',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -61,6 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                         'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
+                        'sdlc.*', 'access_review.*',
                     ],
                 ],
                 'security_engineer' => [
@@ -72,6 +74,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'risk.view', 'audit_log.view',
                         'training.view', 'exception.view', 'exception.create',
                         'certificate.*', 'crypto_key.*',
+                        'sdlc.*', 'access_review.view', 'access_review.create', 'access_review.update',
                     ],
                 ],
                 'risk_owner' => [
@@ -96,6 +99,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'cap.*', 'control.view', 'risk.view', 'asset.view', 'report.view',
                         'report.generate',
                         'training.view', 'exception.view', 'bcp.view',
+                        'access_review.*', 'sdlc.view',
                     ],
                 ],
                 'external_auditor' => [
@@ -135,6 +139,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'incident.view', 'nis2.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                         'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
+                        'access_review.*', 'sdlc.view',
                     ],
                 ],
                 'sales' => [

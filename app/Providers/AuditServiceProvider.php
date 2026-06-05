@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\AccessReviewCampaign;
+use App\Models\AccessReviewItem;
 use App\Models\AnswerLibrary;
 use App\Models\Asset;
 use App\Models\AuditEngagement;
@@ -34,6 +36,9 @@ use App\Models\RiskAcceptance;
 use App\Models\RiskTreatmentPlan;
 use App\Models\RtpAction;
 use App\Models\SecurityQuestionnaire;
+use App\Models\SdlcProject;
+use App\Models\SdlcSecurityGate;
+use App\Models\SdlcThreatModel;
 use App\Models\Subprocessor;
 use App\Models\ThirdParty;
 use App\Models\Training;
@@ -65,6 +70,9 @@ class AuditServiceProvider extends ServiceProvider
             // New modules
             Training::class, UserTrainingCompletion::class, ComplianceException::class,
             CertificateInventory::class, CryptoKey::class, BcpPlan::class, BcpTest::class,
+            // AppSec & IAM
+            SdlcProject::class, SdlcThreatModel::class, SdlcSecurityGate::class,
+            AccessReviewCampaign::class, AccessReviewItem::class,
         ];
 
         foreach ($observable as $modelClass) {

@@ -238,6 +238,31 @@
             </div>
         </div>
 
+        {{-- AppSec & IAM --}}
+        @canany(['sdlc.view','access_review.view'])
+        <div class="px-3 mb-1" x-data="{ open: {{ request()->routeIs('sdlc.*','access-reviews.*') ? 'true' : 'false' }} }">
+            <button @click="open = !open"
+                    class="w-full flex items-center justify-between px-2 py-1 text-xs font-semibold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors">
+                <span>AppSec & IAM</span>
+                <svg class="w-3 h-3 transition-transform" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div x-show="open" x-transition class="space-y-0.5">
+                @can('sdlc.view')
+                <a href="{{ route('sdlc.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('sdlc.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    <span>SDLC Projekty</span>
+                </a>
+                @endcan
+                @can('access_review.view')
+                <a href="{{ route('access-reviews.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('access-reviews.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <span>Przeglądy dostępów</span>
+                </a>
+                @endcan
+            </div>
+        </div>
+        @endcanany
+
         {{-- Raporty --}}
         <div class="px-3 mb-1">
             <p class="px-2 py-1 text-xs font-semibold text-slate-500 uppercase tracking-widest">Raporty</p>
