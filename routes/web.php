@@ -33,6 +33,8 @@ use App\Http\Controllers\TrustCenterController;
 use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
 use App\Http\Controllers\VulnerabilityController;
+use App\Http\Controllers\AccessReviewController;
+use App\Http\Controllers\SdlcController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -199,6 +201,20 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Org Metrics Dashboard
     Route::get('org-metrics', [OrgMetricsController::class, 'index'])->name('org-metrics.index');
+
+    // Secure SDLC / AppSec
+    Route::resource('sdlc', SdlcController::class)->except(['destroy']);
+    Route::post('sdlc/{sdlc}/gate', [SdlcController::class, 'addGate'])->name('sdlc.gate.add');
+    Route::post('sdlc/{sdlc}/gate/{gate}', [SdlcController::class, 'updateGate'])->name('sdlc.gate.update');
+    Route::post('sdlc/{sdlc}/threat-model', [SdlcController::class, 'addThreatModel'])->name('sdlc.threat_model.add');
+
+    // Access Reviews
+    Route::resource('access-reviews', AccessReviewController::class)->parameters(['access-reviews' => 'campaign'])->except(['destroy']);
+    Route::post('access-reviews/{campaign}/launch', [AccessReviewController::class, 'launch'])->name('access-reviews.launch');
+    Route::post('access-reviews/{campaign}/complete', [AccessReviewController::class, 'complete'])->name('access-reviews.complete');
+    Route::post('access-reviews/{campaign}/items', [AccessReviewController::class, 'addItem'])->name('access-reviews.item.add');
+    Route::post('access-reviews/{campaign}/items/{item}/decide', [AccessReviewController::class, 'decide'])->name('access-reviews.item.decide');
+    Route::post('access-reviews/{campaign}/bulk-approve', [AccessReviewController::class, 'bulkApprove'])->name('access-reviews.bulk_approve');
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
