@@ -81,7 +81,7 @@
                         @endif
                     </td>
                     <td class="px-4 py-2.5 text-xs font-mono text-slate-400">
-                        {{ data_get($log->context, 'ip', $log->context['ip'] ?? '—') }}
+                        {{ $log->ip_address ?? '—' }}
                     </td>
                 </tr>
                 @empty
