@@ -27,6 +27,9 @@ class User extends Authenticatable
         'external_org',
         'clearance_level',
         'is_active',
+        'google_id',
+        'avatar_url',
+        'auth_provider',
     ];
 
     protected $hidden = [

@@ -34,10 +34,13 @@ class UserController extends Controller
             'business_unit_id' => ['nullable', 'exists:business_units,id'],
             'is_external' => ['nullable', 'boolean'],
             'external_org' => ['nullable', 'string'],
+            'auth_provider' => ['nullable', 'in:local,google'],
             'roles' => ['array'],
         ]);
 
-        $tempPassword = Str::password(16);
+        $authProvider = $data['auth_provider'] ?? 'local';
+        $tempPassword = Str::password(64);
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -45,14 +48,23 @@ class UserController extends Controller
             'business_unit_id' => $data['business_unit_id'] ?? null,
             'is_external' => $data['is_external'] ?? false,
             'external_org' => $data['external_org'] ?? null,
+            'auth_provider' => $authProvider,
             'is_active' => true,
             'locale' => 'pl',
             'email_verified_at' => now(),
         ]);
         $user->syncRoles($data['roles'] ?? []);
 
+        if ($authProvider === 'google') {
+            return redirect()->route('admin.users.index')
+                ->with('status', "Utworzono użytkownika {$user->email}. Użytkownik będzie logował się przez Google Workspace.");
+        }
+
+        $shortPassword = Str::password(16);
+        $user->update(['password' => Hash::make($shortPassword)]);
+
         return redirect()->route('admin.users.index')
-            ->with('status', "Utworzono usera {$user->email}. Hasło tymczasowe: {$tempPassword} — przekaż bezpiecznym kanałem i wymuś zmianę.");
+            ->with('status', "Utworzono usera {$user->email}. Hasło tymczasowe: {$shortPassword} — przekaż bezpiecznym kanałem i wymuś zmianę.");
     }
 
     public function edit(User $user): View
@@ -68,6 +80,7 @@ class UserController extends Controller
             'is_external' => ['nullable', 'boolean'],
             'external_org' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'auth_provider' => ['nullable', 'in:local,google'],
             'roles' => ['array'],
         ]);
 
@@ -77,6 +90,7 @@ class UserController extends Controller
             'is_external' => $data['is_external'] ?? false,
             'external_org' => $data['external_org'] ?? null,
             'is_active' => $data['is_active'] ?? true,
+            'auth_provider' => $data['auth_provider'] ?? $user->auth_provider,
         ]);
         $user->syncRoles($data['roles'] ?? []);
 

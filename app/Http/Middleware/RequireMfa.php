@@ -18,6 +18,11 @@ class RequireMfa
             return $next($request);
         }
 
+        // Google Workspace users — MFA is handled by Google, skip TOTP requirement
+        if ($user->auth_provider === 'google') {
+            return $next($request);
+        }
+
         if ($user->hasMfaEnabled()) {
             return $next($request);
         }

@@ -48,6 +48,13 @@ class LoginController extends Controller
             ]);
         }
 
+        // Block Google-only users from using password login
+        if ($user->auth_provider === 'google') {
+            AuditLogger::log('login_failed', $user, ['reason' => 'google_account_use_oauth']);
+
+            return back()->withErrors(['email' => 'To konto używa logowania przez Google. Użyj przycisku "Zaloguj przez Google".']);
+        }
+
         RateLimiter::clear($key);
 
         if ($user->hasMfaEnabled()) {
