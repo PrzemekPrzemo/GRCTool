@@ -13,7 +13,7 @@
             @foreach($users as $u)
             <tr class="border-t border-slate-100">
                 <td class="px-3 py-2 text-xs font-mono">{{ $u->email }}</td>
-                <td class="px-3 py-2">{{ $u->name }}</td>
+                <td class="px-3 py-2"><a href="{{ route('admin.users.show', $u) }}" class="font-medium text-slate-800 hover:text-emerald-700">{{ $u->name }}</a></td>
                 <td class="px-3 py-2 text-xs">@foreach($u->roles as $r)<span class="px-1.5 py-0.5 bg-slate-100 rounded mr-1">{{ $r->name }}</span>@endforeach</td>
                 <td class="px-3 py-2 text-xs">{{ $u->businessUnit?->code ?? '—' }}</td>
                 <td class="px-3 py-2 text-xs">{{ $u->is_external ? $u->external_org : '—' }}</td>
@@ -21,7 +21,8 @@
                 <td class="px-3 py-2 text-xs">{{ $u->is_active ? 'Tak' : 'Nie' }}</td>
                 <td class="px-3 py-2 text-xs">{{ $u->last_login_at?->format('Y-m-d H:i') ?? '—' }}</td>
                 <td class="px-3 py-2 text-xs">
-                    <a href="{{ route('admin.users.edit', $u) }}" class="text-emerald-700 hover:underline">edit</a>
+                    <a href="{{ route('admin.users.show', $u) }}" class="text-blue-700 hover:underline">Aktywność</a>
+                    <a href="{{ route('admin.users.edit', $u) }}" class="text-emerald-700 hover:underline ml-2">edit</a>
                     <form method="POST" action="{{ route('admin.users.reset', $u) }}" class="inline" onsubmit="return confirm('Reset hasła i wyłączyć MFA?')">@csrf<button class="text-amber-700 hover:underline ml-2">reset pwd</button></form>
                     @if($u->is_active)
                         <form method="POST" action="{{ route('admin.users.deactivate', $u) }}" class="inline" onsubmit="return confirm('Dezaktywować?')">@csrf<button class="text-red-700 hover:underline ml-2">deactivate</button></form>

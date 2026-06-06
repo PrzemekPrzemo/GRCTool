@@ -27,6 +27,9 @@ class User extends Authenticatable
         'external_org',
         'clearance_level',
         'is_active',
+        'google_id',
+        'avatar_url',
+        'auth_provider',
     ];
 
     protected $hidden = [
@@ -62,6 +65,11 @@ class User extends Authenticatable
     public function scopes(): HasMany
     {
         return $this->hasMany(UserScope::class);
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(\App\Models\UserSession::class);
     }
 
     public function hasMfaEnabled(): bool

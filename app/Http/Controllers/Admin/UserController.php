@@ -55,6 +55,22 @@ class UserController extends Controller
             ->with('status', "Utworzono usera {$user->email}. Hasło tymczasowe: {$tempPassword} — przekaż bezpiecznym kanałem i wymuś zmianę.");
     }
 
+    public function show(User $user): View
+    {
+        $sessions = $user->sessions()
+            ->orderByDesc('logged_in_at')
+            ->limit(50)
+            ->get();
+
+        $activityLog = \App\Models\AuditLog::where('user_id', $user->id)
+            ->orderByDesc('occurred_at')
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get();
+
+        return view('admin.users.show', compact('user', 'sessions', 'activityLog'));
+    }
+
     public function edit(User $user): View
     {
         return view('admin.users.form', $this->formData($user));

@@ -62,6 +62,16 @@ class LoginController extends Controller
         $request->session()->regenerate();
         AuditLogger::log('login', $user);
 
+        $sessionToken = $request->session()->getId();
+        \App\Models\UserSession::create([
+            'user_id'       => $user->id,
+            'ip_address'    => $request->ip(),
+            'user_agent'    => $request->userAgent(),
+            'auth_provider' => 'local',
+            'logged_in_at'  => now(),
+            'session_token' => $sessionToken,
+        ]);
+
         if (! $user->hasMfaEnabled()) {
             return redirect()->route('mfa.setup')
                 ->with('warning', 'MFA nie jest skonfigurowane. Włącz je dla bezpieczeństwa konta.');
@@ -107,6 +117,12 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        if (auth()->check()) {
+            \App\Models\UserSession::where('user_id', auth()->id())
+                ->whereNull('logged_out_at')
+                ->latest('logged_in_at')
+                ->first()?->update(['logged_out_at' => now()]);
+        }
         if ($user = Auth::user()) {
             AuditLogger::log('logout', $user);
         }
