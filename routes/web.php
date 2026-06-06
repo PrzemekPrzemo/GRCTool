@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
@@ -263,5 +264,6 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
         Route::post('users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
         Route::post('users/{user}/reset', [AdminUserController::class, 'resetPassword'])->name('users.reset');
         Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log');
+        Route::resource('roles', RoleController::class)->except(['show']);
     });
 });
