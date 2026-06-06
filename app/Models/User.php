@@ -67,6 +67,11 @@ class User extends Authenticatable
         return $this->hasMany(UserScope::class);
     }
 
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(\App\Models\UserSession::class);
+    }
+
     public function hasMfaEnabled(): bool
     {
         return ! is_null($this->two_factor_confirmed_at);
