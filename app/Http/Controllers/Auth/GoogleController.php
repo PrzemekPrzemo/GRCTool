@@ -50,6 +50,16 @@ class GoogleController extends Controller
         $user->update(['last_login_at' => now(), 'last_login_ip' => request()->ip()]);
         AuditLogger::log('login_google', $user);
 
+        \App\Models\UserSession::create([
+            'user_id'       => $user->id,
+            'ip_address'    => request()->ip(),
+            'user_agent'    => request()->userAgent(),
+            'auth_provider' => 'google',
+            'logged_in_at'  => now(),
+            'session_token' => session()->getId(),
+        ]);
+
+
         // Google users skip MFA TOTP — Google handles their 2FA
         session(['mfa_verified' => true]);
 
