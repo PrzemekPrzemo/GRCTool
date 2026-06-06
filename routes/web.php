@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\BcpController;
@@ -49,6 +51,10 @@ Route::get('trust/policies/{policy}', [TrustCenterController::class, 'policy'])-
 Route::get('vendor-portal/{token}', [VendorPortalController::class, 'show'])->name('vendor-portal.show');
 Route::post('vendor-portal/{token}/responses/{mcrId}', [VendorPortalController::class, 'updateResponse'])->name('vendor-portal.update');
 Route::post('vendor-portal/{token}/submit', [VendorPortalController::class, 'submit'])->name('vendor-portal.submit');
+
+// Google OAuth (no middleware — handles its own auth state)
+Route::get('auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
+Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
 
 // Auth (guest)
 Route::middleware('guest')->group(function (): void {
@@ -256,5 +262,6 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
         Route::resource('users', AdminUserController::class)->except(['show']);
         Route::post('users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
         Route::post('users/{user}/reset', [AdminUserController::class, 'resetPassword'])->name('users.reset');
+        Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log');
     });
 });
