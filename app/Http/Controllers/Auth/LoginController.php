@@ -58,6 +58,8 @@ class LoginController extends Controller
         RateLimiter::clear($key);
 
         if ($user->hasMfaEnabled()) {
+            // Rotate session ID before storing any identity information
+            $request->session()->regenerate();
             $request->session()->put('mfa.user_id', $user->id);
             $request->session()->put('mfa.remember', $request->boolean('remember'));
 
@@ -107,11 +109,20 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
+        $mfaKey = 'mfa:' . $userId . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($mfaKey, 5)) {
+            $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+            throw ValidationException::withMessages(['code' => 'Zbyt wiele błędnych prób. Zaloguj się ponownie.']);
+        }
+
         $user = User::find($userId);
         if (! $user || ! $this->mfa->verifyCode($user, $data['code'])) {
+            RateLimiter::hit($mfaKey, 300);
             AuditLogger::log('mfa_failed', $user);
             throw ValidationException::withMessages(['code' => 'Niepoprawny kod MFA.']);
         }
+
+        RateLimiter::clear($mfaKey);
 
         Auth::login($user, $remember);
         $user->update(['last_login_at' => now(), 'last_login_ip' => $request->ip()]);

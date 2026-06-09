@@ -13,6 +13,8 @@ class IncidentController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('incident.view'), 403);
+
         $q = Incident::query()->with('owner');
 
         if ($search = $request->string('q')->trim()->toString()) {
