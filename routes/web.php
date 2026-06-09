@@ -41,6 +41,10 @@ use App\Http\Controllers\ComplianceAssessmentController;
 use App\Http\Controllers\ComplianceFrameworkAdminController;
 use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\SdlcController;
+use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\BusinessUnitController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -136,6 +140,19 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('vulnerabilities/{vulnerability}/close', [VulnerabilityController::class, 'close'])->name('vulnerabilities.close');
     Route::post('vulnerabilities/{vulnerability}/exceptions', [VulnerabilityController::class, 'proposeException'])->name('vulnerabilities.exceptions.propose');
     Route::post('vulnerabilities/exceptions/{exception}/approve', [VulnerabilityController::class, 'approveException'])->name('vulnerabilities.exceptions.approve');
+
+    // Evidence
+    Route::resource('evidence', EvidenceController::class)->except(['destroy']);
+    Route::delete('evidence/{evidence}', [EvidenceController::class, 'destroy'])->name('evidence.destroy');
+
+    // Clients
+    Route::resource('clients', ClientController::class)->except(['destroy']);
+
+    // Business Units
+    Route::resource('business-units', BusinessUnitController::class)->except(['destroy']);
+
+    // Projects
+    Route::resource('projects', ProjectController::class)->except(['destroy']);
 
     // Audit engagements
     Route::resource('engagements', AuditEngagementController::class)->except(['destroy']);
