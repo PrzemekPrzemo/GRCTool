@@ -49,4 +49,21 @@ class Control extends Model
     {
         return $this->morphMany(EvidenceLink::class, 'linkable');
     }
+
+    public function isTestingOverdue(): bool
+    {
+        return $this->next_test_due !== null && $this->next_test_due->isPast();
+    }
+
+    public function testingStatus(): string
+    {
+        if ($this->last_tested_at === null) {
+            return 'never_tested';
+        }
+        if ($this->isTestingOverdue()) {
+            return 'overdue';
+        }
+
+        return 'ok';
+    }
 }

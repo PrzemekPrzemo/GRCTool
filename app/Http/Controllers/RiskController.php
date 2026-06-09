@@ -246,6 +246,27 @@ class RiskController extends Controller
         return back()->with('status', 'Akcja dodana do planu.');
     }
 
+    public function updateAction(Request $request, RtpAction $action): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('risk.update'), 403);
+
+        $data = $request->validate([
+            'status'           => ['required', 'in:Open,In Progress,Completed,Cancelled,Overdue'],
+            'progress_percent' => ['required', 'integer', 'min:0', 'max:100'],
+            'completed_at'     => ['nullable', 'date'],
+        ]);
+
+        if ($data['status'] === 'Completed' && empty($data['completed_at'])) {
+            $data['completed_at'] = now()->toDateString();
+            $data['progress_percent'] = 100;
+        }
+
+        $action->update($data);
+        AuditLogger::log('risk.rtp_action_updated', $action->plan->risk);
+
+        return back()->with('status', 'Akcja zaktualizowana.');
+    }
+
     private function snapshotVersion(Risk $risk, string $action, ?string $reason = null, array $diff = []): void
     {
         $next = ($risk->versions()->max('version_number') ?? 0) + 1;

@@ -39,6 +39,7 @@ use App\Http\Controllers\VulnerabilityController;
 use App\Http\Controllers\AccessReviewController;
 use App\Http\Controllers\ComplianceAssessmentController;
 use App\Http\Controllers\ComplianceFrameworkAdminController;
+use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\SdlcController;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +79,7 @@ Route::middleware('auth')->group(function (): void {
 // Authenticated + MFA enforced
 Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/export', [DashboardController::class, 'exportPdf'])->name('dashboard.export');
 
     // Assets
     Route::get('assets/import', [AssetController::class, 'showImport'])->name('assets.import.show');
@@ -97,8 +99,14 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('scenarios/{scenario}', [ScenarioController::class, 'show'])->name('scenarios.show');
     Route::post('scenarios/{scenario}/adopt', [RiskController::class, 'adoptScenario'])->name('scenarios.adopt');
 
+    // Risk Treatment Plans & Actions
+    Route::get('risk-treatment-plans', [RiskTreatmentPlanController::class, 'index'])->name('risk-treatment-plans.index');
+    Route::get('risk-treatment-plans/{plan}', [RiskTreatmentPlanController::class, 'show'])->name('risk-treatment-plans.show');
+    Route::patch('rtp-actions/{action}', [RiskController::class, 'updateAction'])->name('rtp-actions.update');
+
     // Controls
     Route::get('controls/soa', [ControlController::class, 'soa'])->name('controls.soa');
+    Route::get('controls/cross-mapping', [ControlController::class, 'crossMapping'])->name('controls.cross-mapping');
     Route::resource('controls', ControlController::class)->except(['destroy']);
     Route::post('controls/{control}/test', [ControlController::class, 'recordTest'])->name('controls.test');
 
@@ -119,9 +127,15 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // Vulnerabilities
     Route::get('vulnerabilities/import', [VulnerabilityController::class, 'showImport'])->name('vulnerabilities.import.show');
     Route::post('vulnerabilities/import', [VulnerabilityController::class, 'import'])->name('vulnerabilities.import');
+    Route::get('vulnerabilities/create', [VulnerabilityController::class, 'create'])->name('vulnerabilities.create');
+    Route::post('vulnerabilities', [VulnerabilityController::class, 'store'])->name('vulnerabilities.store');
     Route::get('vulnerabilities', [VulnerabilityController::class, 'index'])->name('vulnerabilities.index');
+    Route::get('vulnerabilities/{vulnerability}/edit', [VulnerabilityController::class, 'edit'])->name('vulnerabilities.edit');
+    Route::put('vulnerabilities/{vulnerability}', [VulnerabilityController::class, 'update'])->name('vulnerabilities.update');
     Route::get('vulnerabilities/{vulnerability}', [VulnerabilityController::class, 'show'])->name('vulnerabilities.show');
     Route::post('vulnerabilities/{vulnerability}/close', [VulnerabilityController::class, 'close'])->name('vulnerabilities.close');
+    Route::post('vulnerabilities/{vulnerability}/exceptions', [VulnerabilityController::class, 'proposeException'])->name('vulnerabilities.exceptions.propose');
+    Route::post('vulnerabilities/exceptions/{exception}/approve', [VulnerabilityController::class, 'approveException'])->name('vulnerabilities.exceptions.approve');
 
     // Audit engagements
     Route::resource('engagements', AuditEngagementController::class)->except(['destroy']);

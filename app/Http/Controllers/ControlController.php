@@ -6,6 +6,7 @@ use App\Models\Control;
 use App\Models\ControlTest;
 use App\Models\Framework;
 use App\Models\FrameworkControl;
+use App\Models\FrameworkVersion;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -103,6 +104,54 @@ class ControlController extends Controller
         ]);
 
         return back()->with('status', 'Test zarejestrowany.');
+    }
+
+    public function crossMapping(): View
+    {
+        abort_unless(auth()->user()->can('control.view'), 403);
+
+        $frameworks = Framework::where('category', 'standard')
+            ->with(['versions' => fn ($q) => $q->orderByDesc('published_at')->limit(1)])
+            ->get()
+            ->filter(fn ($fw) => $fw->versions->isNotEmpty());
+
+        $controls = Control::where('is_applicable', true)
+            ->with(['frameworkControls.frameworkVersion'])
+            ->orderBy('code')
+            ->get();
+
+        // Build matrix: [control_id][framework_id] => strongest mapping_type
+        $priority = ['full' => 2, 'partial' => 1, 'compensating' => 0];
+        $matrix   = [];
+
+        foreach ($controls as $control) {
+            foreach ($frameworks as $fw) {
+                $latestVersionId = $fw->versions->first()?->id;
+                $best            = null;
+
+                foreach ($control->frameworkControls as $fc) {
+                    if ($fc->framework_version_id !== $latestVersionId) {
+                        continue;
+                    }
+                    $type = $fc->pivot->mapping_type ?? 'partial';
+                    if ($best === null || ($priority[$type] ?? 0) > ($priority[$best] ?? 0)) {
+                        $best = $type;
+                    }
+                }
+
+                $matrix[$control->id][$fw->id] = $best;
+            }
+        }
+
+        // Coverage % per framework
+        $coverage = [];
+        foreach ($frameworks as $fw) {
+            $total   = $controls->count();
+            $mapped  = collect($matrix)->filter(fn ($row) => isset($row[$fw->id]))->count();
+            $coverage[$fw->id] = $total > 0 ? round($mapped / $total * 100) : 0;
+        }
+
+        return view('controls.cross-mapping', compact('frameworks', 'controls', 'matrix', 'coverage'));
     }
 
     public function soa(Request $request): View
