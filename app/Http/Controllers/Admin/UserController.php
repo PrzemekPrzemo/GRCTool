@@ -16,6 +16,8 @@ class UserController extends Controller
 {
     public function index(): View
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         $users = User::with('roles', 'businessUnit')->orderBy('name')->paginate(50);
 
         return view('admin.users.index', compact('users'));
@@ -23,11 +25,15 @@ class UserController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         return view('admin.users.form', $this->formData(new User));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
@@ -48,11 +54,13 @@ class UserController extends Controller
             'business_unit_id' => $data['business_unit_id'] ?? null,
             'is_external' => $data['is_external'] ?? false,
             'external_org' => $data['external_org'] ?? null,
+        ]);
+        $user->forceFill([
             'auth_provider' => $authProvider,
             'is_active' => true,
             'locale' => 'pl',
             'email_verified_at' => now(),
-        ]);
+        ])->save();
         $user->syncRoles($data['roles'] ?? []);
 
         if ($authProvider === 'google') {
@@ -61,7 +69,7 @@ class UserController extends Controller
         }
 
         $shortPassword = Str::password(16);
-        $user->update(['password' => Hash::make($shortPassword)]);
+        $user->forceFill(['password' => Hash::make($shortPassword)])->save();
 
         return redirect()->route('admin.users.index')
             ->with('status', "Utworzono usera {$user->email}. Hasło tymczasowe: {$shortPassword} — przekaż bezpiecznym kanałem i wymuś zmianę.");
@@ -69,12 +77,15 @@ class UserController extends Controller
 
     public function show(User $user): View
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         $sessions = $user->sessions()
             ->orderByDesc('logged_in_at')
             ->limit(50)
             ->get();
 
-        $activityLog = \App\Models\AuditLog::where('user_id', $user->id)
+        $activityLog = \App\Models\AuditLog::with('user')
+            ->where('user_id', $user->id)
             ->orderByDesc('occurred_at')
             ->orderByDesc('id')
             ->limit(100)
@@ -85,11 +96,15 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         return view('admin.users.form', $this->formData($user));
     }
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'business_unit_id' => ['nullable', 'exists:business_units,id'],
@@ -105,9 +120,11 @@ class UserController extends Controller
             'business_unit_id' => $data['business_unit_id'] ?? null,
             'is_external' => $data['is_external'] ?? false,
             'external_org' => $data['external_org'] ?? null,
+        ]);
+        $user->forceFill([
             'is_active' => $data['is_active'] ?? true,
             'auth_provider' => $data['auth_provider'] ?? $user->auth_provider,
-        ]);
+        ])->save();
         $user->syncRoles($data['roles'] ?? []);
 
         return redirect()->route('admin.users.index')->with('status', "Zaktualizowano {$user->email}.");
@@ -115,20 +132,24 @@ class UserController extends Controller
 
     public function deactivate(User $user): RedirectResponse
     {
-        $user->update(['is_active' => false, 'disabled_at' => now()]);
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
+        $user->forceFill(['is_active' => false, 'disabled_at' => now()])->save();
 
         return back()->with('status', "Konto {$user->email} dezaktywowane.");
     }
 
     public function resetPassword(User $user): RedirectResponse
     {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
         $tempPassword = Str::password(16);
-        $user->update([
+        $user->forceFill([
             'password' => Hash::make($tempPassword),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
-        ]);
+        ])->save();
 
         return back()->with('status', "Hasło zresetowane: {$tempPassword} — wymuś zmianę przy pierwszym logowaniu.");
     }

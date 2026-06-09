@@ -139,6 +139,10 @@ class Incident extends Model
             $this->enisa_early_warning_deadline = $dt->copy()->addHours(24);
             $this->enisa_notification_deadline  = $dt->copy()->addHours(72);
             $this->enisa_final_report_deadline  = $dt->copy()->addDays(30);
+        } else {
+            $this->enisa_early_warning_deadline = null;
+            $this->enisa_notification_deadline  = null;
+            $this->enisa_final_report_deadline  = null;
         }
     }
 }

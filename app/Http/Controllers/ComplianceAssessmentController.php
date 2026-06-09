@@ -287,16 +287,22 @@ class ComplianceAssessmentController extends Controller
             }
         }
 
-        $csv    = '';
+        $csv    = "\xEF\xBB\xBF"; // UTF-8 BOM for Excel
         foreach ($rows as $row) {
             $csv .= implode(',', array_map(function (string $cell): string {
+                // Neutralise spreadsheet formula injection (CSV injection)
+                if (preg_match('/^[=+\-@\t\r]/', $cell)) {
+                    $cell = "'" . $cell;
+                }
                 $cell = str_replace('"', '""', $cell);
 
                 return '"' . $cell . '"';
             }, $row)) . "\r\n";
         }
 
-        $filename = "compliance_{$assessment->code}_" . now()->format('Ymd') . '.csv';
+        // Strip non-printable / newline chars from filename to prevent CRLF header injection
+        $safeCode = preg_replace('/[^A-Za-z0-9_\-]/', '_', $assessment->code);
+        $filename = "compliance_{$safeCode}_" . now()->format('Ymd') . '.csv';
 
         return response($csv, 200, [
             'Content-Type'        => 'text/csv; charset=UTF-8',

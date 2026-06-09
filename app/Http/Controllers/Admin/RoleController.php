@@ -49,7 +49,7 @@ class RoleController extends Controller
         $role->syncPermissions($data['permissions'] ?? []);
 
         return redirect()->route('admin.roles.index')
-            ->with('status', "Utworzono rolę „{$role->name}".");
+            ->with('status', 'Utworzono rolę "' . $role->name . '".');
     }
 
     public function edit(Role $role): View
@@ -73,7 +73,7 @@ class RoleController extends Controller
         $role->syncPermissions($data['permissions'] ?? []);
 
         return redirect()->route('admin.roles.index')
-            ->with('status', "Zaktualizowano uprawnienia roli „{$role->name}".");
+            ->with('status', 'Zaktualizowano uprawnienia roli "' . $role->name . '".');
     }
 
     public function destroy(Role $role): RedirectResponse
@@ -94,6 +94,6 @@ class RoleController extends Controller
         $role->delete();
 
         return redirect()->route('admin.roles.index')
-            ->with('status', "Usunięto rolę „{$role->name}".");
+            ->with('status', 'Usunięto rolę "' . $role->name . '".');
     }
 }

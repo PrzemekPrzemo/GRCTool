@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 ->whereDate('due_date', '<', now())->count(),
             'findings_open' => Finding::whereNotIn('status', ['Closed', 'Verified', 'Risk Accepted'])->count(),
             'engagements_active' => AuditEngagement::whereIn('status', ['Planning', 'Fieldwork', 'Reporting'])->count(),
-            'incidents_open_p1_p2' => Incident::whereIn('severity', ['P1', 'P2'])->whereNotIn('status', ['Closed'])->count(),
+            'incidents_open_p1_p2' => Incident::whereIn('severity', ['Critical', 'High'])->whereNotIn('status', ['Closed'])->count(),
             'certs_expiring_30d' => CertificateInventory::where('status', 'active')->whereDate('expires_at', '<=', now()->addDays(30))->whereDate('expires_at', '>=', now())->count(),
             'certs_expired' => CertificateInventory::where('status', 'active')->whereDate('expires_at', '<', now())->count(),
             'gdpr_breach_overdue' => GdprBreach::where('notification_required', true)->whereNull('uodo_notified_at')->where('uodo_notification_deadline', '<', now())->count(),

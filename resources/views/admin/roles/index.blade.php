@@ -79,7 +79,7 @@ $builtinRoles = \App\Http\Controllers\Admin\RoleController::BUILTIN_ROLES;
                 <td class="px-3 py-2 text-xs whitespace-nowrap">
                     <a href="{{ route('admin.roles.edit', $role) }}" class="text-emerald-700 hover:underline mr-3">Edytuj uprawnienia</a>
                     @if(!in_array($role->name, $builtinRoles))
-                        <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" class="inline" onsubmit="return confirm('Usunąć rolę „{{ $role->name }}"?')">
+                        <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" class="inline" data-role-name="{{ $role->name }}" onsubmit="return confirm('Usunąć rolę „' + this.dataset.roleName + '“?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-700 hover:underline">Usuń</button>

@@ -58,6 +58,8 @@ class LoginController extends Controller
         RateLimiter::clear($key);
 
         if ($user->hasMfaEnabled()) {
+            // Rotate session ID before storing any identity information
+            $request->session()->regenerate();
             $request->session()->put('mfa.user_id', $user->id);
             $request->session()->put('mfa.remember', $request->boolean('remember'));
 
@@ -107,17 +109,35 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
+        $mfaKey = 'mfa:' . $userId . '|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($mfaKey, 5)) {
+            $request->session()->forget(['mfa.user_id', 'mfa.remember']);
+            throw ValidationException::withMessages(['code' => 'Zbyt wiele błędnych prób. Zaloguj się ponownie.']);
+        }
+
         $user = User::find($userId);
         if (! $user || ! $this->mfa->verifyCode($user, $data['code'])) {
+            RateLimiter::hit($mfaKey, 300);
             AuditLogger::log('mfa_failed', $user);
             throw ValidationException::withMessages(['code' => 'Niepoprawny kod MFA.']);
         }
+
+        RateLimiter::clear($mfaKey);
 
         Auth::login($user, $remember);
         $user->update(['last_login_at' => now(), 'last_login_ip' => $request->ip()]);
         $request->session()->forget(['mfa.user_id', 'mfa.remember']);
         $request->session()->regenerate();
         AuditLogger::log('mfa_verified', $user);
+
+        \App\Models\UserSession::create([
+            'user_id'       => $user->id,
+            'ip_address'    => $request->ip(),
+            'user_agent'    => $request->userAgent(),
+            'auth_provider' => 'local',
+            'logged_in_at'  => now(),
+            'session_token' => $request->session()->getId(),
+        ]);
 
         return redirect()->intended(route('dashboard'));
     }

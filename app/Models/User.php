@@ -25,11 +25,6 @@ class User extends Authenticatable
         'manager_id',
         'is_external',
         'external_org',
-        'clearance_level',
-        'is_active',
-        'google_id',
-        'avatar_url',
-        'auth_provider',
     ];
 
     protected $hidden = [
