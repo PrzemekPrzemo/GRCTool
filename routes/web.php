@@ -102,6 +102,10 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Scenarios
     Route::get('scenarios', [ScenarioController::class, 'index'])->name('scenarios.index');
+    Route::get('scenarios/create', [ScenarioController::class, 'create'])->name('scenarios.create');
+    Route::post('scenarios', [ScenarioController::class, 'store'])->name('scenarios.store');
+    Route::get('scenarios/{scenario}/edit', [ScenarioController::class, 'edit'])->name('scenarios.edit');
+    Route::put('scenarios/{scenario}', [ScenarioController::class, 'update'])->name('scenarios.update');
     Route::get('scenarios/{scenario}', [ScenarioController::class, 'show'])->name('scenarios.show');
     Route::post('scenarios/{scenario}/adopt', [RiskController::class, 'adoptScenario'])->name('scenarios.adopt');
 
