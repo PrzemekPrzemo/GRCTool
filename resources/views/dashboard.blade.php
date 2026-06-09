@@ -11,12 +11,14 @@
 {{-- Alert banner: critical issues --}}
 @php
 $alerts = [];
-if($stats['incidents_open_p1_p2'] > 0) $alerts[] = ['Aktywne incydenty P1/P2: '.$stats['incidents_open_p1_p2'], 'red', route('incidents.index')];
-if($stats['gdpr_breach_overdue'] > 0) $alerts[] = ['Naruszenia RODO po terminie: '.$stats['gdpr_breach_overdue'], 'red', route('gdpr-breaches.index')];
-if($stats['dsar_overdue'] > 0) $alerts[] = ['Przeterminowane DSAR: '.$stats['dsar_overdue'], 'red', route('dsar.index')];
-if($stats['certs_expired'] > 0) $alerts[] = ['Wygasłe certyfikaty: '.$stats['certs_expired'], 'red', route('certificates.index')];
-if($stats['certs_expiring_30d'] > 0) $alerts[] = ['Certyfikaty wygasające ≤30 dni: '.$stats['certs_expiring_30d'], 'amber', route('certificates.index')];
-if($stats['exceptions_pending'] > 0) $alerts[] = ['Wyjątki do zatwierdzenia: '.$stats['exceptions_pending'], 'amber', route('exceptions.index')];
+if($stats['incidents_open_p1_p2'] > 0)   $alerts[] = ['Aktywne incydenty P1/P2: '.$stats['incidents_open_p1_p2'], 'red', route('incidents.index')];
+if($stats['gdpr_breach_overdue'] > 0)     $alerts[] = ['Naruszenia RODO po terminie: '.$stats['gdpr_breach_overdue'], 'red', route('gdpr-breaches.index')];
+if($stats['dsar_overdue'] > 0)            $alerts[] = ['Przeterminowane DSAR: '.$stats['dsar_overdue'], 'red', route('dsar.index')];
+if($stats['certs_expired'] > 0)           $alerts[] = ['Wygasłe certyfikaty: '.$stats['certs_expired'], 'red', route('certificates.index')];
+if($stats['rtp_actions_overdue'] > 0)     $alerts[] = ['Akcje planu leczenia po terminie: '.$stats['rtp_actions_overdue'], 'red', route('risk-treatment-plans.index')];
+if($stats['evidence_expiring_30d'] > 0)   $alerts[] = ['Dowody wygasające ≤30 dni: '.$stats['evidence_expiring_30d'], 'amber', route('controls.index')];
+if($stats['certs_expiring_30d'] > 0)      $alerts[] = ['Certyfikaty wygasające ≤30 dni: '.$stats['certs_expiring_30d'], 'amber', route('certificates.index')];
+if($stats['exceptions_pending'] > 0)      $alerts[] = ['Wyjątki do zatwierdzenia: '.$stats['exceptions_pending'], 'amber', route('exceptions.index')];
 @endphp
 @if(count($alerts))
 <div class="space-y-2 mb-6">
@@ -177,6 +179,82 @@ $tiles = [
                 </div>
             </a>
         @endforeach
+    </div>
+</div>
+
+{{-- Trend charts --}}
+<div class="mt-5">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold text-slate-700 flex items-center gap-2">
+            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            Trendy — ostatnie 12 miesięcy
+        </h2>
+        @can('report.generate')
+        <a href="{{ route('dashboard.export') }}" target="_blank"
+           class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs hover:bg-slate-200 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Eksport / Druk
+        </a>
+        @endcan
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Nowe ryzyka --}}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Nowe ryzyka</h3>
+                <span class="text-xs text-slate-400">12 mies.</span>
+            </div>
+            <x-svg-line-chart :points="$trends['risksNew']->toArray()" color="#f59e0b" :height="80"/>
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>Suma: {{ $trends['risksNew']->sum('y') }}</span>
+                <span>Mies.: ~{{ round($trends['risksNew']->avg('y'), 1) }}</span>
+            </div>
+        </div>
+
+        {{-- Nowe podatności --}}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Nowe podatności</h3>
+                <span class="text-xs text-red-400">Odkryte vs zamknięte</span>
+            </div>
+            <x-svg-line-chart :points="$trends['vulnsNew']->toArray()" color="#ef4444" :height="80"/>
+            <x-svg-line-chart :points="$trends['vulnsClosed']->toArray()" color="#10b981" :height="50"/>
+            <div class="flex justify-between text-xs mt-1">
+                <span class="text-red-500">Odkryte: {{ $trends['vulnsNew']->sum('y') }}</span>
+                <span class="text-emerald-600">Zamknięte: {{ $trends['vulnsClosed']->sum('y') }}</span>
+            </div>
+        </div>
+
+        {{-- Incydenty --}}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Incydenty</h3>
+                <span class="text-xs text-slate-400">12 mies.</span>
+            </div>
+            <x-svg-line-chart :points="$trends['incidentsNew']->toArray()" color="#8b5cf6" :height="80"/>
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>Suma: {{ $trends['incidentsNew']->sum('y') }}</span>
+                <span>Szczyt: {{ $trends['incidentsNew']->max('y') }}</span>
+            </div>
+        </div>
+
+        {{-- Compliance --}}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide">Wyniki ocen zgodności</h3>
+                <a href="{{ route('compliance.index') }}" class="text-xs text-emerald-600 hover:underline">→</a>
+            </div>
+            @if($trends['complianceScores']->count() >= 2)
+                <x-svg-line-chart :points="$trends['complianceScores']->toArray()" color="#059669" :height="80" :targetLine="80"/>
+                <div class="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>Ostatni: {{ $trends['complianceScores']->last()['y'] ?? '—' }}%</span>
+                    <span class="text-blue-500">Cel: 80%</span>
+                </div>
+            @else
+                <div class="flex items-center justify-center text-slate-400 text-xs h-20">Brak ukończonych ocen</div>
+            @endif
+        </div>
     </div>
 </div>
 

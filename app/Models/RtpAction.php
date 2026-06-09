@@ -33,4 +33,20 @@ class RtpAction extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public function isOverdue(): bool
+    {
+        return $this->due_date
+            && $this->due_date->isPast()
+            && ! in_array($this->status, ['Completed', 'Cancelled'], true);
+    }
+
+    public function daysOverdue(): int
+    {
+        if (! $this->due_date) {
+            return 0;
+        }
+
+        return (int) now()->diffInDays($this->due_date, false) * -1;
+    }
 }

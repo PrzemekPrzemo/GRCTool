@@ -48,4 +48,22 @@ class RiskTreatmentPlan extends Model
 
         return (int) round($this->actions()->sum('progress_percent') / $count);
     }
+
+    public function totalCostEur(): float
+    {
+        return (float) $this->actions()->sum('cost_eur');
+    }
+
+    public function budgetVariance(): float
+    {
+        return (float) ($this->budget_eur ?? 0) - $this->totalCostEur();
+    }
+
+    public function overdueActionsCount(): int
+    {
+        return $this->actions()
+            ->whereNotIn('status', ['Completed', 'Cancelled'])
+            ->whereDate('due_date', '<', now())
+            ->count();
+    }
 }

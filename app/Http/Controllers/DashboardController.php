@@ -6,9 +6,11 @@ use App\Models\Asset;
 use App\Models\AuditEngagement;
 use App\Models\BcpPlan;
 use App\Models\CertificateInventory;
+use App\Models\ComplianceAssessment;
 use App\Models\ComplianceException;
 use App\Models\Control;
 use App\Models\DsarRequest;
+use App\Models\EvidenceObject;
 use App\Models\Finding;
 use App\Models\GdprBreach;
 use App\Models\Incident;
@@ -17,13 +19,45 @@ use App\Models\Risk;
 use App\Models\Training;
 use App\Models\UserTrainingCompletion;
 use App\Models\Vulnerability;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        $stats = [
+        $stats = $this->buildStats();
+
+        $heatmap    = $this->buildRiskHeatmap();
+        $topRisks   = Risk::orderByDesc('residual_score')->limit(10)->get();
+        $indicators = Indicator::where('is_active', true)
+            ->with(['latestMeasurement'])
+            ->orderBy('type')
+            ->limit(12)
+            ->get();
+
+        $trends = $this->buildTrends();
+
+        return view('dashboard', compact('stats', 'heatmap', 'topRisks', 'indicators', 'trends'));
+    }
+
+    public function exportPdf(): View
+    {
+        abort_unless(auth()->user()->can('report.generate'), 403);
+
+        $stats    = $this->buildStats();
+        $heatmap  = $this->buildRiskHeatmap();
+        $topRisks = Risk::orderByDesc('residual_score')->limit(10)->get();
+        $trends   = $this->buildTrends();
+
+        return view('dashboard.export', compact('stats', 'heatmap', 'topRisks', 'trends'));
+    }
+
+    // ── private helpers ────────────────────────────────────────────────────────
+
+    private function buildStats(): array
+    {
+        return [
             'assets_total' => Asset::count(),
             'assets_critical' => Asset::where('criticality', 'Critical')->count(),
             'risks_open' => Risk::whereNotIn('status', ['Closed', 'Accepted'])->count(),
@@ -47,22 +81,12 @@ class DashboardController extends Controller
             'trainings_completion_pct' => (function () {
                 $total = UserTrainingCompletion::whereIn('status', ['pending', 'completed', 'expired'])->count();
                 $done  = UserTrainingCompletion::where('status', 'completed')->count();
+
                 return $total > 0 ? round($done / $total * 100) : 0;
             })(),
+            'evidence_expiring_30d' => EvidenceObject::expiringSoon(30)->count(),
+            'rtp_actions_overdue'   => \App\Models\RtpAction::whereNotIn('status', ['Completed', 'Cancelled'])->whereDate('due_date', '<', now())->count(),
         ];
-
-        // Heat map 5x5
-        $heatmap = $this->buildRiskHeatmap();
-
-        $topRisks = Risk::orderByDesc('residual_score')->limit(10)->get();
-
-        $indicators = Indicator::where('is_active', true)
-            ->with(['latestMeasurement'])
-            ->orderBy('type')
-            ->limit(12)
-            ->get();
-
-        return view('dashboard', compact('stats', 'heatmap', 'topRisks', 'indicators'));
     }
 
     private function buildRiskHeatmap(): array
@@ -78,5 +102,41 @@ class DashboardController extends Controller
         }
 
         return $matrix;
+    }
+
+    private function buildTrends(): array
+    {
+        $months = collect(range(11, 0))->map(fn ($i) => now()->startOfMonth()->subMonths($i)->copy());
+
+        $risksNew = $months->map(fn ($m) => [
+            'x' => $m->format('Y-m'),
+            'y' => Risk::whereYear('created_at', $m->year)->whereMonth('created_at', $m->month)->count(),
+        ]);
+
+        $vulnsNew = $months->map(fn ($m) => [
+            'x' => $m->format('Y-m'),
+            'y' => Vulnerability::whereYear('discovered_at', $m->year)->whereMonth('discovered_at', $m->month)->count(),
+        ]);
+
+        $vulnsClosed = $months->map(fn ($m) => [
+            'x' => $m->format('Y-m'),
+            'y' => Vulnerability::whereYear('closed_at', $m->year)->whereMonth('closed_at', $m->month)->count(),
+        ]);
+
+        $incidentsNew = $months->map(fn ($m) => [
+            'x' => $m->format('Y-m'),
+            'y' => Incident::whereYear('detected_at', $m->year)->whereMonth('detected_at', $m->month)->count(),
+        ]);
+
+        $complianceScores = ComplianceAssessment::where('status', 'completed')
+            ->whereNotNull('overall_score')
+            ->orderBy('assessment_date')
+            ->get(['assessment_date', 'overall_score'])
+            ->map(fn ($a) => [
+                'x' => $a->assessment_date?->format('Y-m-d') ?? '',
+                'y' => (float) $a->overall_score,
+            ]);
+
+        return compact('risksNew', 'vulnsNew', 'vulnsClosed', 'incidentsNew', 'complianceScores');
     }
 }

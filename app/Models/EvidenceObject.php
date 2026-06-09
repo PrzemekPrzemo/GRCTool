@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,5 +51,44 @@ class EvidenceObject extends Model
     public function links(): HasMany
     {
         return $this->hasMany(EvidenceLink::class, 'evidence_id');
+    }
+
+    public function isExpiring(int $days = 30): bool
+    {
+        return $this->valid_until !== null
+            && $this->valid_until->isFuture()
+            && $this->valid_until->lte(now()->addDays($days));
+    }
+
+    public function isStale(): bool
+    {
+        return $this->valid_until !== null && $this->valid_until->isPast();
+    }
+
+    public function expiryStatus(): string
+    {
+        if ($this->valid_until === null) {
+            return 'no_expiry';
+        }
+        if ($this->valid_until->isPast()) {
+            return 'expired';
+        }
+        if ($this->valid_until->lte(now()->addDays(30))) {
+            return 'expiring_soon';
+        }
+
+        return 'valid';
+    }
+
+    public function scopeExpiringSoon(Builder $query, int $days = 30): Builder
+    {
+        return $query->whereNotNull('valid_until')
+            ->where('valid_until', '>=', now())
+            ->where('valid_until', '<=', now()->addDays($days));
+    }
+
+    public function scopeExpired(Builder $query): Builder
+    {
+        return $query->whereNotNull('valid_until')->where('valid_until', '<', now());
     }
 }
