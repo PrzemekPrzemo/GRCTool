@@ -45,6 +45,8 @@ use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\BusinessUnitController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RiskAcceptanceController;
+use App\Http\Controllers\SubprocessorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -210,6 +212,17 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('dsar', DsarRequestController::class);
     Route::post('dsar/{dsar}/complete', [DsarRequestController::class, 'complete'])->name('dsar.complete');
     Route::post('dsar/{dsar}/extend', [DsarRequestController::class, 'extend'])->name('dsar.extend');
+
+    // Risk Acceptances
+    Route::get('risk-acceptances', [RiskAcceptanceController::class, 'index'])->name('risk-acceptances.index');
+    Route::get('risk-acceptances/{acceptance}', [RiskAcceptanceController::class, 'show'])->name('risk-acceptances.show');
+    Route::post('risk-acceptances/{acceptance}/approve', [RiskAcceptanceController::class, 'approve'])->name('risk-acceptances.approve');
+    Route::post('risk-acceptances/{acceptance}/reject', [RiskAcceptanceController::class, 'reject'])->name('risk-acceptances.reject');
+    Route::post('risk-acceptances/{acceptance}/revoke', [RiskAcceptanceController::class, 'revoke'])->name('risk-acceptances.revoke');
+
+    // Subprocessors
+    Route::resource('subprocessors', SubprocessorController::class)->except(['destroy']);
+    Route::post('subprocessors/{subprocessor}/notify', [SubprocessorController::class, 'notify'])->name('subprocessors.notify');
 
     // Third Parties
     Route::resource('third-parties', ThirdPartyController::class)->parameters(['third-parties' => 'thirdParty']);
