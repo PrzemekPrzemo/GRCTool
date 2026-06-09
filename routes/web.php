@@ -228,8 +228,8 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // Compliance Management
     Route::get('compliance/frameworks', [ComplianceAssessmentController::class, 'frameworks'])->name('compliance.frameworks');
     Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
-    Route::post('compliance/{compliance}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
-    Route::post('compliance/{compliance}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
+    Route::post('compliance/{assessment}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
+    Route::post('compliance/{assessment}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
     Route::get('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'showRespond'])->name('compliance.respond');
     Route::post('compliance/{assessment}/respond', [ComplianceAssessmentController::class, 'respond'])->name('compliance.respond.save');
     Route::get('compliance/{assessment}/export/csv', [ComplianceAssessmentController::class, 'exportCsv'])->name('compliance.export.csv');

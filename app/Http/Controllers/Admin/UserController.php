@@ -74,7 +74,8 @@ class UserController extends Controller
             ->limit(50)
             ->get();
 
-        $activityLog = \App\Models\AuditLog::where('user_id', $user->id)
+        $activityLog = \App\Models\AuditLog::with('user')
+            ->where('user_id', $user->id)
             ->orderByDesc('occurred_at')
             ->orderByDesc('id')
             ->limit(100)

@@ -45,6 +45,16 @@ class Nis2ApplicabilityService
         // Step 2: Classify organization size (EU Recommendation 2003/361/EC)
         $size = $this->classifySize($data);
 
+        // Step 3a: Insufficient data — cannot determine applicability
+        if ($size === 'unknown') {
+            return [
+                'entity_size'          => 'unknown',
+                'result'               => 'not_subject',
+                'annex_classification' => 'not_applicable',
+                'justification'        => $this->buildJustification($data, 'insufficient_data', null),
+            ];
+        }
+
         // Step 3: Micro/small entities are generally exempt
         if (in_array($size, ['micro', 'small'], true)) {
             // Exception: critical infrastructure operators stay in scope

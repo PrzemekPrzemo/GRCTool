@@ -47,7 +47,7 @@ class Nis2AssessmentController extends Controller
         $computed = $this->service->assess($data);
         $data = array_merge($data, $computed);
         $data['conducted_by'] = auth()->id();
-        $data['code'] = sprintf('NIS2-%s-%04d', now()->format('Ymd'), Nis2Assessment::count() + 1);
+        $data['code'] = sprintf('NIS2-%s-%04d', now()->format('Ymd'), Nis2Assessment::withTrashed()->count() + 1);
 
         $assessment = Nis2Assessment::create($data);
         AuditLogger::log('nis2_assessment_created', $assessment);
@@ -69,7 +69,7 @@ class Nis2AssessmentController extends Controller
         return view('nis2.show', compact('nis2', 'significantBreaches'));
     }
 
-    public function edit(Nis2Assessment $nis2): View
+    public function edit(Nis2Assessment $nis2): View|RedirectResponse
     {
         abort_unless(auth()->user()->can('nis2.update'), 403);
 

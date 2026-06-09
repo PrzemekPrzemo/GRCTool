@@ -119,6 +119,15 @@ class LoginController extends Controller
         $request->session()->regenerate();
         AuditLogger::log('mfa_verified', $user);
 
+        \App\Models\UserSession::create([
+            'user_id'       => $user->id,
+            'ip_address'    => $request->ip(),
+            'user_agent'    => $request->userAgent(),
+            'auth_provider' => 'local',
+            'logged_in_at'  => now(),
+            'session_token' => $request->session()->getId(),
+        ]);
+
         return redirect()->intended(route('dashboard'));
     }
 
