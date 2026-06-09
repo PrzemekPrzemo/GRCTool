@@ -143,7 +143,11 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('engagements/{engagement}/finding', [AuditEngagementController::class, 'addFinding'])->name('engagements.finding');
 
     // Findings
+    Route::get('findings/create', [FindingController::class, 'create'])->name('findings.create');
+    Route::post('findings', [FindingController::class, 'store'])->name('findings.store');
     Route::get('findings', [FindingController::class, 'index'])->name('findings.index');
+    Route::get('findings/{finding}/edit', [FindingController::class, 'edit'])->name('findings.edit');
+    Route::put('findings/{finding}', [FindingController::class, 'update'])->name('findings.update');
     Route::get('findings/{finding}', [FindingController::class, 'show'])->name('findings.show');
     Route::post('findings/{finding}/close', [FindingController::class, 'close'])->name('findings.close');
 

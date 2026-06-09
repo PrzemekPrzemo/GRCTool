@@ -65,13 +65,10 @@ class EvidenceController extends Controller
     {
         abort_unless(auth()->user()->can('evidence.create'), 403);
 
+        $this->mergeTagsFromRaw($request);
         $data = $this->validateEvidence($request);
         $data['uuid']        = (string) Str::uuid();
         $data['uploaded_by'] = auth()->id();
-
-        if (isset($data['tags']) && is_array($data['tags'])) {
-            $data['tags'] = array_values(array_filter(array_map('trim', $data['tags'])));
-        }
 
         $evidence = EvidenceObject::create($data);
         AuditLogger::log('evidence.uploaded', $evidence);
@@ -115,11 +112,8 @@ class EvidenceController extends Controller
                 ->with('error', 'Ten dowód jest niezmienialny — edycja jest zablokowana.');
         }
 
+        $this->mergeTagsFromRaw($request);
         $data = $this->validateEvidence($request);
-
-        if (isset($data['tags']) && is_array($data['tags'])) {
-            $data['tags'] = array_values(array_filter(array_map('trim', $data['tags'])));
-        }
 
         $evidence->update($data);
         AuditLogger::log('evidence.updated', $evidence);
@@ -145,6 +139,15 @@ class EvidenceController extends Controller
     }
 
     // ── helpers ────────────────────────────────────────────────────────────────
+
+    private function mergeTagsFromRaw(Request $request): void
+    {
+        if ($request->has('tags_raw')) {
+            $raw  = $request->string('tags_raw')->toString();
+            $tags = array_values(array_filter(array_map('trim', explode(',', $raw))));
+            $request->merge(['tags' => $tags]);
+        }
+    }
 
     private function validateEvidence(Request $request): array
     {
