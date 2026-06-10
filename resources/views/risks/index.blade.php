@@ -4,6 +4,7 @@
     <h1 class="text-2xl font-semibold">Risk Register</h1>
     <div class="flex gap-2">
         <a href="{{ route('scenarios.index') }}" class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm hover:bg-slate-50">Biblioteka scenariuszy</a>
+        <a href="{{ route('export.risks') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">↓ CSV</a>
         @can('create', App\Models\Risk::class)
             <a href="{{ route('risks.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm hover:bg-emerald-700">+ Nowe ryzyko</a>
         @endcan

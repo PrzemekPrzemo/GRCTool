@@ -2,7 +2,10 @@
 @section('content')
 <div class="flex justify-between mb-4">
     <h1 class="text-2xl font-semibold">Findings Register</h1>
-    <a href="{{ route('engagements.index') }}" class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm">← Audyty</a>
+    <div class="flex gap-2">
+        <a href="{{ route('export.findings') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">↓ CSV</a>
+        <a href="{{ route('engagements.index') }}" class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm">← Audyty</a>
+    </div>
 </div>
 <form method="GET" class="bg-white rounded shadow p-3 mb-4 flex gap-2">
     <select name="severity" class="px-3 py-1.5 border border-slate-300 rounded text-sm">

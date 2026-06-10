@@ -47,6 +47,8 @@ use App\Http\Controllers\BusinessUnitController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RiskAcceptanceController;
 use App\Http\Controllers\SubprocessorController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -133,6 +135,18 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // NIS2 Applicability Assessments
     Route::resource('nis2', Nis2AssessmentController::class)->parameters(['nis2' => 'nis2']);
     Route::post('nis2/{nis2}/finalize', [Nis2AssessmentController::class, 'finalize'])->name('nis2.finalize');
+
+    // Export CSV
+    Route::prefix('export')->name('export.')->group(function (): void {
+        Route::get('risks',           [ExportController::class, 'risks'])->name('risks');
+        Route::get('controls',        [ExportController::class, 'controls'])->name('controls');
+        Route::get('vulnerabilities', [ExportController::class, 'vulnerabilities'])->name('vulnerabilities');
+        Route::get('findings',        [ExportController::class, 'findings'])->name('findings');
+        Route::get('incidents',       [ExportController::class, 'incidents'])->name('incidents');
+    });
+
+    // Global Search
+    Route::get('search', [SearchController::class, 'index'])->name('search');
 
     // Vulnerabilities
     Route::get('vulnerabilities/import', [VulnerabilityController::class, 'showImport'])->name('vulnerabilities.import.show');

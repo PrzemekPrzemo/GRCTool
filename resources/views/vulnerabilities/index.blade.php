@@ -5,6 +5,7 @@
     <h1 class="text-2xl font-semibold">Zarządzanie podatnościami</h1>
     <div class="flex gap-2">
         <a href="{{ route('vulnerabilities.import.show') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm hover:bg-slate-200 transition-colors">Import CSV</a>
+        <a href="{{ route('export.vulnerabilities') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">↓ CSV</a>
         @can('vulnerability.create')
         <a href="{{ route('vulnerabilities.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm hover:bg-emerald-700 transition-colors">+ Dodaj ręcznie</a>
         @endcan

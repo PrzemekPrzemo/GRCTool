@@ -51,6 +51,7 @@ class IncidentController extends Controller
 
         $incident = Incident::create($data);
         AuditLogger::log('incident_created', $incident);
+        \App\Services\SlackNotifier::incidentCreated($incident);
 
         return redirect()->route('incidents.show', $incident)
             ->with('status', "Incydent {$incident->code} zarejestrowany.");
@@ -146,6 +147,9 @@ class IncidentController extends Controller
         $incident->update(['is_breach' => ! $incident->is_breach]);
         $label = $incident->is_breach ? 'oznaczony jako BREACH' : 'odznaczony jako BREACH';
         AuditLogger::log('incident_breach_toggled', $incident, ['is_breach' => $incident->is_breach]);
+        if ($incident->is_breach) {
+            \App\Services\SlackNotifier::incidentBreachFlagged($incident);
+        }
 
         return back()->with('status', "Incydent $label.");
     }

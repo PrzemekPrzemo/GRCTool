@@ -103,6 +103,11 @@ class Risk extends Model
         return $this->morphMany(EvidenceLink::class, 'linkable');
     }
 
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->latest();
+    }
+
     public function riskLevel(): string
     {
         return match (true) {
