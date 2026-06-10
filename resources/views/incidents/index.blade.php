@@ -2,9 +2,12 @@
 @section('content')
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-semibold">Incydenty bezpieczeństwa</h1>
-    @can('incident.create')
-        <a href="{{ route('incidents.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowy incydent</a>
-    @endcan
+    <div class="flex gap-2">
+        <a href="{{ route('export.incidents') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">↓ CSV</a>
+        @can('incident.create')
+            <a href="{{ route('incidents.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowy incydent</a>
+        @endcan
+    </div>
 </div>
 
 <form method="GET" class="bg-white rounded shadow p-3 mb-4 flex flex-wrap gap-2">

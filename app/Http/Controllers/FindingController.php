@@ -74,6 +74,9 @@ class FindingController extends Controller
 
         $finding = Finding::create($data);
         AuditLogger::log('finding.created', $finding);
+        if ($data['severity'] === 'Major') {
+            \App\Services\SlackNotifier::criticalFindingCreated($finding);
+        }
 
         return redirect()->route('findings.show', $finding)->with('success', 'Finding dodany.');
     }

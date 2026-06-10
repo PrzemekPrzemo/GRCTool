@@ -4,6 +4,7 @@
     <h1 class="text-2xl font-semibold">Control Library</h1>
     <div class="flex gap-2">
         <a href="{{ route('controls.soa') }}" class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm">Statement of Applicability</a>
+        <a href="{{ route('export.controls') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">↓ CSV</a>
         <a href="{{ route('controls.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowa kontrola</a>
     </div>
 </div>

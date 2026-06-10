@@ -258,4 +258,96 @@ $tiles = [
     </div>
 </div>
 
+{{-- Role-specific widgets --}}
+@if(!empty($roleWidgets))
+<div class="mt-6">
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">Moje zadania</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        @isset($roleWidgets['my_risks'])
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Moje ryzyka (otwarte)</h3>
+            @forelse($roleWidgets['my_risks'] as $r)
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                <a href="{{ route('risks.show', $r) }}" class="text-sm text-emerald-700 hover:underline truncate max-w-[70%]">{{ $r->code }} — {{ $r->title }}</a>
+                <span class="text-xs font-medium text-slate-500">{{ $r->residual_score ?? '—' }}</span>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400">Brak otwartych ryzyk.</p>
+            @endforelse
+        </div>
+        @endisset
+
+        @isset($roleWidgets['my_controls'])
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Moje kontrolki (nieefektywne)</h3>
+            @forelse($roleWidgets['my_controls'] as $c)
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                <a href="{{ route('controls.show', $c) }}" class="text-sm text-emerald-700 hover:underline truncate max-w-[70%]">{{ $c->code }} — {{ $c->name }}</a>
+                <span class="text-xs text-amber-600">{{ $c->effectiveness_status }}</span>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400">Wszystkie kontrolki efektywne.</p>
+            @endforelse
+        </div>
+        @endisset
+
+        @isset($roleWidgets['active_engagements'])
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Aktywne audyty</h3>
+            @forelse($roleWidgets['active_engagements'] as $e)
+            <div class="py-1.5 border-b border-slate-50 last:border-0">
+                <a href="{{ route('engagements.show', $e) }}" class="text-sm text-emerald-700 hover:underline">{{ $e->code }} — {{ $e->title }}</a>
+                <span class="ml-2 text-xs text-slate-400">{{ $e->status }}</span>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400">Brak aktywnych audytów.</p>
+            @endforelse
+        </div>
+        @endisset
+
+        @isset($roleWidgets['open_findings'])
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Otwarte findingi</h3>
+            @forelse($roleWidgets['open_findings'] as $f)
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                <a href="{{ route('findings.show', $f) }}" class="text-sm text-emerald-700 hover:underline truncate max-w-[75%]">{{ $f->code }} — {{ $f->title }}</a>
+                <span class="text-xs @if($f->severity==='Major') text-red-600 @else text-amber-500 @endif">{{ $f->severity }}</span>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400">Brak otwartych findingów.</p>
+            @endforelse
+        </div>
+        @endisset
+
+        @isset($roleWidgets['vendor_assessments'])
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Oceny dostawców (oczekujące)</h3>
+            @forelse($roleWidgets['vendor_assessments'] as $v)
+            <div class="py-1.5 border-b border-slate-50 last:border-0">
+                <a href="{{ route('vendor-assessments.show', $v) }}" class="text-sm text-emerald-700 hover:underline">{{ $v->code ?? $v->id }}</a>
+                <span class="ml-2 text-xs text-slate-400">{{ $v->status }}</span>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400">Brak oczekujących ocen.</p>
+            @endforelse
+        </div>
+        @endisset
+
+        @isset($roleWidgets['board_summary'])
+        @php $bs = $roleWidgets['board_summary']; @endphp
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 lg:col-span-2">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-3">Podsumowanie zarządcze</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center"><p class="text-2xl font-bold text-slate-800">{{ $bs['risk_score_avg'] }}</p><p class="text-xs text-slate-500">Śr. wynik ryzyka</p></div>
+                <div class="text-center"><p class="text-2xl font-bold text-emerald-700">{{ $bs['controls_effective_pct'] }}%</p><p class="text-xs text-slate-500">Efektywność kontrolek</p></div>
+                <div class="text-center"><p class="text-2xl font-bold text-red-600">{{ $bs['open_incidents'] }}</p><p class="text-xs text-slate-500">Otwarte incydenty</p></div>
+            </div>
+        </div>
+        @endisset
+
+    </div>
+</div>
+@endif
+
 @endsection
