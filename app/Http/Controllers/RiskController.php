@@ -180,7 +180,7 @@ class RiskController extends Controller
             'proposed_at' => now(),
             'rationale' => $data['rationale'],
             'expiry_date' => $data['expiry_date'],
-            'compensating_controls' => $data['compensating_controls'] ? array_map('trim', explode("\n", $data['compensating_controls'])) : [],
+            'compensating_controls' => ($data['compensating_controls'] ?? null) ? array_map('trim', explode("\n", $data['compensating_controls'])) : [],
             'status' => 'Pending',
         ]);
 

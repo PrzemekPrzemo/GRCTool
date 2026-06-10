@@ -67,8 +67,14 @@ class EvidenceController extends Controller
 
         $this->mergeTagsFromRaw($request);
         $data = $this->validateEvidence($request);
-        $data['uuid']        = (string) Str::uuid();
-        $data['uploaded_by'] = auth()->id();
+        $data['uuid']              = (string) Str::uuid();
+        $data['uploaded_by']       = auth()->id();
+        $data['original_filename'] ??= 'manual_entry';
+        $data['storage_path']      = 'manual/' . $data['uuid'];
+        $data['mime_type']         ??= 'application/octet-stream';
+        $data['size_bytes']        ??= 0;
+        $data['sha256']            ??= str_repeat('0', 64);
+        $data['retention_until']   ??= now()->addYears(7)->toDateString();
 
         $evidence = EvidenceObject::create($data);
         AuditLogger::log('evidence.uploaded', $evidence);
@@ -86,7 +92,7 @@ class EvidenceController extends Controller
         return view('evidence.show', compact('evidence'));
     }
 
-    public function edit(EvidenceObject $evidence): View
+    public function edit(EvidenceObject $evidence): View|RedirectResponse
     {
         abort_unless(auth()->user()->can('evidence.update'), 403);
 
