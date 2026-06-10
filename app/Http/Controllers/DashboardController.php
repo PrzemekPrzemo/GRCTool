@@ -26,8 +26,9 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $stats = $this->buildStats();
-
+        $user       = auth()->user();
+        $userRoles  = $user->getRoleNames()->toArray();
+        $stats      = $this->buildStats();
         $heatmap    = $this->buildRiskHeatmap();
         $topRisks   = Risk::orderByDesc('residual_score')->limit(10)->get();
         $indicators = Indicator::where('is_active', true)
@@ -35,10 +36,12 @@ class DashboardController extends Controller
             ->orderBy('type')
             ->limit(12)
             ->get();
-
         $trends = $this->buildTrends();
 
-        return view('dashboard', compact('stats', 'heatmap', 'topRisks', 'indicators', 'trends'));
+        // Role-specific widgets
+        $roleWidgets = $this->buildRoleWidgets($userRoles);
+
+        return view('dashboard', compact('stats', 'heatmap', 'topRisks', 'indicators', 'trends', 'userRoles', 'roleWidgets'));
     }
 
     public function exportPdf(): View
@@ -138,5 +141,57 @@ class DashboardController extends Controller
             ]);
 
         return compact('risksNew', 'vulnsNew', 'vulnsClosed', 'incidentsNew', 'complianceScores');
+    }
+
+    private function buildRoleWidgets(array $roles): array
+    {
+        $is = fn (string $role) => in_array($role, $roles);
+
+        $widgets = [];
+
+        if ($is('risk_owner')) {
+            $widgets['my_risks'] = Risk::where('owner_id', auth()->id())
+                ->whereNotIn('status', ['Closed', 'Accepted'])
+                ->orderByDesc('residual_score')->limit(8)->get();
+        }
+
+        if ($is('control_owner')) {
+            $widgets['my_controls'] = \App\Models\Control::where('owner_id', auth()->id())
+                ->where('effectiveness_status', '!=', 'Effective')
+                ->limit(8)->get();
+        }
+
+        if ($is('audit_lead') || $is('auditor_sysops')) {
+            $widgets['active_engagements'] = AuditEngagement::whereIn('status', ['Planning', 'Fieldwork', 'Reporting'])
+                ->orderByDesc('created_at')->limit(5)->get();
+            $widgets['open_findings'] = Finding::whereNotIn('status', ['Closed', 'Verified', 'Risk Accepted'])
+                ->orderByDesc('discovered_at')->limit(8)->get();
+        }
+
+        if ($is('compliance_officer')) {
+            $widgets['compliance_assessments'] = \App\Models\ComplianceAssessment::whereIn('status', ['draft', 'in_progress'])
+                ->orderByDesc('created_at')->limit(5)->get();
+            $widgets['trainings_pending'] = UserTrainingCompletion::where('status', 'pending')
+                ->with('user', 'training')->limit(8)->get();
+        }
+
+        if ($is('vendor_manager')) {
+            $widgets['vendor_assessments'] = \App\Models\VendorAssessment::whereIn('status', ['Sent', 'In Review'])
+                ->orderByDesc('created_at')->limit(5)->get();
+        }
+
+        if ($is('board_viewer')) {
+            $widgets['board_summary'] = [
+                'risk_score_avg'    => round(Risk::whereNotIn('status', ['Closed'])->avg('residual_score') ?? 0, 1),
+                'controls_effective_pct' => \App\Models\Control::count() > 0
+                    ? round(\App\Models\Control::where('effectiveness_status', 'Effective')->count() / \App\Models\Control::count() * 100)
+                    : 0,
+                'open_incidents'    => Incident::whereNotIn('status', ['Closed'])->count(),
+                'compliance_scores' => \App\Models\ComplianceAssessment::where('status', 'completed')
+                    ->orderByDesc('assessment_date')->limit(3)->get(['framework_id', 'overall_score', 'assessment_date']),
+            ];
+        }
+
+        return $widgets;
     }
 }

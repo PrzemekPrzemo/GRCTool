@@ -3,7 +3,7 @@
 @section('content')
 <div class="mb-6">
     <h1 class="text-2xl font-semibold mb-4">Wyniki wyszukiwania</h1>
-    <form method="GET" action="{{ route('search.index') }}" class="flex gap-2 items-center">
+    <form method="GET" action="{{ route('search') }}" class="flex gap-2 items-center">
         <input
             name="q"
             value="{{ $q }}"

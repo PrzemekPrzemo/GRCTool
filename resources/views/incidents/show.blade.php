@@ -300,4 +300,6 @@
         </div>
     </div>
 </div>
+
+<x-comment-thread :model="$incident" />
 @endsection

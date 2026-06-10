@@ -395,10 +395,14 @@
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
 
-        {{-- Breadcrumb / page title area --}}
-        <div class="flex-1 text-sm text-slate-500">
-            {{ now()->format('l, d F Y') }}
-        </div>
+        {{-- Global search --}}
+        <form method="GET" action="{{ route('search') }}" class="flex-1 max-w-sm mx-4">
+            <div class="relative">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Szukaj..."
+                    class="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                <svg class="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+        </form>
 
         {{-- Right side: quick links --}}
         <div class="flex items-center gap-2 text-sm">

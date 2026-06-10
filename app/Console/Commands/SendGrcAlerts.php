@@ -92,12 +92,13 @@ class SendGrcAlerts extends Command
             }
 
             $daysLeft = (int) now()->diffInDays($vuln->due_date, false);
+            $vulnRef  = $vuln->code ?? $vuln->cve_id ?? "ID #{$vuln->id}";
 
             Notification::route('mail', $owner->email)
                 ->notify(new GrcAlertNotification(
                     subject: "[GRC Alert] Vulnerability SLA due in {$daysLeft} day(s): {$vuln->title}",
                     bodyLines: [
-                        "Vulnerability **{$vuln->title}** ({$vuln->code ?? $vuln->cve_id ?? "ID #{$vuln->id}"}) is due in **{$daysLeft} day(s)** on {$vuln->due_date->toDateString()}.",
+                        "Vulnerability **{$vuln->title}** ({$vulnRef}) is due in **{$daysLeft} day(s)** on {$vuln->due_date->toDateString()}.",
                         "Severity: {$vuln->severity} | Status: {$vuln->status}",
                         'Please remediate or update the status of this vulnerability before the SLA deadline.',
                     ],
@@ -105,7 +106,7 @@ class SendGrcAlerts extends Command
                     actionLabel: 'View Vulnerability',
                 ));
 
-            $this->info("Sent: Vulnerability alert [{$vuln->code ?? $vuln->id}] → {$owner->email}");
+            $this->info("Sent: Vulnerability alert [{$vulnRef}] → {$owner->email}");
         }
     }
 

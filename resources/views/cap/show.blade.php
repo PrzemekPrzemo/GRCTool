@@ -324,4 +324,5 @@
     @endcan
 </div>
 
+<x-comment-thread :model="$cap" />
 @endsection

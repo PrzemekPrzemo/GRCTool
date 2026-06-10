@@ -49,6 +49,7 @@ use App\Http\Controllers\RiskAcceptanceController;
 use App\Http\Controllers\SubprocessorController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -147,6 +148,10 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Global Search
     Route::get('search', [SearchController::class, 'index'])->name('search');
+
+    // Comments (polymorphic)
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     // Vulnerabilities
     Route::get('vulnerabilities/import', [VulnerabilityController::class, 'showImport'])->name('vulnerabilities.import.show');

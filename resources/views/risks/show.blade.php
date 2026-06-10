@@ -191,4 +191,6 @@
         </div>
     </div>
 </div>
+
+<x-comment-thread :model="$risk" />
 @endsection
