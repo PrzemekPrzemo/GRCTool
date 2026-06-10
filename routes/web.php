@@ -41,6 +41,12 @@ use App\Http\Controllers\ComplianceAssessmentController;
 use App\Http\Controllers\ComplianceFrameworkAdminController;
 use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\SdlcController;
+use App\Http\Controllers\EvidenceController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\BusinessUnitController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RiskAcceptanceController;
+use App\Http\Controllers\SubprocessorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -96,6 +102,10 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Scenarios
     Route::get('scenarios', [ScenarioController::class, 'index'])->name('scenarios.index');
+    Route::get('scenarios/create', [ScenarioController::class, 'create'])->name('scenarios.create');
+    Route::post('scenarios', [ScenarioController::class, 'store'])->name('scenarios.store');
+    Route::get('scenarios/{scenario}/edit', [ScenarioController::class, 'edit'])->name('scenarios.edit');
+    Route::put('scenarios/{scenario}', [ScenarioController::class, 'update'])->name('scenarios.update');
     Route::get('scenarios/{scenario}', [ScenarioController::class, 'show'])->name('scenarios.show');
     Route::post('scenarios/{scenario}/adopt', [RiskController::class, 'adoptScenario'])->name('scenarios.adopt');
 
@@ -137,13 +147,30 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('vulnerabilities/{vulnerability}/exceptions', [VulnerabilityController::class, 'proposeException'])->name('vulnerabilities.exceptions.propose');
     Route::post('vulnerabilities/exceptions/{exception}/approve', [VulnerabilityController::class, 'approveException'])->name('vulnerabilities.exceptions.approve');
 
+    // Evidence
+    Route::resource('evidence', EvidenceController::class)->except(['destroy']);
+    Route::delete('evidence/{evidence}', [EvidenceController::class, 'destroy'])->name('evidence.destroy');
+
+    // Clients
+    Route::resource('clients', ClientController::class)->except(['destroy']);
+
+    // Business Units
+    Route::resource('business-units', BusinessUnitController::class)->except(['destroy']);
+
+    // Projects
+    Route::resource('projects', ProjectController::class)->except(['destroy']);
+
     // Audit engagements
     Route::resource('engagements', AuditEngagementController::class)->except(['destroy']);
     Route::post('engagements/{engagement}/evidence-request', [AuditEngagementController::class, 'addEvidenceRequest'])->name('engagements.evidence_request');
     Route::post('engagements/{engagement}/finding', [AuditEngagementController::class, 'addFinding'])->name('engagements.finding');
 
     // Findings
+    Route::get('findings/create', [FindingController::class, 'create'])->name('findings.create');
+    Route::post('findings', [FindingController::class, 'store'])->name('findings.store');
     Route::get('findings', [FindingController::class, 'index'])->name('findings.index');
+    Route::get('findings/{finding}/edit', [FindingController::class, 'edit'])->name('findings.edit');
+    Route::put('findings/{finding}', [FindingController::class, 'update'])->name('findings.update');
     Route::get('findings/{finding}', [FindingController::class, 'show'])->name('findings.show');
     Route::post('findings/{finding}/close', [FindingController::class, 'close'])->name('findings.close');
 
@@ -189,6 +216,17 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('dsar', DsarRequestController::class);
     Route::post('dsar/{dsar}/complete', [DsarRequestController::class, 'complete'])->name('dsar.complete');
     Route::post('dsar/{dsar}/extend', [DsarRequestController::class, 'extend'])->name('dsar.extend');
+
+    // Risk Acceptances
+    Route::get('risk-acceptances', [RiskAcceptanceController::class, 'index'])->name('risk-acceptances.index');
+    Route::get('risk-acceptances/{acceptance}', [RiskAcceptanceController::class, 'show'])->name('risk-acceptances.show');
+    Route::post('risk-acceptances/{acceptance}/approve', [RiskAcceptanceController::class, 'approve'])->name('risk-acceptances.approve');
+    Route::post('risk-acceptances/{acceptance}/reject', [RiskAcceptanceController::class, 'reject'])->name('risk-acceptances.reject');
+    Route::post('risk-acceptances/{acceptance}/revoke', [RiskAcceptanceController::class, 'revoke'])->name('risk-acceptances.revoke');
+
+    // Subprocessors
+    Route::resource('subprocessors', SubprocessorController::class)->except(['destroy']);
+    Route::post('subprocessors/{subprocessor}/notify', [SubprocessorController::class, 'notify'])->name('subprocessors.notify');
 
     // Third Parties
     Route::resource('third-parties', ThirdPartyController::class)->parameters(['third-parties' => 'thirdParty']);
