@@ -43,7 +43,7 @@ class ScenarioController extends Controller
     {
         abort_unless(auth()->user()->hasRole(['admin', 'ciso']), 403);
 
-        $data = $this->validate($request);
+        $data = $this->validateScenario($request);
         $scenario = ScenarioTemplate::create($data);
         AuditLogger::log('scenario.created', $scenario);
 
@@ -61,7 +61,7 @@ class ScenarioController extends Controller
     {
         abort_unless(auth()->user()->hasRole(['admin', 'ciso']), 403);
 
-        $data = $this->validate($request);
+        $data = $this->validateScenario($request);
         $scenario->update($data);
         AuditLogger::log('scenario.updated', $scenario);
 
