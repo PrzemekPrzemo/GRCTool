@@ -15,6 +15,7 @@
         "livewire/livewire": "^4.2",
         "phpoffice/phpspreadsheet": "^5.7",
         "pragmarx/google2fa": "^9.0",
+        "socialiteproviders/microsoft-azure": "^5.2",
         "spatie/laravel-permission": "^7.4"
     },
     "require-dev": {
