@@ -39,7 +39,22 @@
     <span>Zaloguj się przez Google Workspace</span>
 </a>
 
+@php($azureEnabled = \App\Models\AppSetting::get('azure_enabled') === '1' || config('services.azure.client_id'))
+@if($azureEnabled)
+<a href="{{ route('auth.microsoft') }}"
+   class="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 shadow-sm">
+    {{-- Microsoft SVG logo --}}
+    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 21 21">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+    </svg>
+    <span>Zaloguj się przez Microsoft</span>
+</a>
+@endif
+
 <p class="text-center text-xs text-slate-400 mt-3">
-    Konta Google Workspace są zarządzane przez administratora systemu.
+    Konta SSO są zarządzane przez administratora systemu.
 </p>
 @endsection

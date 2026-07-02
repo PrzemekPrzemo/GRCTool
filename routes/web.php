@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
+use App\Http\Controllers\Admin\EntraIdSettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
+use App\Http\Controllers\Auth\MicrosoftController;
 use App\Http\Controllers\BcpController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ControlController;
@@ -66,6 +68,10 @@ Route::post('vendor-portal/{token}/submit', [VendorPortalController::class, 'sub
 // Google OAuth (no middleware — handles its own auth state)
 Route::get('auth/google', [GoogleController::class, 'redirect'])->name('auth.google');
 Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+
+// Microsoft Entra ID OAuth (no middleware — handles its own auth state)
+Route::get('auth/microsoft', [MicrosoftController::class, 'redirect'])->name('auth.microsoft');
+Route::get('auth/microsoft/callback', [MicrosoftController::class, 'callback'])->name('auth.microsoft.callback');
 
 // Auth (guest)
 Route::middleware('guest')->group(function (): void {
@@ -337,4 +343,8 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
         Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log');
         Route::resource('roles', RoleController::class)->except(['show']);
     });
+
+    // Entra ID Settings (ciso + admin — handled in controller)
+    Route::get('admin/entra-settings', [EntraIdSettingsController::class, 'show'])->name('admin.entra.show');
+    Route::put('admin/entra-settings', [EntraIdSettingsController::class, 'update'])->name('admin.entra.update');
 });

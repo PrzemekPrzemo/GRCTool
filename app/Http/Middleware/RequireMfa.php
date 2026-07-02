@@ -18,8 +18,8 @@ class RequireMfa
             return $next($request);
         }
 
-        // Google Workspace users — MFA is handled by Google, skip TOTP requirement
-        if ($user->auth_provider === 'google') {
+        // SSO users — MFA is handled by the identity provider, skip TOTP requirement
+        if (in_array($user->auth_provider, ['google', 'microsoft'], true)) {
             return $next($request);
         }
 
