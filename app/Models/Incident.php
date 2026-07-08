@@ -16,7 +16,7 @@ class Incident extends Model
     protected $fillable = [
         'code', 'title', 'description', 'severity', 'status', 'source', 'source_ref',
         'occurred_at', 'detected_at', 'acknowledged_at', 'contained_at', 'resolved_at',
-        'owner_id', 'is_breach',
+        'owner_id', 'affected_user_id', 'is_breach',
         'affected_clients', 'affected_assets', 'linked_risks', 'linked_controls',
         'post_mortem', 'estimated_cost_eur',
         // ENISA NIS2 Art. 23 scoring
@@ -75,6 +75,11 @@ class Incident extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function affectedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'affected_user_id');
     }
 
     public function comments(): MorphMany

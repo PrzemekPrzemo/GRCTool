@@ -11,6 +11,9 @@ use App\Models\ReportInstance;
 use App\Models\ReportTemplate;
 use App\Models\Risk;
 use App\Models\Subprocessor;
+use App\Models\ThirdParty;
+use App\Models\Training;
+use App\Models\UserTrainingCompletion;
 use App\Models\Vulnerability;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -71,6 +74,9 @@ class ReportGenerator
     {
         $client = $params['client_id'] ?? null;
 
+        $openVulns = Vulnerability::whereIn('status', ['Open', 'In Progress', 'Reopened'])->get();
+        $vulnsBreached = $openVulns->filter(fn (Vulnerability $v) => $v->isOverdue())->count();
+
         $base = [
             'risks_top10' => Risk::orderByDesc('residual_score')->take(10)->get(),
             'risks_total' => Risk::count(),
@@ -79,12 +85,20 @@ class ReportGenerator
             'controls_total' => Control::count(),
             'vulns_open_critical' => Vulnerability::where('severity', 'Critical')->whereIn('status', ['Open', 'In Progress', 'Reopened'])->count(),
             'vulns_open_high' => Vulnerability::where('severity', 'High')->whereIn('status', ['Open', 'In Progress', 'Reopened'])->count(),
+            'vulns_sla_breach_rate' => $openVulns->count() > 0 ? round($vulnsBreached / $openVulns->count() * 100, 1) : 0.0,
             'findings_open' => Finding::whereNotIn('status', ['Closed', 'Verified', 'Risk Accepted'])->count(),
             'engagements_active' => AuditEngagement::whereIn('status', ['Planning', 'Fieldwork', 'Reporting'])->get(),
             'indicators_executive' => Indicator::where('consumer_audience', 'Board')->where('is_active', true)
                 ->with('latestMeasurement')->get(),
             'indicators_kci' => Indicator::where('type', 'KCI')->where('is_active', true)
                 ->with('latestMeasurement')->get(),
+            'compliance_posture' => app(CompliancePostureCalculator::class)->perFramework(),
+            'training_completion_rate' => $this->overallTrainingCompletionRate(),
+            'vendor_risk_top' => ThirdParty::where('is_active', true)->get()
+                ->map(fn (ThirdParty $tp) => ['vendor' => $tp, 'risk' => $tp->computeRiskScore()])
+                ->sortByDesc(fn (array $row) => $row['risk']['score'])
+                ->take(5)
+                ->values(),
         ];
 
         if ($template->code === 'ISO27001-AUDIT-PACK') {
@@ -98,5 +112,22 @@ class ReportGenerator
         }
 
         return $base;
+    }
+
+    private function overallTrainingCompletionRate(): float
+    {
+        $trainings = Training::where('is_mandatory', true)->where('is_active', true)->pluck('id');
+        if ($trainings->isEmpty()) {
+            return 0.0;
+        }
+
+        $completions = UserTrainingCompletion::whereIn('training_id', $trainings)->get();
+        if ($completions->isEmpty()) {
+            return 0.0;
+        }
+
+        $completed = $completions->filter(fn (UserTrainingCompletion $c) => $c->status === 'completed' && ! $c->isExpired())->count();
+
+        return round($completed / $completions->count() * 100, 1);
     }
 }

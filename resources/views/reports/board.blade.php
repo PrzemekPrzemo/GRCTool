@@ -36,6 +36,8 @@
     <div class="tile"><div class="label">Kontrole effective</div><div class="value">{{ $data['controls_effective'] }}/{{ $data['controls_total'] }}</div><div class="sub">{{ $data['controls_total'] > 0 ? round($data['controls_effective'] / $data['controls_total'] * 100) : 0 }}% pokrycia</div></div>
     <div class="tile"><div class="label">Critical vuln otwarte</div><div class="value">{{ $data['vulns_open_critical'] }}</div><div class="sub">+{{ $data['vulns_open_high'] }} High</div></div>
     <div class="tile"><div class="label">Findings otwarte</div><div class="value">{{ $data['findings_open'] }}</div><div class="sub">{{ $data['engagements_active']->count() }} aktywne audyty</div></div>
+    <div class="tile"><div class="label">Naruszenia SLA (vuln)</div><div class="value">{{ $data['vulns_sla_breach_rate'] }}%</div><div class="sub">otwartych podatności po terminie</div></div>
+    <div class="tile"><div class="label">Ukończenie szkoleń obowiązkowych</div><div class="value">{{ $data['training_completion_rate'] }}%</div><div class="sub">mandatory, nie wygasłe</div></div>
 </div>
 
 <h2>2. Top 10 ryzyk (residual)</h2>
@@ -89,6 +91,40 @@
         </tr>
         @empty
         <tr><td colspan="6" class="meta">Brak aktywnych audytów.</td></tr>
+        @endforelse
+    </tbody>
+</table>
+
+<h2>5. Poziom zgodności wg frameworku</h2>
+<table>
+    <thead><tr><th>Framework</th><th>Wymagania</th><th>Ostatnia ocena</th><th>% zgodności</th></tr></thead>
+    <tbody>
+        @forelse($data['compliance_posture'] as $row)
+        <tr>
+            <td>{{ $row['framework']->short_name }} — {{ $row['framework']->name }}</td>
+            <td class="meta">{{ $row['requirements_count'] }}</td>
+            <td class="meta">{{ $row['assessment']?->assessment_date?->format('Y-m-d') ?? '—' }}</td>
+            <td class="{{ $row['score'] !== null && $row['score'] < 50 ? 'residual-high' : '' }}">{{ $row['score'] !== null ? $row['score'].'%' : 'Brak oceny' }}</td>
+        </tr>
+        @empty
+        <tr><td colspan="4" class="meta">Brak aktywnych frameworków.</td></tr>
+        @endforelse
+    </tbody>
+</table>
+
+<h2>6. Top 5 dostawców wg ryzyka</h2>
+<table>
+    <thead><tr><th>Dostawca</th><th>Tier</th><th>Rating</th><th>Wynik ryzyka</th></tr></thead>
+    <tbody>
+        @forelse($data['vendor_risk_top'] as $row)
+        <tr>
+            <td>{{ $row['vendor']->name }}</td>
+            <td class="meta">{{ $row['vendor']->tier ?? '—' }}</td>
+            <td class="meta">{{ $row['vendor']->security_rating ?? '—' }}</td>
+            <td class="{{ $row['risk']['score'] >= 70 ? 'residual-high' : '' }}">{{ $row['risk']['score'] }}</td>
+        </tr>
+        @empty
+        <tr><td colspan="4" class="meta">Brak aktywnych dostawców.</td></tr>
         @endforelse
     </tbody>
 </table>

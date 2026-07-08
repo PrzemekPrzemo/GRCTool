@@ -1,60 +1,63 @@
 <?php
 
+use App\Http\Controllers\AccessReviewController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\AwsSecurityHubSettingsController;
+use App\Http\Controllers\Admin\EntraIdSettingsController;
+use App\Http\Controllers\Admin\GoogleDriveSettingsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
-use App\Http\Controllers\Admin\EntraIdSettingsController;
-use App\Http\Controllers\Admin\GoogleDriveSettingsController;
-use App\Http\Controllers\Admin\AwsSecurityHubSettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\Auth\MicrosoftController;
 use App\Http\Controllers\BcpController;
+use App\Http\Controllers\BusinessUnitController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ComplianceAssessmentController;
+use App\Http\Controllers\ComplianceFrameworkAdminController;
+use App\Http\Controllers\ComplianceOverviewController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\CryptoKeyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DpiaController;
 use App\Http\Controllers\DsarRequestController;
+use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ExceptionController;
-use App\Http\Controllers\GdprBreachController;
-use App\Http\Controllers\IncidentController;
-use App\Http\Controllers\Nis2AssessmentController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FindingController;
+use App\Http\Controllers\GdprBreachController;
 use App\Http\Controllers\InboundQuestionnaireController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\McrController;
+use App\Http\Controllers\Nis2AssessmentController;
 use App\Http\Controllers\OrgMetricsController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ProcessingActivityController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RiskAcceptanceController;
 use App\Http\Controllers\RiskController;
+use App\Http\Controllers\RiskTreatmentPlanController;
 use App\Http\Controllers\ScenarioController;
+use App\Http\Controllers\SdlcController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SecurityOverviewController;
+use App\Http\Controllers\SubprocessorController;
 use App\Http\Controllers\ThirdPartyController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrustCenterController;
 use App\Http\Controllers\VendorAssessmentController;
 use App\Http\Controllers\VendorPortalController;
+use App\Http\Controllers\VendorRiskController;
 use App\Http\Controllers\VulnerabilityController;
-use App\Http\Controllers\AccessReviewController;
-use App\Http\Controllers\ComplianceAssessmentController;
-use App\Http\Controllers\ComplianceFrameworkAdminController;
-use App\Http\Controllers\RiskTreatmentPlanController;
-use App\Http\Controllers\SdlcController;
-use App\Http\Controllers\EvidenceController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\BusinessUnitController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\RiskAcceptanceController;
-use App\Http\Controllers\SubprocessorController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\VulnerabilitySlaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -149,11 +152,11 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Export CSV
     Route::prefix('export')->name('export.')->group(function (): void {
-        Route::get('risks',           [ExportController::class, 'risks'])->name('risks');
-        Route::get('controls',        [ExportController::class, 'controls'])->name('controls');
+        Route::get('risks', [ExportController::class, 'risks'])->name('risks');
+        Route::get('controls', [ExportController::class, 'controls'])->name('controls');
         Route::get('vulnerabilities', [ExportController::class, 'vulnerabilities'])->name('vulnerabilities');
-        Route::get('findings',        [ExportController::class, 'findings'])->name('findings');
-        Route::get('incidents',       [ExportController::class, 'incidents'])->name('incidents');
+        Route::get('findings', [ExportController::class, 'findings'])->name('findings');
+        Route::get('incidents', [ExportController::class, 'incidents'])->name('incidents');
     });
 
     // Global Search
@@ -169,6 +172,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('vulnerabilities/create', [VulnerabilityController::class, 'create'])->name('vulnerabilities.create');
     Route::post('vulnerabilities', [VulnerabilityController::class, 'store'])->name('vulnerabilities.store');
     Route::get('vulnerabilities', [VulnerabilityController::class, 'index'])->name('vulnerabilities.index');
+    Route::get('vulnerabilities/sla', [VulnerabilitySlaController::class, 'index'])->name('vulnerabilities.sla');
     Route::get('vulnerabilities/{vulnerability}/edit', [VulnerabilityController::class, 'edit'])->name('vulnerabilities.edit');
     Route::put('vulnerabilities/{vulnerability}', [VulnerabilityController::class, 'update'])->name('vulnerabilities.update');
     Route::get('vulnerabilities/{vulnerability}', [VulnerabilityController::class, 'show'])->name('vulnerabilities.show');
@@ -259,6 +263,8 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Third Parties
     Route::resource('third-parties', ThirdPartyController::class)->parameters(['third-parties' => 'thirdParty']);
+    Route::get('vendor-risk', [VendorRiskController::class, 'index'])->name('vendor-risk.index');
+    Route::post('vendor-risk/snapshot', [VendorRiskController::class, 'snapshot'])->name('vendor-risk.snapshot');
 
     // Policies
     Route::get('policies/import', [PolicyController::class, 'showImport'])->name('policies.import.show');
@@ -315,6 +321,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Compliance Management
     Route::get('compliance/frameworks', [ComplianceAssessmentController::class, 'frameworks'])->name('compliance.frameworks');
+    Route::get('compliance/overview', [ComplianceOverviewController::class, 'index'])->name('compliance.overview');
     Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
     Route::post('compliance/{assessment}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
     Route::post('compliance/{assessment}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');

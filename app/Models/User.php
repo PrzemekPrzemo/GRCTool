@@ -64,7 +64,17 @@ class User extends Authenticatable
 
     public function sessions(): HasMany
     {
-        return $this->hasMany(\App\Models\UserSession::class);
+        return $this->hasMany(UserSession::class);
+    }
+
+    public function affectedIncidents(): HasMany
+    {
+        return $this->hasMany(Incident::class, 'affected_user_id');
+    }
+
+    public function trainingCompletions(): HasMany
+    {
+        return $this->hasMany(UserTrainingCompletion::class);
     }
 
     public function hasMfaEnabled(): bool

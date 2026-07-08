@@ -28,6 +28,40 @@ class AwsSecurityHubService
      */
     public function fetchActiveFindings(int $maxResults = 50, ?string $nextToken = null): array
     {
+        return $this->getFindings([
+            'RecordState' => [['Comparison' => 'EQUALS', 'Value' => 'ACTIVE']],
+            'WorkflowStatus' => [['Comparison' => 'NOT_EQUALS', 'Value' => 'SUPPRESSED']],
+        ], $maxResults, $nextToken);
+    }
+
+    /**
+     * Passed compliance-standard checks (e.g. CIS AWS Foundations, PCI DSS) — used to
+     * auto-collect evidence of control operation instead of manually screenshotting the
+     * AWS console before every audit.
+     *
+     * @return array{findings: array<int, array<string, mixed>>, nextToken: ?string}
+     */
+    public function fetchPassedComplianceControls(int $maxResults = 50, ?string $nextToken = null): array
+    {
+        return $this->getFindings([
+            'RecordState' => [['Comparison' => 'EQUALS', 'Value' => 'ACTIVE']],
+            'ComplianceStatus' => [['Comparison' => 'EQUALS', 'Value' => 'PASSED']],
+        ], $maxResults, $nextToken);
+    }
+
+    public function testConnection(): array
+    {
+        $result = $this->fetchActiveFindings(1);
+
+        return ['sample_count' => count($result['findings'])];
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array{findings: array<int, array<string, mixed>>, nextToken: ?string}
+     */
+    private function getFindings(array $filters, int $maxResults, ?string $nextToken): array
+    {
         if (! $this->isEnabled()) {
             throw new RuntimeException('Synchronizacja AWS Security Hub jest wyłączona.');
         }
@@ -37,13 +71,7 @@ class AwsSecurityHubService
         $secretAccessKey = Crypt::decryptString(AppSetting::get('aws_secret_access_key_encrypted'));
         $host = "securityhub.{$region}.amazonaws.com";
 
-        $body = [
-            'Filters' => [
-                'RecordState' => [['Comparison' => 'EQUALS', 'Value' => 'ACTIVE']],
-                'WorkflowStatus' => [['Comparison' => 'NOT_EQUALS', 'Value' => 'SUPPRESSED']],
-            ],
-            'MaxResults' => $maxResults,
-        ];
+        $body = ['Filters' => $filters, 'MaxResults' => $maxResults];
         if ($nextToken) {
             $body['NextToken'] = $nextToken;
         }
@@ -72,12 +100,5 @@ class AwsSecurityHubService
             'findings' => $response->json('Findings', []),
             'nextToken' => $response->json('NextToken'),
         ];
-    }
-
-    public function testConnection(): array
-    {
-        $result = $this->fetchActiveFindings(1);
-
-        return ['sample_count' => count($result['findings'])];
     }
 }

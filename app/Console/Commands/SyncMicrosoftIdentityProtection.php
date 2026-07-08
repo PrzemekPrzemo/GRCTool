@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AppSetting;
 use App\Models\Incident;
+use App\Models\User;
 use App\Services\Security\MicrosoftIdentityProtectionService;
 use App\Services\SlackNotifier;
 use Illuminate\Console\Command;
@@ -67,6 +68,10 @@ class SyncMicrosoftIdentityProtection extends Command
                 ->where('source_ref', $ref)
                 ->first();
 
+            $affectedUserId = $detection['userPrincipalName'] ?? null
+                ? User::where('email', $detection['userPrincipalName'])->value('id')
+                : null;
+
             $attrs = [
                 'title' => trim(($detection['riskEventType'] ?? 'Risk detection').' — '.($detection['userDisplayName'] ?? $detection['userPrincipalName'] ?? 'nieznany użytkownik')),
                 'description' => sprintf(
@@ -79,6 +84,7 @@ class SyncMicrosoftIdentityProtection extends Command
                 'status' => $status,
                 'source' => 'Entra ID Identity Protection',
                 'source_ref' => $ref,
+                'affected_user_id' => $affectedUserId,
                 'occurred_at' => $occurredAt ? Carbon::parse($occurredAt) : null,
                 'detected_at' => $detectedAt ? Carbon::parse($detectedAt) : null,
             ];
