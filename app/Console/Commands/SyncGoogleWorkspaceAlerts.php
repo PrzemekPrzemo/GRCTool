@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AppSetting;
 use App\Models\Incident;
 use App\Services\Security\GoogleWorkspaceAlertService;
 use App\Services\SlackNotifier;
@@ -76,6 +77,8 @@ class SyncGoogleWorkspaceAlerts extends Command
                 }
             }
         }
+
+        AppSetting::set('google_workspace_alerts_last_synced_at', now()->toDateTimeString());
 
         $this->info("Google Workspace Alert Center: {$created} new, {$updated} updated.");
 
