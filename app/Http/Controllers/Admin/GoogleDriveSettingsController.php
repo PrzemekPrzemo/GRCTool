@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AppSetting;
 use App\Services\AuditLogger;
 use App\Services\GoogleDriveService;
+use App\Services\Security\GoogleWorkspaceAlertService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -22,6 +23,8 @@ class GoogleDriveSettingsController extends Controller
             'google_drive_folder_id' => AppSetting::get('google_drive_folder_id', ''),
             'google_drive_client_email' => AppSetting::get('google_drive_client_email', ''),
             'credentials_saved' => (bool) AppSetting::get('google_drive_credentials_encrypted'),
+            'google_workspace_alerts_enabled' => AppSetting::get('google_workspace_alerts_enabled', '0'),
+            'google_workspace_admin_email' => AppSetting::get('google_workspace_admin_email', ''),
         ];
 
         return view('admin.google-drive-settings', compact('settings'));
@@ -35,9 +38,13 @@ class GoogleDriveSettingsController extends Controller
             'google_drive_folder_id' => ['nullable', 'string', 'max:191'],
             'google_drive_credentials' => ['nullable', 'string'],
             'google_drive_enabled' => ['nullable', 'boolean'],
+            'google_workspace_alerts_enabled' => ['nullable', 'boolean'],
+            'google_workspace_admin_email' => ['nullable', 'email', 'max:191'],
         ]);
 
         AppSetting::set('google_drive_folder_id', $data['google_drive_folder_id'] ?? '');
+        AppSetting::set('google_workspace_admin_email', $data['google_workspace_admin_email'] ?? '');
+        AppSetting::set('google_workspace_alerts_enabled', $request->boolean('google_workspace_alerts_enabled') ? '1' : '0');
 
         if (! empty($data['google_drive_credentials'])) {
             $decoded = json_decode($data['google_drive_credentials'], true);
@@ -71,5 +78,22 @@ class GoogleDriveSettingsController extends Controller
         }
 
         return back()->with('status', 'Połączenie OK. Service account: '.($result['email'] ?? '—'));
+    }
+
+    public function testAlertCenter(GoogleWorkspaceAlertService $alerts): RedirectResponse
+    {
+        abort_unless(auth()->user()->hasAnyRole(['ciso', 'admin']), 403);
+
+        if (! $alerts->isEnabled()) {
+            return back()->with('error', 'Włącz synchronizację Alert Center i uzupełnij e-mail administratora przed testem.');
+        }
+
+        try {
+            $result = $alerts->testConnection();
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Test połączenia z Alert Center nieudany: '.$e->getMessage());
+        }
+
+        return back()->with('status', "Połączenie OK. Pobrano {$result['sample_count']} przykładowych alertów.");
     }
 }

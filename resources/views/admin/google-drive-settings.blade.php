@@ -107,6 +107,49 @@
         </div>
     </form>
 
+    {{-- Alert Center sync --}}
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 p-6">
+        <h3 class="text-sm font-semibold text-slate-900 mb-1">Synchronizacja Google Workspace Alert Center</h3>
+        <p class="text-xs text-slate-500 mb-4">Ciągnie alerty bezpieczeństwa poczty i Drive (phishing, malware, podejrzane logowania, DLP) do rejestru incydentów. Korzysta z tego samego service accounta co wyżej, ale wymaga domain-wide delegation ze scope'em <code class="bg-slate-100 px-1 rounded">apps.alerts.readonly</code> i adresu administratora Workspace do impersonacji.</p>
+
+        <form method="PUT" action="{{ route('admin.google-drive.update') }}" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="google_drive_folder_id" value="{{ $settings['google_drive_folder_id'] }}">
+            <input type="hidden" name="google_drive_enabled" value="{{ $settings['google_drive_enabled'] }}">
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">E-mail administratora do impersonacji</label>
+                <input type="email" name="google_workspace_admin_email"
+                       value="{{ old('google_workspace_admin_email', $settings['google_workspace_admin_email']) }}"
+                       placeholder="admin@yourdomain.com"
+                       class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400">
+                @error('google_workspace_admin_email')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="google_workspace_alerts_enabled" value="1"
+                       {{ $settings['google_workspace_alerts_enabled'] === '1' ? 'checked' : '' }}
+                       class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400">
+                <div>
+                    <p class="text-sm font-medium text-slate-700">Włącz synchronizację Alert Center</p>
+                    <p class="text-xs text-slate-400">Godzinowa komenda tworzy/aktualizuje incydenty na podstawie alertów Workspace.</p>
+                </div>
+            </label>
+
+            <div class="flex items-center justify-end pt-2">
+                <button type="submit" class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Zapisz</button>
+            </div>
+        </form>
+
+        @if($settings['google_workspace_alerts_enabled'] === '1')
+        <form method="POST" action="{{ route('admin.google-drive.test-alert-center') }}" class="mt-3">
+            @csrf
+            <button class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm hover:bg-slate-50">Testuj połączenie</button>
+        </form>
+        @endif
+    </div>
+
     {{-- Setup instructions --}}
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-5">
         <h3 class="text-sm font-semibold text-blue-900 mb-3">Jak założyć service account dla Google Drive API</h3>
@@ -118,6 +161,7 @@
             <li>Skopiuj adres e-mail service accounta (pole <code class="bg-blue-100 px-1 rounded">client_email</code> w pobranym pliku)</li>
             <li>Na Google Drive: udostępnij folder z politykami temu adresowi e-mail (wystarczy uprawnienie "Czytelnik")</li>
             <li>Wklej całą zawartość pobranego pliku JSON w pole powyżej i zapisz</li>
+            <li>Dla synchronizacji Alert Center: w Google Admin Console → Security → API controls → Domain-wide delegation → dodaj Client ID service accounta ze scope'em <code class="bg-blue-100 px-1 rounded">https://www.googleapis.com/auth/apps.alerts.readonly</code></li>
         </ol>
     </div>
 
