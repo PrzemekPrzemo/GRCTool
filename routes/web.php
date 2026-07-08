@@ -8,6 +8,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
 use App\Http\Controllers\Admin\EntraIdSettingsController;
 use App\Http\Controllers\Admin\GoogleDriveSettingsController;
+use App\Http\Controllers\Admin\AwsSecurityHubSettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
@@ -355,9 +356,16 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // Entra ID Settings (ciso + admin — handled in controller)
     Route::get('admin/entra-settings', [EntraIdSettingsController::class, 'show'])->name('admin.entra.show');
     Route::put('admin/entra-settings', [EntraIdSettingsController::class, 'update'])->name('admin.entra.update');
+    Route::post('admin/entra-settings/test-identity-protection', [EntraIdSettingsController::class, 'testIdentityProtection'])->name('admin.entra.test-identity-protection');
 
     // Google Drive Settings (ciso + admin — handled in controller)
     Route::get('admin/google-drive-settings', [GoogleDriveSettingsController::class, 'show'])->name('admin.google-drive.show');
     Route::put('admin/google-drive-settings', [GoogleDriveSettingsController::class, 'update'])->name('admin.google-drive.update');
     Route::post('admin/google-drive-settings/test', [GoogleDriveSettingsController::class, 'test'])->name('admin.google-drive.test');
+    Route::post('admin/google-drive-settings/test-alert-center', [GoogleDriveSettingsController::class, 'testAlertCenter'])->name('admin.google-drive.test-alert-center');
+
+    // AWS Security Hub Settings (ciso + admin — handled in controller)
+    Route::get('admin/aws-security-hub-settings', [AwsSecurityHubSettingsController::class, 'show'])->name('admin.aws-security-hub.show');
+    Route::put('admin/aws-security-hub-settings', [AwsSecurityHubSettingsController::class, 'update'])->name('admin.aws-security-hub.update');
+    Route::post('admin/aws-security-hub-settings/test', [AwsSecurityHubSettingsController::class, 'test'])->name('admin.aws-security-hub.test');
 });

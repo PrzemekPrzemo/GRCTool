@@ -14,7 +14,7 @@ class Incident extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'code', 'title', 'description', 'severity', 'status', 'source',
+        'code', 'title', 'description', 'severity', 'status', 'source', 'source_ref',
         'occurred_at', 'detected_at', 'acknowledged_at', 'contained_at', 'resolved_at',
         'owner_id', 'is_breach',
         'affected_clients', 'affected_assets', 'linked_risks', 'linked_controls',
@@ -27,35 +27,43 @@ class Incident extends Model
     ];
 
     protected $casts = [
-        'occurred_at'       => 'datetime',
-        'detected_at'       => 'datetime',
-        'acknowledged_at'   => 'datetime',
-        'contained_at'      => 'datetime',
-        'resolved_at'       => 'datetime',
-        'is_breach'         => 'boolean',
-        'affected_clients'  => 'array',
-        'affected_assets'   => 'array',
-        'linked_risks'      => 'array',
-        'linked_controls'   => 'array',
+        'occurred_at' => 'datetime',
+        'detected_at' => 'datetime',
+        'acknowledged_at' => 'datetime',
+        'contained_at' => 'datetime',
+        'resolved_at' => 'datetime',
+        'is_breach' => 'boolean',
+        'affected_clients' => 'array',
+        'affected_assets' => 'array',
+        'linked_risks' => 'array',
+        'linked_controls' => 'array',
         'estimated_cost_eur' => 'decimal:2',
         // ENISA
-        'enisa_duration_hours'          => 'decimal:2',
-        'enisa_severity_score'          => 'decimal:2',
-        'enisa_is_significant'          => 'boolean',
-        'enisa_early_warning_deadline'  => 'datetime',
-        'enisa_notification_deadline'   => 'datetime',
-        'enisa_final_report_deadline'   => 'datetime',
+        'enisa_duration_hours' => 'decimal:2',
+        'enisa_severity_score' => 'decimal:2',
+        'enisa_is_significant' => 'boolean',
+        'enisa_early_warning_deadline' => 'datetime',
+        'enisa_notification_deadline' => 'datetime',
+        'enisa_final_report_deadline' => 'datetime',
     ];
 
     // ENISA severity classification weights (ENISA Technical Guidelines for NIS2)
-    private const ENISA_USER_SCORES    = ['lt100' => 0, 'lt1k' => 1, 'lt10k' => 2, 'lt100k' => 2, 'ge100k' => 3];
+    private const ENISA_USER_SCORES = ['lt100' => 0, 'lt1k' => 1, 'lt10k' => 2, 'lt100k' => 2, 'ge100k' => 3];
+
     private const ENISA_SERVICE_SCORES = ['none' => 0, 'minimal' => 1, 'partial' => 1, 'significant' => 2, 'full' => 3];
-    private const ENISA_GEO_SCORES     = ['local' => 0, 'regional' => 1, 'national' => 2, 'cross_border' => 3];
-    private const ENISA_ECONOMIC_SCORES= ['negligible' => 0, 'low' => 1, 'moderate' => 2, 'significant' => 2, 'severe' => 3];
+
+    private const ENISA_GEO_SCORES = ['local' => 0, 'regional' => 1, 'national' => 2, 'cross_border' => 3];
+
+    private const ENISA_ECONOMIC_SCORES = ['negligible' => 0, 'low' => 1, 'moderate' => 2, 'significant' => 2, 'severe' => 3];
 
     public const SEVERITIES = ['Critical', 'High', 'Medium', 'Low'];
-    public const STATUSES   = ['New', 'Investigating', 'Containment', 'Eradication', 'Recovery', 'Closed'];
-    public const SOURCES    = ['SIEM', 'Manual', 'Customer', 'IR Process', 'Threat Intel', 'Other'];
+
+    public const STATUSES = ['New', 'Investigating', 'Containment', 'Eradication', 'Recovery', 'Closed'];
+
+    public const SOURCES = [
+        'SIEM', 'Manual', 'Customer', 'IR Process', 'Threat Intel', 'Other',
+        'Entra ID Identity Protection', 'Google Workspace',
+    ];
 
     protected static function booted(): void
     {
@@ -113,29 +121,30 @@ class Incident extends Model
         $gScore = self::ENISA_GEO_SCORES[$this->enisa_geographic_spread] ?? null;
         $eScore = self::ENISA_ECONOMIC_SCORES[$this->enisa_economic_impact] ?? null;
 
-        $hours  = $this->enisa_duration_hours !== null ? (float) $this->enisa_duration_hours : null;
-        $dScore = $hours === null ? null : match(true) {
+        $hours = $this->enisa_duration_hours !== null ? (float) $this->enisa_duration_hours : null;
+        $dScore = $hours === null ? null : match (true) {
             $hours >= 24 => 3,
-            $hours >= 4  => 2,
-            $hours >= 1  => 1,
-            default      => 0,
+            $hours >= 4 => 2,
+            $hours >= 1 => 1,
+            default => 0,
         };
 
         if ($uScore === null || $sScore === null || $gScore === null || $dScore === null || $eScore === null) {
             $this->enisa_severity_score = null;
             $this->enisa_severity_level = null;
             $this->enisa_is_significant = null;
+
             return;
         }
 
         $score = round($uScore * 0.25 + $sScore * 0.25 + $gScore * 0.20 + $dScore * 0.20 + $eScore * 0.10, 2);
 
         $this->enisa_severity_score = $score;
-        $this->enisa_severity_level = match(true) {
+        $this->enisa_severity_level = match (true) {
             $score >= 2.25 => 'Critical',
-            $score >= 1.5  => 'High',
+            $score >= 1.5 => 'High',
             $score >= 0.75 => 'Medium',
-            default        => 'Low',
+            default => 'Low',
         };
         $this->enisa_is_significant = $score >= 1.5;
 
@@ -143,12 +152,12 @@ class Incident extends Model
         if ($this->is_breach && $this->enisa_is_significant && $this->detected_at) {
             $dt = Carbon::parse($this->detected_at);
             $this->enisa_early_warning_deadline = $dt->copy()->addHours(24);
-            $this->enisa_notification_deadline  = $dt->copy()->addHours(72);
-            $this->enisa_final_report_deadline  = $dt->copy()->addDays(30);
+            $this->enisa_notification_deadline = $dt->copy()->addHours(72);
+            $this->enisa_final_report_deadline = $dt->copy()->addDays(30);
         } else {
             $this->enisa_early_warning_deadline = null;
-            $this->enisa_notification_deadline  = null;
-            $this->enisa_final_report_deadline  = null;
+            $this->enisa_notification_deadline = null;
+            $this->enisa_final_report_deadline = null;
         }
     }
 }

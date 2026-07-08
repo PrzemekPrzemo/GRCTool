@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 Schedule::command('grc:send-alerts')->dailyAt('07:00');
 Schedule::command('grc:sync-policy-drive-documents')->hourly();
+Schedule::command('grc:sync-entra-identity-protection')->hourly();
+Schedule::command('grc:sync-google-workspace-alerts')->hourly();
+Schedule::command('grc:sync-aws-security-hub-findings')->hourly();

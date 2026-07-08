@@ -118,6 +118,42 @@
         </div>
     </form>
 
+    {{-- Identity Protection sync --}}
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 p-6">
+        <h3 class="text-sm font-semibold text-slate-900 mb-1">Synchronizacja Entra ID Identity Protection</h3>
+        <p class="text-xs text-slate-500 mb-4">Ciągnie ryzykowne logowania i detekcje ryzyka (risk detections) do rejestru incydentów. Korzysta z tej samej rejestracji aplikacji co logowanie SSO powyżej — wymaga dodatkowo uprawnienia aplikacji <code class="bg-slate-100 px-1 rounded">IdentityRiskEvent.Read.All</code> z admin consent.</p>
+
+        <form method="PUT" action="{{ route('admin.entra.update') }}" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="azure_client_id" value="{{ $settings['azure_client_id'] }}">
+            <input type="hidden" name="azure_tenant_id" value="{{ $settings['azure_tenant_id'] }}">
+            <input type="hidden" name="azure_enabled" value="{{ $settings['azure_enabled'] }}">
+
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="azure_identity_protection_enabled" value="1"
+                       {{ $settings['azure_identity_protection_enabled'] === '1' ? 'checked' : '' }}
+                       class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400">
+                <div>
+                    <p class="text-sm font-medium text-slate-700">Włącz synchronizację risk detections</p>
+                    <p class="text-xs text-slate-400">Godzinowa komenda tworzy/aktualizuje incydenty na podstawie sygnałów ryzyka z Entra ID.</p>
+                </div>
+            </label>
+
+            <div class="flex items-center justify-between pt-2">
+                <span class="text-xs text-slate-400">{{ $settings['secret_saved'] ? 'Client secret już skonfigurowany powyżej.' : 'Najpierw zapisz Client ID/Tenant ID/Secret powyżej.' }}</span>
+                <button type="submit" class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Zapisz</button>
+            </div>
+        </form>
+
+        @if($settings['azure_identity_protection_enabled'] === '1')
+        <form method="POST" action="{{ route('admin.entra.test-identity-protection') }}" class="mt-3">
+            @csrf
+            <button class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm hover:bg-slate-50">Testuj połączenie</button>
+        </form>
+        @endif
+    </div>
+
     {{-- Setup instructions --}}
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-5">
         <h3 class="text-sm font-semibold text-blue-900 mb-3">Instrukcja rejestracji aplikacji w Microsoft Entra</h3>
@@ -129,6 +165,7 @@
             <li>Po rejestracji: skopiuj <strong>Application (client) ID</strong> i <strong>Directory (tenant) ID</strong></li>
             <li>Certificates & secrets → New client secret → skopiuj wartość (widoczna tylko raz)</li>
             <li>API permissions → Add → Microsoft Graph → Delegated → <strong>User.Read</strong> → Grant admin consent</li>
+            <li>Dla synchronizacji Identity Protection: API permissions → Add → Microsoft Graph → <strong>Application</strong> → <strong>IdentityRiskEvent.Read.All</strong> → Grant admin consent</li>
             <li>Enterprise Applications → GRC Tool → Properties → <strong>Visible to users? = Yes</strong> → pojawi się w "Moje aplikacje"</li>
         </ol>
     </div>
