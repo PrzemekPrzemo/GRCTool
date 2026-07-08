@@ -34,6 +34,7 @@ use App\Http\Controllers\ProcessingActivityController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskController;
 use App\Http\Controllers\ScenarioController;
+use App\Http\Controllers\SecurityOverviewController;
 use App\Http\Controllers\ThirdPartyController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrustCenterController;
@@ -140,6 +141,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('incidents', IncidentController::class);
     Route::post('incidents/{incident}/status', [IncidentController::class, 'updateStatus'])->name('incidents.status');
     Route::post('incidents/{incident}/breach', [IncidentController::class, 'toggleBreach'])->name('incidents.breach');
+    Route::get('security-overview', [SecurityOverviewController::class, 'index'])->name('security-overview.index');
 
     // NIS2 Applicability Assessments
     Route::resource('nis2', Nis2AssessmentController::class)->parameters(['nis2' => 'nis2']);

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AppSetting;
 use App\Models\Incident;
 use App\Services\Security\MicrosoftIdentityProtectionService;
 use App\Services\SlackNotifier;
@@ -95,6 +96,8 @@ class SyncMicrosoftIdentityProtection extends Command
                 }
             }
         }
+
+        AppSetting::set('azure_identity_protection_last_synced_at', now()->toDateTimeString());
 
         $this->info("Entra ID Identity Protection: {$created} new, {$updated} updated.");
 
