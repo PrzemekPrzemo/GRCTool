@@ -43,7 +43,7 @@ class PolicyController extends Controller
 
         return view('policy.form', [
             'policy' => null,
-            'users'  => User::orderBy('name')->get(),
+            'users' => User::orderBy('name')->get(),
         ]);
     }
 
@@ -84,7 +84,7 @@ class PolicyController extends Controller
 
         return view('policy.form', [
             'policy' => $policy,
-            'users'  => User::orderBy('name')->get(),
+            'users' => User::orderBy('name')->get(),
         ]);
     }
 
@@ -105,7 +105,7 @@ class PolicyController extends Controller
         abort_unless(auth()->user()->can('policy.update'), 403);
 
         $policy->update([
-            'status'      => 'Active',
+            'status' => 'Active',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
         ]);
@@ -145,14 +145,14 @@ class PolicyController extends Controller
                 $policy = Policy::updateOrCreate(
                     ['code' => $code],
                     [
-                        'title'            => $r['title'] ?? '',
-                        'category'         => $r['category'] ?: null,
-                        'current_version'  => $r['current_version'] ?: '1.0',
-                        'status'           => $r['status'] ?: 'Draft',
-                        'owner_id'         => ! empty($r['owner_email']) ? optional(User::where('email', $r['owner_email'])->first())->id : null,
-                        'effective_from'   => $r['effective_from'] ?: null,
-                        'next_review_due'  => $r['next_review_due'] ?: null,
-                        'description'      => $r['description'] ?: null,
+                        'title' => $r['title'] ?? '',
+                        'category' => $r['category'] ?: null,
+                        'current_version' => $r['current_version'] ?: '1.0',
+                        'status' => $r['status'] ?: 'Draft',
+                        'owner_id' => ! empty($r['owner_email']) ? optional(User::where('email', $r['owner_email'])->first())->id : null,
+                        'effective_from' => $r['effective_from'] ?: null,
+                        'next_review_due' => $r['next_review_due'] ?: null,
+                        'description' => $r['description'] ?: null,
                     ],
                 );
 
@@ -186,8 +186,8 @@ class PolicyController extends Controller
         $policies = Policy::whereIn('id', $ids)->orderBy('title')->get();
 
         return view('policy.bulk-edit', [
-            'policies'   => $policies,
-            'users'      => User::orderBy('name')->get(),
+            'policies' => $policies,
+            'users' => User::orderBy('name')->get(),
             'categories' => Policy::distinct()->pluck('category')->filter()->sort()->values(),
         ]);
     }
@@ -197,11 +197,11 @@ class PolicyController extends Controller
         abort_unless(auth()->user()->can('policy.update'), 403);
 
         $data = $request->validate([
-            'ids'             => ['required', 'array', 'min:1'],
-            'ids.*'           => ['integer', 'exists:policies,id'],
-            'status'          => ['nullable', 'in:Draft,Approved,Active,Retired'],
-            'owner_id'        => ['nullable', 'exists:users,id'],
-            'category'        => ['nullable', 'string', 'max:64'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:policies,id'],
+            'status' => ['nullable', 'in:Draft,Approved,Active,Retired'],
+            'owner_id' => ['nullable', 'exists:users,id'],
+            'category' => ['nullable', 'string', 'max:64'],
             'next_review_due' => ['nullable', 'date'],
         ]);
 
@@ -242,8 +242,8 @@ class PolicyController extends Controller
         abort_unless(auth()->user()->can('policy.update'), 403);
 
         $data = $request->validate([
-            'title'         => ['nullable', 'string', 'max:255'],
-            'drive_url'     => ['required', 'url', 'max:1024'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'drive_url' => ['required', 'url', 'max:1024'],
             'drive_file_id' => ['nullable', 'string', 'max:191'],
         ]);
 
@@ -287,10 +287,10 @@ class PolicyController extends Controller
 
         $changed = $evidence->original_filename !== ($meta['name'] ?? $evidence->original_filename);
         $evidence->update([
-            'original_filename'   => $meta['name'] ?? $evidence->original_filename,
-            'external_url'        => $meta['webViewLink'] ?? $evidence->external_url,
-            'external_synced_at'  => now(),
-            'source'              => 'drive_api',
+            'original_filename' => $meta['name'] ?? $evidence->original_filename,
+            'external_url' => $meta['webViewLink'] ?? $evidence->external_url,
+            'external_synced_at' => now(),
+            'source' => 'drive_api',
         ]);
 
         if ($changed) {
@@ -308,13 +308,13 @@ class PolicyController extends Controller
 
         PolicyAttestation::updateOrCreate(
             [
-                'policy_id'      => $policy->id,
-                'user_id'        => auth()->id(),
+                'policy_id' => $policy->id,
+                'user_id' => auth()->id(),
                 'policy_version' => $policy->current_version,
             ],
             [
                 'attested_at' => now(),
-                'ip_address'  => request()->ip(),
+                'ip_address' => request()->ip(),
             ]
         );
 
@@ -326,15 +326,15 @@ class PolicyController extends Controller
     private function validatePolicy(Request $request): array
     {
         return $request->validate([
-            'title'               => 'required|string|max:255',
-            'description'         => 'nullable|string',
-            'category'            => 'nullable|string|max:64',
-            'current_version'     => 'required|string|max:16',
-            'effective_from'      => 'nullable|date',
-            'next_review_due'     => 'nullable|date',
-            'owner_id'            => 'nullable|exists:users,id',
-            'status'              => 'required|in:Draft,Approved,Active,Retired',
-            'framework_mappings'  => 'nullable|array',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string|max:64',
+            'current_version' => 'required|string|max:16',
+            'effective_from' => 'nullable|date',
+            'next_review_due' => 'nullable|date',
+            'owner_id' => 'nullable|exists:users,id',
+            'status' => 'required|in:Draft,Approved,Active,Retired',
+            'framework_mappings' => 'nullable|array',
             'attestation_required' => 'boolean',
         ]);
     }
@@ -349,19 +349,19 @@ class PolicyController extends Controller
     private function attachDriveLink(Policy $policy, string $url, ?string $title = null, ?string $fileId = null): EvidenceObject
     {
         $evidence = EvidenceObject::create([
-            'title'              => $title ?: $policy->title,
-            'original_filename'  => $title ?: $policy->title,
-            'source'             => $fileId ? 'drive_api' : 'drive_link',
-            'external_provider'  => 'google_drive',
-            'external_file_id'   => $fileId,
-            'external_url'       => $url,
-            'uploaded_by'        => auth()->id(),
+            'title' => $title ?: $policy->title,
+            'original_filename' => $title ?: $policy->title,
+            'source' => $fileId ? 'drive_api' : 'drive_link',
+            'external_provider' => 'google_drive',
+            'external_file_id' => $fileId,
+            'external_url' => $url,
+            'uploaded_by' => auth()->id(),
         ]);
 
         EvidenceLink::create([
-            'evidence_id'   => $evidence->id,
+            'evidence_id' => $evidence->id,
             'linkable_type' => Policy::class,
-            'linkable_id'   => $policy->id,
+            'linkable_id' => $policy->id,
             'relation_role' => 'policy_document',
         ]);
 
@@ -371,15 +371,15 @@ class PolicyController extends Controller
     private function recordVersion(Policy $policy, ?string $reason = null): void
     {
         PolicyVersion::create([
-            'policy_id'       => $policy->id,
-            'version_number'  => $policy->current_version,
-            'snapshot'        => $policy->only([
+            'policy_id' => $policy->id,
+            'version_number' => $policy->current_version,
+            'snapshot' => $policy->only([
                 'title', 'category', 'status', 'current_version',
                 'effective_from', 'next_review_due', 'owner_id', 'description',
             ]),
-            'changed_by'      => auth()->id(),
-            'change_reason'   => $reason,
-            'changed_at'      => now(),
+            'changed_by' => auth()->id(),
+            'change_reason' => $reason,
+            'changed_at' => now(),
         ]);
     }
 }

@@ -5,6 +5,8 @@ use App\Models\EvidenceLink;
 use App\Models\Policy;
 use App\Models\PolicyVersion;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Crypt;
 
 beforeEach(function (): void {
     $admin = User::where('email', 'admin@grc.local')->firstOrFail();
@@ -17,17 +19,17 @@ beforeEach(function (): void {
 function makePolicy(array $overrides = []): Policy
 {
     return Policy::create(array_merge([
-        'code'   => 'POL-TEST-'.random_int(1000, 999999),
-        'title'  => 'Testowa polityka',
+        'code' => 'POL-TEST-'.random_int(1000, 999999),
+        'title' => 'Testowa polityka',
         'status' => 'Draft',
     ], $overrides));
 }
 
 it('creating a policy records an initial version', function (): void {
     $this->post('/policies', [
-        'title'            => 'Polityka haseł',
-        'current_version'  => '1.0',
-        'status'           => 'Draft',
+        'title' => 'Polityka haseł',
+        'current_version' => '1.0',
+        'status' => 'Draft',
     ])->assertRedirect();
 
     $policy = Policy::where('title', 'Polityka haseł')->firstOrFail();
@@ -38,7 +40,7 @@ it('attaches a Google Drive link to a policy without any API configuration', fun
     $policy = makePolicy();
 
     $this->post("/policies/{$policy->id}/documents", [
-        'title'     => 'Polityka PDF',
+        'title' => 'Polityka PDF',
         'drive_url' => 'https://drive.google.com/file/d/abc123/view',
     ])->assertRedirect();
 
@@ -62,7 +64,7 @@ it('detaches a document from a policy', function (): void {
 it('refuses to sync a document when Google Drive API is disabled', function (): void {
     $policy = makePolicy();
     $this->post("/policies/{$policy->id}/documents", [
-        'drive_url'     => 'https://drive.google.com/file/d/xyz/view',
+        'drive_url' => 'https://drive.google.com/file/d/xyz/view',
         'drive_file_id' => 'xyz',
     ]);
     $link = $policy->documentLinks()->first();
@@ -79,11 +81,11 @@ it('bulk-updates status and owner for multiple selected policies', function (): 
     $p2 = makePolicy(['status' => 'Draft']);
 
     $this->post('/policies/bulk-update', [
-        'ids'          => [$p1->id, $p2->id],
+        'ids' => [$p1->id, $p2->id],
         'apply_status' => '1',
-        'status'       => 'Active',
-        'apply_owner'  => '1',
-        'owner_id'     => $owner->id,
+        'status' => 'Active',
+        'apply_owner' => '1',
+        'owner_id' => $owner->id,
     ])->assertRedirect(route('policies.index'));
 
     expect($p1->fresh()->status)->toBe('Active');
@@ -105,7 +107,7 @@ it('imports policies from CSV including a Google Drive link column', function ()
     $csv = "code,title,category,current_version,status,owner_email,effective_from,next_review_due,description,drive_url\n"
         ."POL-CSV-0001,Polityka importowana,ISMS,1.0,Draft,,,,,https://drive.google.com/file/d/csv1/view\n";
 
-    $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('policies.csv', $csv);
+    $file = UploadedFile::fake()->createWithContent('policies.csv', $csv);
 
     $this->post('/policies/import', ['file' => $file])->assertRedirect(route('policies.index'));
 
@@ -126,9 +128,9 @@ it('admin can save Google Drive settings with enable toggle and credentials are 
     $credentials = json_encode(['type' => 'service_account', 'client_email' => 'svc@project.iam.gserviceaccount.com']);
 
     $this->put('/admin/google-drive-settings', [
-        'google_drive_folder_id'    => 'folder123',
-        'google_drive_credentials'  => $credentials,
-        'google_drive_enabled'      => '1',
+        'google_drive_folder_id' => 'folder123',
+        'google_drive_credentials' => $credentials,
+        'google_drive_enabled' => '1',
     ])->assertRedirect(route('admin.google-drive.show'));
 
     expect(AppSetting::get('google_drive_enabled'))->toBe('1');
@@ -136,7 +138,7 @@ it('admin can save Google Drive settings with enable toggle and credentials are 
 
     $encrypted = AppSetting::get('google_drive_credentials_encrypted');
     expect($encrypted)->not->toBe($credentials);
-    expect(\Illuminate\Support\Facades\Crypt::decryptString($encrypted))->toBe($credentials);
+    expect(Crypt::decryptString($encrypted))->toBe($credentials);
 });
 
 it('rejects invalid JSON when saving Google Drive credentials', function (): void {

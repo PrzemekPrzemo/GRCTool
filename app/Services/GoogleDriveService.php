@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\AppSetting;
+use Google\Client;
+use Google\Service\Drive;
 use Illuminate\Support\Facades\Crypt;
 use RuntimeException;
 
@@ -48,16 +50,16 @@ class GoogleDriveService
         return $decoded;
     }
 
-    private function client(): \Google\Client
+    private function client(): Client
     {
-        if (! class_exists(\Google\Client::class)) {
+        if (! class_exists(Client::class)) {
             throw new RuntimeException('Pakiet google/apiclient nie jest zainstalowany na serwerze.');
         }
 
-        $client = new \Google\Client();
+        $client = new Client;
         $client->setApplicationName(config('app.name', 'GRC Platform'));
         $client->setAuthConfig($this->credentials());
-        $client->setScopes([\Google\Service\Drive::DRIVE_READONLY]);
+        $client->setScopes([Drive::DRIVE_READONLY]);
 
         return $client;
     }
@@ -71,7 +73,7 @@ class GoogleDriveService
             throw new RuntimeException('Synchronizacja przez Google Drive API jest wyłączona.');
         }
 
-        $service = new \Google\Service\Drive($this->client());
+        $service = new Drive($this->client());
         $file = $service->files->get($fileId, [
             'fields' => 'id,name,webViewLink,mimeType,modifiedTime,version',
             'supportsAllDrives' => true,
@@ -94,7 +96,7 @@ class GoogleDriveService
      */
     public function testConnection(): array
     {
-        $service = new \Google\Service\Drive($this->client());
+        $service = new Drive($this->client());
         // about->get zwraca informacje o kontekście service accounta — wystarczy do sprawdzenia poprawności kluczy.
         $about = $service->about->get(['fields' => 'user']);
 

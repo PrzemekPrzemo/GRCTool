@@ -42,8 +42,8 @@ class SyncPolicyDriveDocuments extends Command
 
             $changed = $evidence->original_filename !== ($meta['name'] ?? $evidence->original_filename);
             $evidence->update([
-                'original_filename'  => $meta['name'] ?? $evidence->original_filename,
-                'external_url'       => $meta['webViewLink'] ?? $evidence->external_url,
+                'original_filename' => $meta['name'] ?? $evidence->original_filename,
+                'external_url' => $meta['webViewLink'] ?? $evidence->external_url,
                 'external_synced_at' => now(),
             ]);
 
@@ -54,15 +54,15 @@ class SyncPolicyDriveDocuments extends Command
 
                 if ($policy) {
                     PolicyVersion::create([
-                        'policy_id'      => $policy->id,
+                        'policy_id' => $policy->id,
                         'version_number' => $policy->current_version,
-                        'snapshot'       => $policy->only([
+                        'snapshot' => $policy->only([
                             'title', 'category', 'status', 'current_version',
                             'effective_from', 'next_review_due', 'owner_id', 'description',
                         ]),
                         'document_evidence_id' => $evidence->id,
-                        'change_reason'  => 'Automatyczna synchronizacja z Google Drive: zmiana dokumentu',
-                        'changed_at'     => now(),
+                        'change_reason' => 'Automatyczna synchronizacja z Google Drive: zmiana dokumentu',
+                        'changed_at' => now(),
                     ]);
                 }
             }
