@@ -19,6 +19,7 @@ class EvidenceObject extends Model
         'mime_type', 'size_bytes', 'sha256', 'classification', 'tags',
         'valid_from', 'valid_until', 'retention_until',
         'is_immutable', 'uploaded_by', 'client_id',
+        'source', 'external_provider', 'external_file_id', 'external_url', 'external_synced_at',
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class EvidenceObject extends Model
         'valid_until' => 'date',
         'retention_until' => 'date',
         'is_immutable' => 'boolean',
+        'external_synced_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -51,6 +53,11 @@ class EvidenceObject extends Model
     public function links(): HasMany
     {
         return $this->hasMany(EvidenceLink::class, 'evidence_id');
+    }
+
+    public function isExternal(): bool
+    {
+        return $this->source !== 'upload';
     }
 
     public function isExpiring(int $days = 30): bool

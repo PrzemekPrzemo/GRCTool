@@ -107,6 +107,80 @@
             </div>
         </div>
         @endif
+
+        {{-- Documents (Google Drive) --}}
+        <div class="bg-white rounded shadow p-5">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-semibold text-slate-700">Dokumenty (Google Drive)</h2>
+                @if(!$driveApiEnabled)
+                <span class="text-xs text-slate-400">Tryb linków — API wyłączone</span>
+                @endif
+            </div>
+
+            @forelse($policy->documentLinks as $link)
+            @php $doc = $link->evidence; @endphp
+            @if($doc)
+            <div class="flex items-center justify-between p-2 rounded hover:bg-slate-50 text-sm border-b border-slate-50 last:border-0">
+                <a href="{{ $doc->external_url }}" target="_blank" rel="noopener" class="text-emerald-700 hover:underline truncate max-w-xs">
+                    {{ $doc->title ?? $doc->original_filename }}
+                </a>
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                    @if($doc->external_synced_at)
+                        <span title="Ostatnia synchronizacja">↻ {{ $doc->external_synced_at->format('Y-m-d H:i') }}</span>
+                    @endif
+                    @can('policy.update')
+                        @if($driveApiEnabled && $doc->external_file_id)
+                        <form method="POST" action="{{ route('policies.documents.sync', [$policy, $link]) }}">
+                            @csrf
+                            <button class="px-2 py-1 border border-slate-300 rounded hover:bg-slate-100">Synchronizuj</button>
+                        </form>
+                        @endif
+                        <form method="POST" action="{{ route('policies.documents.destroy', [$policy, $link]) }}" onsubmit="return confirm('Odpiąć dokument?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="px-2 py-1 text-red-600 hover:bg-red-50 rounded">Odepnij</button>
+                        </form>
+                    @endcan
+                </div>
+            </div>
+            @endif
+            @empty
+            <p class="text-sm text-slate-400">Brak podpiętych dokumentów.</p>
+            @endforelse
+
+            @can('policy.update')
+            <form method="POST" action="{{ route('policies.documents.store', $policy) }}" class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                @csrf
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" name="title" placeholder="Nazwa dokumentu (opcjonalnie)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
+                    <input type="text" name="drive_file_id" placeholder="ID pliku Drive (opcjonalnie, do synchronizacji API)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
+                </div>
+                <div class="flex gap-2">
+                    <input type="url" name="drive_url" required placeholder="https://drive.google.com/…" class="flex-1 px-2 py-1.5 border border-slate-300 rounded text-xs">
+                    <button class="px-3 py-1.5 bg-slate-900 text-white rounded text-xs">Podepnij</button>
+                </div>
+                @error('drive_url')<p class="text-red-600 text-xs">{{ $message }}</p>@enderror
+            </form>
+            @endcan
+        </div>
+
+        {{-- Version history --}}
+        @if($policy->versions->isNotEmpty())
+        <div class="bg-white rounded shadow p-5">
+            <h2 class="font-semibold text-slate-700 mb-3">Historia wersji ({{ $policy->versions->count() }})</h2>
+            <div class="space-y-1.5 max-h-72 overflow-y-auto">
+                @foreach($policy->versions as $v)
+                <div class="text-xs p-1.5 rounded hover:bg-slate-50 border-b border-slate-50 last:border-0">
+                    <div class="flex items-center justify-between">
+                        <span class="font-mono">v{{ $v->version_number }}</span>
+                        <span class="text-slate-500">{{ $v->changed_at->format('Y-m-d H:i') }}</span>
+                    </div>
+                    <div class="text-slate-500">{{ $v->author?->name ?? 'System' }}@if($v->change_reason) — {{ $v->change_reason }}@endif</div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </div>
 
     <div class="space-y-4">

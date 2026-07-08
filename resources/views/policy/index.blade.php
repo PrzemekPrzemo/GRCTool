@@ -6,7 +6,10 @@
         <p class="text-sm text-slate-500 mt-1">Rejestr dokumentów polityk bezpieczeństwa i ochrony danych</p>
     </div>
     @can('policy.create')
-        <a href="{{ route('policies.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowa polityka</a>
+        <div class="flex gap-2">
+            <a href="{{ route('policies.import.show') }}" class="px-3 py-1.5 border border-slate-300 rounded text-sm">Importuj CSV</a>
+            <a href="{{ route('policies.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowa polityka</a>
+        </div>
     @endcan
 </div>
 
@@ -29,10 +32,18 @@
     @endif
 </form>
 
+@can('policy.update')
+<form method="GET" action="{{ route('policies.bulk-edit') }}" id="bulk-form">
+@endcan
 <div class="bg-white rounded shadow overflow-hidden">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
+                @can('policy.update')
+                <th class="px-3 py-2 w-8">
+                    <input type="checkbox" onclick="document.querySelectorAll('.policy-check').forEach(c=>c.checked=this.checked)">
+                </th>
+                @endcan
                 <th class="px-3 py-2">Kod</th>
                 <th class="px-3 py-2">Tytuł</th>
                 <th class="px-3 py-2">Kategoria</th>
@@ -55,6 +66,11 @@
                 };
             @endphp
             <tr class="border-t border-slate-100 hover:bg-slate-50">
+                @can('policy.update')
+                <td class="px-3 py-2">
+                    <input type="checkbox" name="ids[]" value="{{ $p->id }}" class="policy-check">
+                </td>
+                @endcan
                 <td class="px-3 py-2 font-mono text-xs">
                     <a href="{{ route('policies.show', $p) }}" class="text-emerald-700 hover:underline">{{ $p->code }}</a>
                 </td>
@@ -72,7 +88,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="px-3 py-8 text-center text-slate-500">
+                <td colspan="9" class="px-3 py-8 text-center text-slate-500">
                     Brak polityk.
                     @can('policy.create')
                         <a href="{{ route('policies.create') }}" class="text-emerald-600 hover:underline ml-1">Dodaj pierwszą politykę</a>.
@@ -83,5 +99,13 @@
         </tbody>
     </table>
 </div>
+@can('policy.update')
+    @if($policies->isNotEmpty())
+    <div class="mt-3">
+        <button type="submit" class="px-3 py-1.5 bg-slate-900 text-white rounded text-sm">Masowa aktualizacja zaznaczonych</button>
+    </div>
+    @endif
+</form>
+@endcan
 <div class="mt-3">{{ $policies->links() }}</div>
 @endsection
