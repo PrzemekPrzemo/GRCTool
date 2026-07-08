@@ -9,6 +9,22 @@
     </div>
 </div>
 
+@if($atRiskGaps->isNotEmpty())
+<div class="bg-red-50 border border-red-200 rounded-xl p-5 mb-4">
+    <h2 class="text-sm font-semibold text-red-900 mb-1">⚠ Użytkownicy ryzykowni (Entra ID) bez aktualnego szkolenia obowiązkowego</h2>
+    <p class="text-xs text-red-700 mb-3">Mają otwarty incydent z Entra ID Identity Protection i jednocześnie brakujące/wygasłe szkolenie obowiązkowe — priorytet do interwencji.</p>
+    <div class="space-y-1.5">
+        @foreach($atRiskGaps as $row)
+        <div class="flex items-center justify-between text-xs bg-white rounded p-2 border border-red-100">
+            <span class="font-medium text-slate-800">{{ $row['user']->name }}</span>
+            <span class="text-slate-500">{{ $row['user']->email }}</span>
+            <span class="text-red-700">Brakuje: {{ $row['missing']->pluck('code')->join(', ') }}</span>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 <div class="bg-white rounded shadow overflow-x-auto">
     <table class="text-xs">
         <thead class="bg-slate-50 text-slate-600">

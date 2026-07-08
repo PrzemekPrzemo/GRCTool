@@ -6,8 +6,10 @@ use App\Models\Training;
 use App\Models\User;
 use App\Models\UserTrainingCompletion;
 use App\Services\AuditLogger;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class TrainingController extends Controller
@@ -95,7 +97,7 @@ class TrainingController extends Controller
 
         $expiresAt = null;
         if ($data['status'] === 'completed' && $training->expiry_days > 0) {
-            $expiresAt = \Carbon\Carbon::parse($data['completed_at'])->addDays($training->expiry_days);
+            $expiresAt = Carbon::parse($data['completed_at'])->addDays($training->expiry_days);
         }
 
         UserTrainingCompletion::updateOrCreate(
@@ -122,7 +124,39 @@ class TrainingController extends Controller
             ->groupBy('user_id')
             ->map(fn ($c) => $c->keyBy('training_id'));
 
-        return view('trainings.report', compact('trainings', 'users', 'completions'));
+        $atRiskGaps = $this->atRiskUsersMissingMandatoryTraining($trainings, $completions);
+
+        return view('trainings.report', compact('trainings', 'users', 'completions', 'atRiskGaps'));
+    }
+
+    /**
+     * Users with an open Entra ID Identity Protection incident who are also missing
+     * (or overdue on) at least one mandatory training — the correlation CISOs care about:
+     * "who's currently risky AND hasn't done their security awareness training."
+     *
+     * @return Collection<int, array{user: User, missing: Collection}>
+     */
+    private function atRiskUsersMissingMandatoryTraining($trainings, $completions): Collection
+    {
+        $mandatory = $trainings->where('is_mandatory', true);
+        if ($mandatory->isEmpty()) {
+            return collect();
+        }
+
+        $atRiskUsers = User::whereHas('affectedIncidents', function ($q): void {
+            $q->where('source', 'Entra ID Identity Protection')->where('status', '!=', 'Closed');
+        })->get();
+
+        return $atRiskUsers->map(function (User $user) use ($mandatory, $completions): array {
+            $userCompletions = $completions->get($user->id, collect());
+            $missing = $mandatory->filter(function (Training $t) use ($userCompletions): bool {
+                $c = $userCompletions->get($t->id);
+
+                return ! $c || $c->status !== 'completed' || $c->isExpired();
+            });
+
+            return ['user' => $user, 'missing' => $missing];
+        })->filter(fn (array $row) => $row['missing']->isNotEmpty())->values();
     }
 
     private function validateTraining(Request $request): array
