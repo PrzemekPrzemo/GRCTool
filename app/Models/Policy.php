@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Policy extends Model
@@ -41,5 +42,15 @@ class Policy extends Model
     public function attestations(): HasMany
     {
         return $this->hasMany(PolicyAttestation::class);
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(PolicyVersion::class)->orderByDesc('changed_at');
+    }
+
+    public function documentLinks(): MorphMany
+    {
+        return $this->morphMany(EvidenceLink::class, 'linkable');
     }
 }

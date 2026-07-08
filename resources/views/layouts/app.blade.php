@@ -378,6 +378,10 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 <span>Entra ID / SSO</span>
             </a>
+            <a href="{{ route('admin.google-drive.show') }}" class="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-700 rounded transition-colors {{ request()->routeIs('admin.google-drive.*') ? 'bg-slate-700 text-white' : 'text-slate-300' }}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 14l-4 4m0 0l4 4m-4-4h16m-4-14l4 4m0 0l-4 4m4-4H4"/></svg>
+                <span>Google Drive</span>
+            </a>
             @endif
             <form action="{{ route('logout') }}" method="POST">
                 @csrf

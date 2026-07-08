@@ -7,6 +7,7 @@ use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AuditEngagementController;
 use App\Http\Controllers\Admin\EntraIdSettingsController;
+use App\Http\Controllers\Admin\GoogleDriveSettingsController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
@@ -257,9 +258,16 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::resource('third-parties', ThirdPartyController::class)->parameters(['third-parties' => 'thirdParty']);
 
     // Policies
+    Route::get('policies/import', [PolicyController::class, 'showImport'])->name('policies.import.show');
+    Route::post('policies/import', [PolicyController::class, 'import'])->name('policies.import');
+    Route::get('policies/bulk-edit', [PolicyController::class, 'bulkEdit'])->name('policies.bulk-edit');
+    Route::post('policies/bulk-update', [PolicyController::class, 'bulkUpdate'])->name('policies.bulk-update');
     Route::resource('policies', PolicyController::class);
     Route::post('policies/{policy}/approve', [PolicyController::class, 'approve'])->name('policies.approve');
     Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
+    Route::post('policies/{policy}/documents', [PolicyController::class, 'attachDocument'])->name('policies.documents.store');
+    Route::delete('policies/{policy}/documents/{document}', [PolicyController::class, 'detachDocument'])->name('policies.documents.destroy');
+    Route::post('policies/{policy}/documents/{document}/sync', [PolicyController::class, 'syncDocument'])->name('policies.documents.sync');
 
     // Training & Awareness
     Route::resource('trainings', TrainingController::class)->except(['destroy']);
@@ -347,4 +355,9 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // Entra ID Settings (ciso + admin — handled in controller)
     Route::get('admin/entra-settings', [EntraIdSettingsController::class, 'show'])->name('admin.entra.show');
     Route::put('admin/entra-settings', [EntraIdSettingsController::class, 'update'])->name('admin.entra.update');
+
+    // Google Drive Settings (ciso + admin — handled in controller)
+    Route::get('admin/google-drive-settings', [GoogleDriveSettingsController::class, 'show'])->name('admin.google-drive.show');
+    Route::put('admin/google-drive-settings', [GoogleDriveSettingsController::class, 'update'])->name('admin.google-drive.update');
+    Route::post('admin/google-drive-settings/test', [GoogleDriveSettingsController::class, 'test'])->name('admin.google-drive.test');
 });
