@@ -1,0 +1,60 @@
+BUSINESS IMPACT ANALYSIS
+BY PRZEMYSŁAW SZULECKI, CSO
+Formal assessment of TSH critical processes: what fails when unavailable, maximum tolerable downtime, RTO/RPO derivation, and single points of failure with mitigations.
+TSH-SEC-PROC-216  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines how TSH conducts Business Impact Analysis (BIA) — the formal assessment of what happens when a critical process or system is unavailable. BIA outputs define the RTO/RPO targets in POL-008 (BCP). Reviewed annually.
+# 2. Critical Processes
+# 3. Impact Assessment — Unavailability Scenarios
+# 4. RTO / RPO Derivation
+RTO (Recovery Time Objective) and RPO (Recovery Point Objective) in POL-008 are derived from the Maximum Tolerable Downtime (MTD) above, less a safety margin:
+# 5. Single Points of Failure
+BIA identified the following single points of failure requiring active mitigation:
+# 6. BIA Review
+Annual review: CSO + Team Leads, Q4, before BCP test
+Triggered review: after any significant architecture change, new major client, or RTO/RPO breach during incident
+Output feeds into: POL-008 (BCP), REG-011 (Operational Risk Register), PROC-206 (Risk Assessment)
+
+[TABLE]
+Process | What fails if unavailable | Max tolerable downtime | Owner
+Software delivery (GitHub + CI/CD) | Developers cannot commit, review, or deploy code to clients | 4 hours | Tech Lead
+Identity & access (Entra ID) | No login to any TSH system; IRU/Intune lose management connection | 2 hours | IT Lead
+Communication (Google Workspace + Slack) | Internal coordination fails; client communication impossible | 4 hours | IT Lead
+Device management (IRU + Intune) | Cannot onboard/offboard devices; cannot execute emergency wipe | 8 hours | IT Lead
+Project management (Jira/Confluence) | Delivery coordination degrades; knowledge base inaccessible | 8 hours | PM
+HR & payroll | Onboarding/offboarding blocked; payroll at risk if >72h | 72 hours | HR
+Financial operations | Invoicing/payment blocked if >5 business days | 5 days | Finance
+Client incident response | Cannot notify clients or coordinate incident response | 1 hour | CSO
+[/TABLE]
+
+
+[TABLE]
+Process | 1–4h impact | 4–24h impact | 24–72h impact | >72h impact
+GitHub / CI/CD | Sprint delay; devs context-switch to docs/review | SLA breach risk for active releases | Client escalation; contractual breach possible | Major reputational + financial damage
+Entra ID / Identity | All SaaS access lost; immediate productivity stop | Security risk — cannot offboard departing employee | Regulatory risk — cannot manage access controls | DORA/NIS2 reportable incident
+Google Workspace | Email/Meet down; switch to Teams + mobile | Client meeting disruption; document access lost | Project delivery impact | Significant client impact
+IRU / Device Mgmt | Cannot push urgent security patch | Cannot execute emergency device wipe (security risk) | Onboarding/offboarding blocked | Security control gap — reportable
+Jira / Confluence | Team coordinates via Slack | Documentation inaccessible — workaround in Drive | PM coordination degrades significantly | Delivery quality impact
+[/TABLE]
+
+
+[TABLE]
+System | MTD | RTO target | RPO target | Recovery method
+Entra ID | 2 hours | 30 minutes | Near-zero | Break-glass accounts; cloud-native redundancy
+GitHub Enterprise | 4 hours | 2 hours | 1 hour | Local clones; GitLab mirror for active repos
+Google Workspace | 4 hours | 2 hours | 4 hours | Teams/Exchange backup; offline email clients
+IRU (Apple MDM) | 8 hours | 4 hours | N/A (policies persist) | Apple Configurator 2 for emergency actions
+Intune (Windows MDM) | 8 hours | 4 hours | N/A (policies persist) | Entra ID fallback; local admin LAPS
+Jira / Confluence | 8 hours | 4 hours | 24 hours | Atlassian cloud SLA; Drive export backup
+Client incident comms | 1 hour | 30 minutes | N/A | Mobile + personal email as backup channel
+[/TABLE]
+
+
+[TABLE]
+SPOF | Risk | Mitigation in place | Residual risk
+CSO person dependency | ISMS governance collapses if CSO unavailable | Documented deputy; Management Board has break-glass access; all procedures in Confluence | Low
+IT Lead person dependency | Technical controls unmanaged if IT Lead unavailable | Two documented deputies; runbooks in Confluence | Low
+Single cloud identity provider (Entra) | All access lost if Entra unavailable | Break-glass accounts; CA policy allows fallback MFA | Low
+IRU as sole Apple MDM | Cannot manage Apple devices if IRU unavailable | Policies persist on device; Apple Configurator 2 as emergency fallback; documented in PROC-211 | Medium — accept
+GitHub as single code repo | All delivery stops if GitHub unavailable | GitLab mirror for critical active repos; local developer clones | Medium — accept
+[/TABLE]

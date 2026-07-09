@@ -1,0 +1,110 @@
+EMPLOYEE OFFBOARDING PROCEDURE
+BY HR / IT LEAD / CSO
+Complete security offboarding checklist for all departing TSH employees and contractors. Covers identity revocation, IRU/Intune device management, credential cleanup, and final sign-off. Applies to both voluntary and involuntary departures.
+TSH-SEC-PROC-211  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+This checklist must be completed for EVERY departing employee or contractor — regardless of whether the departure is voluntary or involuntary. IT Lead owns execution; CSO signs off.
+# 1. Purpose & Scope
+This procedure defines the complete security offboarding process for all TSH employees and contractors. It ensures that departing personnel do not retain access to TSH or client systems, data, or assets after their engagement ends.
+Related documents: PROC-201 (User Lifecycle Management), PROC-210 (Supplier/Client Project Offboarding), POL-003 (Access Control Policy), POL-015 (Approved Applications Policy).
+# 2. Offboarding Types & Timelines
+For involuntary terminations: IT Lead MUST be notified simultaneously with the termination meeting — not after. Access revocation begins during the meeting. Do not wait.
+# 3. Phase 1: Preparation (T-5 to T-1 Business Days)
+## For Voluntary Resignations Only
+# 4. Phase 2: Access Revocation (Day T=0)
+## 4.1 Identity & Authentication — Execute in this order
+## 4.2 Device Management — IRU (Apple) & Intune (Windows)
+IRU Wipe vs Retire distinction: WIPE erases everything (factory reset) — use for company-owned devices. RETIRE removes only managed content — use for BYOD. NEVER wipe a personal device.
+# 5. Phase 3: Credential & Data Cleanup (T+1 to T+3)
+# 6. Phase 4: Client Project Decommission (if applicable)
+If the departing person had access to client environments, complete PROC-210 (Supplier/Client Project Offboarding Checklist) in parallel. Additionally:
+PM notifies client (where contractually required) that team member has changed
+Client confirms TSH personnel removed from their systems (client sign-off in PROC-210 Section A)
+Review if person was named in any client contracts or DPAs — update if needed
+# 7. Phase 5: Final Sign-off & Documentation
+Offboarding is not complete until CSO has signed off the Jira ticket. Partial offboarding (e.g. only email disabled) is not acceptable. Every item must be ticked before closure.
+# 8. Emergency Offboarding (Involuntary / Security Incident)
+## 8.1 Procedure — Execute Simultaneously
+HR initiates termination meeting
+IT Lead (notified simultaneously): disable Entra ID account IMMEDIATELY
+IT Lead: trigger IRU Remote Wipe on all company Apple devices (do not wait for return)
+IT Lead: trigger Intune Wipe on Windows device
+IT Lead: revoke GitHub, Slack, Google sessions within 15 minutes
+CSO: review any recent access logs — check for data exfiltration indicators
+Complete full Phase 2-5 checklist within 4 hours
+If there are grounds to suspect data exfiltration: do NOT wipe device immediately. Preserve forensic evidence first. Consult CSO and legal counsel before wiping. IRU Lock (not Wipe) may be used to prevent use while preserving evidence.
+
+[TABLE]
+Scenario | Access Revocation Deadline | Device Return | HR Lead
+Voluntary resignation (standard notice) | End of last working day (T=0) | Last working day or courier within 5 days | HR notifies IT T-5 days minimum
+Voluntary resignation (immediate) | Same day as notification | Arrange return within 72 hours | HR notifies IT immediately
+Involuntary termination | Within 1 HOUR of HR notification | Immediate device collection or IRU/Intune wipe | HR notifies IT simultaneously with action
+End of contractor engagement | Within 4 hours of contract end date | Return or IRU retire (BYOD) | PM notifies IT T-3 days minimum
+Security incident (insider threat) | IMMEDIATE — within 15 minutes | Emergency IRU wipe if unreachable | CSO + HR act simultaneously
+[/TABLE]
+
+
+[TABLE]
+# | Action | Owner | Done?
+P1 | HR sends offboarding notification to IT Lead with last day, return date, role details | HR | [ ]
+P2 | IT Lead creates offboarding Jira ticket with checklist and assigns tasks | IT Lead | [ ]
+P3 | PM reviews active project access — list all client environments person has access to | PM | [ ]
+P4 | IT Lead identifies all accounts via Entra ID user object — export access report | IT Lead | [ ]
+P5 | Prepare IRU device retire/wipe command (do not execute yet) | IT Lead | [ ]
+P6 | Notify departing person: last-day checklist, device return instructions, data transfer guidance | HR + IT Lead | [ ]
+[/TABLE]
+
+
+[TABLE]
+# | Action | System | SLA | Done?
+A1 | Disable Entra ID account (do NOT delete — preserve audit log) | Entra ID | Immediate | [ ]
+A2 | Revoke all active Entra ID sessions and tokens | Entra ID → User → Revoke sessions | Immediate | [ ]
+A3 | Remove from all Entra ID security groups and role assignments | Entra ID → Groups | 1 hour | [ ]
+A4 | Disable Google Workspace account (suspend, not delete) | Google Admin → Users | Immediate | [ ]
+A5 | Revoke GitHub Enterprise access — remove from org and all repos | GitHub Enterprise → People | 1 hour | [ ]
+A6 | Deactivate Slack account | Slack Admin → Members | 1 hour | [ ]
+A7 | Deactivate Jira/Confluence Atlassian account | Atlassian Admin | 1 hour | [ ]
+A8 | Remove from 1Password groups (do not delete shared vaults yet) | 1Password Admin | 2 hours | [ ]
+A9 | Revoke any Personal Access Tokens (PATs) in GitHub | GitHub → User → PATs | 1 hour | [ ]
+A10 | Remove from any AWS/GCP/Azure IAM roles (if project access) | Per cloud console | 2 hours | [ ]
+[/TABLE]
+
+
+[TABLE]
+# | Action | Device Type | Method | Done?
+D1 | Company MacBook returned in person: perform IRU Wipe before reassigning | macOS | IRU Console → Devices → [device] → Wipe | [ ]
+D2 | Company MacBook NOT returned (remote/involuntary): trigger IRU Remote Wipe immediately | macOS | IRU Console → Devices → [device] → Remote Wipe | [ ]
+D3 | Company iPhone returned: IRU Wipe (Erase All Content) | iOS | IRU Console → Devices → [device] → Erase Device | [ ]
+D4 | Company iPhone NOT returned: IRU Remote Wipe immediately | iOS | IRU Console → Remote Commands → Erase Device | [ ]
+D5 | Personal MacBook (BYOD with IRU user enrollment): IRU Retire (removes work data, preserves personal) | macOS BYOD | IRU Console → Devices → [device] → Retire | [ ]
+D6 | Personal iPhone (MAM only): IRU selective wipe (removes managed apps and data) | iOS BYOD | IRU Console → MAM → Selective Wipe | [ ]
+D7 | Windows laptop returned: Intune Full Wipe before reassignment | Windows | Intune → Devices → [device] → Wipe | [ ]
+D8 | Windows laptop NOT returned: Intune Remote Wipe immediately | Windows | Intune → Devices → [device] → Wipe | [ ]
+D9 | Remove device from IRU device group / Blueprint assignments | All Apple | IRU Console → update device groups | [ ]
+D10 | Remove device from Intune compliance policies (if reassigning) | Windows | Intune → Devices → retire/reassign | [ ]
+[/TABLE]
+
+
+[TABLE]
+# | Action | Owner | Done?
+C1 | Identify and rotate any shared credentials the person had access to (checked in 1Password) | IT Lead | [ ]
+C2 | Rotate any service account tokens or API keys the person created or knew | IT Lead + relevant developer | [ ]
+C3 | Review person's email for any sensitive data that needs forwarding or archiving (via Google Vault) | IT Lead + manager | [ ]
+C4 | Transfer ownership of Google Drive files to manager (Google Admin → User → Transfer files) | IT Lead | [ ]
+C5 | Archive or reassign Jira/Confluence content owned by person | PM | [ ]
+C6 | Remove from any CI/CD pipeline secrets or environment variables | Lead developer | [ ]
+C7 | Check and remove from any client VPN profiles or certificates | IT Lead | [ ]
+C8 | Delete 1Password account after credential rotation complete (retain vault contents in team vault) | IT Lead | [ ]
+C9 | Deactivate MDE device license for returned/wiped device (if reassigning to new person) | IT Lead | [ ]
+[/TABLE]
+
+
+[TABLE]
+# | Action | Owner | Done?
+F1 | IT Lead confirms all access revoked — Entra ID user shows 'Disabled', all groups empty | IT Lead | [ ]
+F2 | Run Entra ID Access Review report — verify no residual access | IT Lead | [ ]
+F3 | Update REG-002 (Asset Inventory) — remove departing person's devices, update asset status | IT Lead | [ ]
+F4 | Update REG-003 (RACI Matrix) if person held named role | CSO | [ ]
+F5 | HR confirms completion: equipment returned, final pay processed, references agreed | HR | [ ]
+F6 | CSO signs off completed Jira offboarding ticket | CSO | [ ]
+F7 | Archive completed offboarding ticket — retain for 3 years (GDPR accountability) | IT Lead | [ ]
+[/TABLE]

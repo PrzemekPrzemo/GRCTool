@@ -1,0 +1,29 @@
+CHANGE MANAGEMENT PROCEDURE
+BY IT LEAD / CSO
+Controls changes to TSH security systems. Four change types: Standard (pre-approved), Normal, Emergency, Significant. Special controls for IRU Blueprint changes.
+TSH-SEC-PROC-208  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure governs changes to TSH's security-relevant systems, configurations, and policies. Uncontrolled changes are a leading cause of security incidents.
+# 2. Change Classification
+# 3. Change Process
+Raise change request in Jira: IT-SECURITY → Change Request
+Describe: what changes, why, risk assessment, rollback plan, testing plan
+IT Lead reviews technical feasibility and risk
+CSO reviews security impact — particularly for changes to Entra ID, IRU, Intune, GitHub security settings
+Approved: schedule change in maintenance window; notify affected users
+Execute change; test; document result in Jira ticket
+Post-implementation review: did change achieve goal? Any unexpected effects?
+Update REG-006 (Change Register) with outcome
+# 4. IRU (Apple MDM) Change Controls
+Changes to IRU Blueprints, restriction profiles, or compliance policies require Normal or Significant change classification depending on scope:
+Blueprint configuration change: Normal — IT Lead + CSO approval; test on pilot group first
+New restriction profile (all devices): Significant — test on 5 devices for 48h before full rollout
+IRU policy push for security incident: Emergency — execute, document post-implementation
+
+[TABLE]
+Type | Description | Examples | Approval Required
+Standard (pre-approved) | Low risk; routine; documented procedure exists | OS updates via IRU/Intune; dependency updates (non-critical) | None — execute per procedure
+Normal | Medium risk; planned; requires review | New SaaS tool; Entra ID policy change; GitHub org setting | IT Lead (technical) + CSO (security impact)
+Emergency | Urgent response to incident or critical vulnerability | Security patch for critical CVE; IRU policy push for security fix | IT Lead + CSO (post-implementation review within 48h)
+Significant | High risk; major architecture change; new client environment | New MDM platform; identity architecture change; new cloud provider | IT Lead + CSO + Management Board (for major)
+[/TABLE]

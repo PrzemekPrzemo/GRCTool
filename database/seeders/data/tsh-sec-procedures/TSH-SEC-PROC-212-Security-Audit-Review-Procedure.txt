@@ -1,0 +1,38 @@
+SECURITY AUDIT & REVIEW PROCEDURE
+BY CSO
+ISO 27001 Cl. 9.2/9.3-aligned internal audit programme. Annual ISMS management review, technical configuration audits (including IRU/Apple MDM quarterly check), quarterly access reviews.
+TSH-SEC-PROC-212  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines how TSH conducts internal security audits and management reviews of the ISMS. Required by ISO 27001 Clause 9.2 (Internal Audit) and Clause 9.3 (Management Review).
+# 2. Audit Programme
+# 3. Annual ISMS Management Review Agenda
+Status of actions from previous review
+ISMS performance: incidents logged vs closed (REG-009); risk treatment status (REG-001 & REG-011)
+Audit findings and corrective actions
+Security awareness training completion rates
+Changes affecting the ISMS: regulatory, technology, business
+Opportunities for improvement
+Decisions: policy updates needed; resource requirements; risk appetite review
+# 4. Technical Configuration Audit — IRU (Apple MDM)
+IT Lead reviews quarterly — check all of the following in IRU admin console (tsh.iru.io):
+Blueprint: are all required profiles still applied? Any profile conflicts?
+Devices: any non-enrolled Macs or iPhones? Any devices with failed policy apply?
+Compliance: any devices showing non-compliant (outdated OS, disabled FileVault, no MDE)?
+LAPS: are local admin passwords rotating? Any failures?
+Audit log: any unexpected admin actions (wipes, policy changes) in last 90 days?
+# 5. Audit Findings & Corrective Actions
+All findings documented in Jira: IT-SECURITY → Internal Audit Finding
+Critical findings: resolve within 7 days
+Major findings: resolve within 30 days
+Minor findings: resolve within 90 days
+Findings summary reported at Management Review
+Internal audits are not a bureaucratic exercise — they are how TSH finds and fixes problems before clients, regulators, or attackers do. CSO treats audit findings with the same priority as security incidents.
+
+[TABLE]
+Audit Type | Frequency | Scope | Owner
+Annual ISMS Management Review | Annual (Q4) | Entire ISMS: policy currency, risk register, incidents, training completion, exceptions, regulatory changes | CSO presents to Management Board
+Policy Compliance Audit | Annual (Q2) | Sample check: are policies being followed? IRU compliance, access reviews completed, training records | IT Lead + CSO
+Technical Security Review | Annual (Q1) | Entra ID configuration, IRU Blueprint review, GitHub security settings, Intune policies | IT Lead
+Access Review | Quarterly | All user accounts, privileged accounts, service accounts — quarterly per POL-003 | IT Lead
+Vendor/Tier 1 Review | Annual | Tier 1 vendor reassessment: SOC 2 renewal, DPA validity, security questionnaire | CSO
+[/TABLE]

@@ -1,0 +1,45 @@
+USER LIFECYCLE MANAGEMENT
+BY IT LEAD / HR
+Step-by-step procedure for employee and contractor onboarding, role changes, and offboarding. Device enrollment via IRU (Apple) and Intune (Windows). See PROC-211 for full security offboarding checklist.
+TSH-SEC-PROC-201  |  v2.1  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines step-by-step actions for onboarding, role changes, and offboarding of TSH employees and contractors. For full employee offboarding security checklist see PROC-211.
+# 2. Onboarding — Step by Step
+## T-5 Business Days: HR Notification
+HR sends IT notification via Jira: new hire details, start date, role, manager, project assignment
+IT creates onboarding ticket; assigns tasks to IT Lead
+## T-2 Business Days: Account Provisioning
+Create Entra ID account; assign to correct security group (role profile)
+SCIM sync to Google Workspace, Slack, Atlassian, GitHub (org member only — no repo access yet)
+Create 1Password account; assign to team vault
+Send welcome email with first-day instructions to personal email (work email not yet active)
+## T-1 Business Day: Device Preparation
+MacBook: enroll in IRU via ABM; assign TSH-macOS-Standard Blueprint; verify FileVault enabled
+iPhone (if issued): enroll in IRU supervised; verify passcode policy applied
+Windows laptop (if applicable): Autopilot enrollment; verify BitLocker
+Ship device or arrange collection; include device return form
+## Day 1: First Day
+IT Lead calls new hire; confirms device setup complete; walks through 1Password and MFA registration
+New hire completes mandatory security training (Module 1) via training platform — before any project access
+Manager confirms role and project access requirements; IT grants additional access
+New hire acknowledges POL-001 (Information Security Policy) and POL-004 (AUP) in HR system
+## Day 5: Access Confirmation
+IT Lead confirms all accounts active; new hire confirms all access working
+Add to security awareness training schedule (quarterly phishing, annual training)
+Close onboarding Jira ticket; add to REG-002 (Asset Inventory) for issued devices
+# 3. Role Change
+Manager notifies IT Lead via Jira when role changes
+IT Lead adjusts Entra ID security group membership within 2 business days
+SCIM propagates changes; previous role access removed automatically
+Quarterly access review will catch any stale access
+# 4. Offboarding
+For full security offboarding checklist see PROC-211 (Employee Offboarding Procedure). Summary timelines:
+For involuntary terminations: IT Lead must be notified simultaneously with the termination meeting. Use PROC-211 immediately.
+
+[TABLE]
+Scenario | Access Revocation | Device
+Voluntary (standard notice) | End of last working day | Return day T=0; IRU/Intune wipe before reassignment
+Voluntary (immediate) | Same day | Return within 72h; remote wipe if not returned
+Involuntary | Within 1 HOUR of HR notification | IRU Remote Wipe immediately if unreachable
+Contractor end | Within 4 hours of contract end | IRU Retire (BYOD) or Wipe (company device)
+[/TABLE]

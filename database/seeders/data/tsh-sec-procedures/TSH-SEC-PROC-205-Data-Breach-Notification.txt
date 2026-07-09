@@ -1,0 +1,35 @@
+DATA BREACH NOTIFICATION PROCEDURE
+BY CSO
+72-hour breach response timeline from discovery to UODO notification. Covers client 24h notification, GDPR Art.33 UODO filing, SDAIA/KSA notification, and decision documentation.
+TSH-SEC-PROC-205  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines TSH's actions in the event of a personal data breach. It operationalises POL-009 (Privacy Policy) and POL-007 (Incident Response Policy). See also PROC-202 for full incident response steps.
+# 2. What Constitutes a Breach
+A personal data breach is any accidental or unlawful destruction, loss, alteration, unauthorised disclosure of, or access to, personal data (GDPR Art. 4(12)). Examples:
+Laptop containing client personal data lost or stolen (even if encrypted — notify unless encryption confirmed)
+Email with personal data sent to wrong recipient
+Database of personal data exposed via misconfigured cloud storage
+Ransomware encrypting systems containing personal data
+Unauthorised access to personal data by TSH employee or sub-contractor
+# 3. 72-Hour Decision Timeline
+# 4. UODO Notification Content (GDPR Art. 33(3))
+Nature of the breach (categories and approximate number of data subjects; records affected)
+Name and contact details of DPO/contact point (CSO: cso@tsh.io)
+Likely consequences of the breach
+Measures taken or proposed to address the breach and mitigate effects
+# 5. When NOT to Notify UODO
+Notification to UODO is NOT required if the breach is unlikely to result in a risk to the rights and freedoms of natural persons. Low-risk examples:
+Encrypted device lost (AES-256, FileVault confirmed enabled) — verify via IRU before deciding
+Internal email sent between two TSH employees with no external party exposure
+When in doubt — notify UODO. Late notification carries higher regulatory risk than unnecessary notification. Document the decision either way.
+
+[TABLE]
+Hour | Action | Owner
+0 | Incident discovered; notify CSO immediately | Discoverer / IT Lead
+0–4 | Initial assessment: is personal data affected? How many individuals? What categories? | CSO + IT Lead
+4–12 | Notify affected client(s) — TSH's 24-hour client notification starts from Hour 0 | CSO + PM
+12–24 | Client notification sent (24h deadline from TSH to client) | CSO
+24–48 | Determine UODO notification obligation: risk to rights and freedoms? If yes — notify | CSO
+48–72 | UODO notification submitted (if required) — 72h from TSH becoming aware | CSO
+72+ | Ongoing: notify data subjects if high risk; document and close | CSO
+[/TABLE]

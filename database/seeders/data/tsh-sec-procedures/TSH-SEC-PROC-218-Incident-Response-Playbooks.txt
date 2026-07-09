@@ -1,0 +1,121 @@
+INCIDENT RESPONSE PLAYBOOKS
+BY PRZEMYSŁAW SZULECKI, CSO
+Trzy playbooki: ransomware/malware, wyciek credentiali przez GitHub, phishing z przejęciem konta. Każdy: fazy STOP → OCENA → DECYZJE → ODBUDOWA z konkretnymi krokami i narzędziami.
+TSH-SEC-PROC-218  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+Playbooki = akcja, nie teoria. Każdy scenariusz to lista kroków w kolejności. Nie zaczynaj od analizy — zacznij od STOP i CONTAIN. Czytasz to w kryzysie.
+Każdy playbook zakłada że znasz już PROC-202 (IR Procedure). Tu znajdziesz tylko kroki specyficzne dla danego scenariusza, w kolejności priorytetów.
+# Playbook 1: Ransomware / Malware na urządzeniu
+Pierwsze 30 minut decyduje o skali incydentu. Izoluj zanim zbadasz.
+## Faza 1: STOP (0–15 minut)
+## Faza 2: OCENA ZASIĘGU (15–60 minut)
+## Faza 3: DECYZJE (CSO, do 2 godzin)
+Powiadomienie klienta? → Tak jeśli urządzenie miało dostęp do danych klienta → Szablon #1
+Powiadomienie UODO? → Tak jeśli dane osobowe były na urządzeniu → Szablon #2 (72h)
+Powiadomienie Management Board? → Tak dla każdego P1 → Szablon #4 (1h od klasyfikacji)
+Wipe urządzenia? → Tylko gdy forensics kompletne lub gdy nie ma potrzeby zachowania dowodów
+NIGDY nie płać okupu bez decyzji Management Board i konsultacji z prawnikiem. TSH ma polisę cyber insurance — poinformuj ubezpieczyciela przed jakąkolwiek płatnością.
+## Faza 4: ODBUDOWA
+Przywróć dostęp z czystego urządzenia — IRU enrollment nowego MacBooka
+Zresetuj wszystkie hasła i tokeny, do których użytkownik miał dostęp (sprawdź 1Password)
+Przywróć kod z GitHub (nie z zainfekowanego urządzenia)
+Monitoruj przez 72h — Entra ID Identity Protection + MDE
+# Playbook 2: Credentials / dane wrażliwe w repozytorium GitHub
+Każda sekunda liczy. Publiczne repo z kluczem API = klucz już jest skompromitowany — nie ma znaczenia czy go usuniesz. Rotuj natychmiast.
+## Faza 1: STOP (0–10 minut)
+## Faza 2: OCENA (10–30 minut)
+## Faza 3: DECYZJE
+Klucz do infrastruktury klienta → Natychmiast powiadom klienta (Szablon #1), nie czekaj na pełną analizę
+Klucz do infrastruktury TSH → IT Lead rotuje i monitoru pod kątem nieautoryzowanego użycia
+Dane osobowe w repo → ocena GDPR breach — UODO 72h (Szablon #2)
+Brak oznak exploit → zamknij jako P2; post-incident review obowiązkowy
+## Faza 4: ZAPOBIEGANIE NAWROTOWI
+Włącz GitHub Push Protection jeśli jeszcze nie aktywne: GitHub → Org → Code security → Secret scanning → Push protection: ENABLE
+Sprawdź czy wszystkie repo mają Branch Protection + secret scanning (CFG-304)
+Sesja z zespołem developerskim: jak bezpiecznie zarządzać sekretami (1Password, GitHub Secrets)
+# Playbook 3: Phishing — pracownik kliknął / podał dane
+## Faza 1: STOP (0–15 minut)
+## Faza 2: OCENA (15–60 minut)
+## Faza 3: PRZYWRÓCENIE DOSTĘPU
+Reset hasła Entra ID (przez CSO/IT Lead, nie przez użytkownika samodzielnie)
+Weryfikacja MFA — upewnij się że to TSH resetuje, nie atakujący
+Przejrzyj i usuń wszelkie reguły mailowe utworzone przez atakującego (Google Mail → Settings → Filters)
+Sprawdź ustawienia email: forwarding, vacation responder, authorized apps
+Re-enable konto dopiero gdy IT Lead potwierdza czystość
+## Faza 4: DECYZJE I FOLLOW-UP
+Dostęp do danych klienta? → Szablon #1 do klienta w 24h
+Dane osobowe narażone? → Ocena UODO (Szablon #2)
+Użytkownik przeszedł szkolenie z phishingu? → Remedial training obowiązkowy
+Aktualizacja phishing simulation template — dodaj podobny scenariusz do następnej raty
+# Quick Reference — Kluczowe kontakty i narzędzia
+
+[TABLE]
+Krok | Akcja | Kto | Narzędzie
+1 | Zadzwoń do CSO i IT Lead — nie pisz przez potencjalnie zainfekowany Slack | Odkrywający | Telefon
+2 | NIE wyłączaj urządzenia — zachowaj pamięć RAM dla forensics | IT Lead | —
+3 | Odłącz urządzenie od sieci (Wi-Fi OFF, kabel LAN wyciągnij) — ale nie wyłączaj | Odkrywający | Fizycznie
+4 | IRU → Devices → [MacBook] → Lock (nie Wipe — zachowaj dowody) | IT Lead | IRU Console
+5 | Intune → Devices → [Windows PC] → Isolate (jeśli Windows) | IT Lead | Intune Admin
+[/TABLE]
+
+
+[TABLE]
+Krok | Akcja | Kto
+6 | Sprawdź Entra ID — czy konto użytkownika wykonało cokolwiek podejrzanego w ostatnich 24h | IT Lead
+7 | Sprawdź MDE — czy inne urządzenia pokazują podobne alerty | IT Lead
+8 | Sprawdź GitHub — czy były podejrzane pushe lub zmiany tokenów | IT Lead / Tech Lead
+9 | Zidentyfikuj: czy urządzenie miało dostęp do danych klientów? Które? | IT Lead + PM
+10 | Oceń: czy to izolowany przypadek czy potencjalnie sieć? | CSO
+[/TABLE]
+
+
+[TABLE]
+Krok | Akcja | Kto | Narzędzie
+1 | GitHub → Settings → Secrets → SECRET scanning — zidentyfikuj dokładnie co i kiedy | IT Lead | GitHub Security
+2 | Jeśli repo publiczne: natychmiast zmień na Private | IT Lead / Tech Lead | GitHub repo settings
+3 | RÓWNOCZEŚNIE: unieważnij/rotuj skompromitowany sekret — nie czekaj na private | IT Lead / Tech Lead | Konsola serwisu (AWS/GCP/API provider)
+4 | Powiadom CSO i właściciela serwisu, którego dotyczy klucz | IT Lead | Telefon / Slack
+[/TABLE]
+
+
+[TABLE]
+Krok | Pytanie | Gdzie sprawdzić
+5 | Kiedy klucz trafił do repo? (git log, GitHub audit log) | GitHub → Repo → Commits / Blame
+6 | Czy repo było publiczne? Jak długo? | GitHub → Settings → Visibility history
+7 | Czy są logi użycia klucza w tym czasie? Jakiekolwiek podejrzane wywołania? | Konsola AWS/GCP/Azure/API providera — logi dostępu
+8 | Czy inne klucze mogą być w tym repo lub związanych? | GitHub Secret Scanning → All alerts
+9 | Czyj klucz? Czy developer miał uprawnienia do tego serwisu? | Pytanie do developera + 1Password audit
+[/TABLE]
+
+
+[TABLE]
+Krok | Akcja | Kto | Narzędzie
+1 | IT Lead natychmiast dezaktywuje konto Entra ID: Entra → Users → [user] → Disable | IT Lead | Entra Admin
+2 | Entra → Users → [user] → Revoke all sessions — wyloguj wszystkie aktywne sesje | IT Lead | Entra Admin
+3 | Google Admin → Users → [user] → Reset sign-in cookies | IT Lead | Google Admin
+4 | Sprawdź: czy użytkownik podał hasło czy tylko kliknął link? | IT Lead + użytkownik | Wywiad
+5 | Zabezpiecz phishing email: nie klikaj — przekaż do IT jako attachment | Odkrywający | Gmail → Forward as attachment
+[/TABLE]
+
+
+[TABLE]
+Krok | Co sprawdzić | Gdzie
+6 | Entra ID sign-in logs: czy były logowania z nieznanego IP/kraju w ostatnich 24h? | Entra ID → Sign-in logs → filtruj po użytkowniku
+7 | Google Workspace: czy cokolwiek było pobrane, przesłane, udostępnione? | Google Admin → Reports → Audit → Drive
+8 | GitHub: czy były podejrzane operacje na repo? | GitHub Enterprise → Audit log
+9 | Czy użytkownik ma dostęp do danych klienta? Którego? | RACI Matrix / project assignment
+10 | Czy MFA zostało obejście (AiTM phishing)? | Entra ID → Sign-ins → Authentication details
+[/TABLE]
+
+
+[TABLE]
+Kto/Co | Kontakt/Link | Kiedy
+CSO | cso@tsh.io | [mobile] | Zawsze przy P1/P2
+IT Lead | it@tsh.io | [mobile] | Zawsze — pierwsza linia techniczna
+IRU Console | tsh.iru.io | Lock / Wipe Apple devices
+Entra ID | entra.microsoft.com | Disable user / Revoke sessions / PIM
+MDE Security Portal | security.microsoft.com | Alerts / Isolate device
+Google Admin | admin.google.com | Gmail rules / Drive audit / Suspend user
+GitHub Enterprise | github.com/[org]/settings/audit-log | Audit log / Secret scanning
+1Password Admin | 1password.com/sign-in | Rotate / audit credentials
+UODO Portal | uodo.gov.pl/p/formularz-zgloszenia-naruszenia | Zgłoszenie naruszenia GDPR
+[/TABLE]

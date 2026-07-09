@@ -1,0 +1,53 @@
+REGULATORY CHANGE MANAGEMENT
+BY PRZEMYSŁAW SZULECKI, CSO
+How TSH monitors, assesses, and responds to regulatory and legal changes. Monitoring sources, 4-step assessment process, DORA delegated acts special track.
+TSH-SEC-PROC-215  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines how TSH identifies, evaluates, and responds to regulatory and legal changes that affect the ISMS, operational risk, or client obligations. CSO owns this process.
+# 2. Monitoring Sources
+CSO subscribes to and reviews the following on a defined cadence:
+# 3. Change Assessment Process
+## Step 1: Detect (CSO, within 5 business days of publication)
+New regulation or significant amendment identified via monitoring source
+CSO creates Jira ticket: IT-SECURITY → Regulatory Change → brief summary + source link
+Initial triage: does this affect TSH directly, or only through client obligations?
+## Step 2: Impact Assessment (CSO + relevant owner, within 14 days)
+## Step 3: Update & Test (owner, within 30 days of in-force date)
+Update affected documents — version bump, change log entry
+Notify affected personnel (email from CSO for material changes; all-hands for major regulation)
+Update REG-014 (Compliance Obligation Register) with new/changed obligation
+Update REG-015 (Compliance Calendar) with any new recurring compliance tasks
+Close Jira ticket with links to all updated documents
+## Step 4: Management Board Notification
+Material changes (new regulation, significant fine risk): notify Management Board at next quarterly meeting
+Critical changes (regulation in force within 30 days with significant compliance gap): immediate notification
+# 4. DORA Delegated Acts — Special Track
+DORA Level 2 (RTS/ITS) is published in batches by ESAs. Each new batch requires:
+Impact assessment within 14 days of official publication in EU Official Journal
+Update CLT-403 (DPA) and CLT-406 (Operational Risk answers) where contractual provisions change
+Client notification if existing contracts are affected (per CLT-404 review)
+DORA RTS on ICT third-party risk (Art. 28–30) affects TSH most directly. CSO tracks DORA Level 2 calendar at eba.europa.eu/regulation-and-policy/digital-operational-resilience
+
+[TABLE]
+Source | What it covers | Check frequency
+ENISA (enisa.europa.eu/news) | NIS2, DORA implementation, cybersecurity guidance | Monthly
+UODO (uodo.gov.pl/aktualnosci) | GDPR enforcement, Polish DPA guidance, fines | Monthly
+EUR-Lex alerts (eur-lex.europa.eu) | EU regulation updates: DORA delegated acts, NIS2 secondary legislation | Monthly
+IAPP Daily Dashboard (iapp.org) | Global privacy law changes, enforcement actions | Weekly
+EBA publications (eba.europa.eu/news) | EBA guidelines, outsourcing updates, ICT risk guidance | Quarterly
+SAMA / NCA bulletins (sama.gov.sa) | KSA regulatory updates — relevant for KSA client projects | Quarterly
+CERT Polska (cert.pl) | NIS2 reporting requirements, incident classification updates | Monthly
+GitHub security advisories | CVEs in TSH toolchain — automated via Dependabot | Continuous
+[/TABLE]
+
+
+[TABLE]
+Impact area | Questions to answer
+Policies | Which of POL-001–017 need updating? Is a new policy required?
+Procedures | Which PROC need updating? New procedure required?
+Client obligations | Does this change what we must tell clients (CLT documents)?
+Contracts | Do existing client contracts need addenda? Does CLT-404 checklist need updating?
+Technical controls | New control required? Existing control needs changing?
+Training | Do staff need to know about this? Update PROC-207 training content?
+Timeline | Hard deadline (regulation in force date) vs. best practice adoption?
+[/TABLE]

@@ -1,0 +1,61 @@
+INCIDENT RESPONSE PROCEDURE
+BY CSO / IT LEAD
+Step-by-step IR procedure for P1–P4. Containment via IRU (Apple devices) and Entra ID (accounts). References PROC-217 for communication templates and PROC-218 for scenario playbooks.
+TSH-SEC-PROC-202  |  v2.1  |  2025-01-01  |  CSO — Przemysław Szulecki
+During a P1/P2 incident: step-by-step procedure is here. Communication templates: PROC-217. Scenario playbooks: PROC-218. Classification and notification policy: POL-007.
+# 1. Quick Reference
+# 2. Phase 1: Detect & Report
+Anyone who suspects an incident: email security@tsh.io AND call IT Lead immediately
+IT Lead: acknowledge within 15 minutes; classify P1–P4; open REG-009 entry
+P1/P2: assemble response team (CSO + IT Lead + relevant PM) immediately
+Do NOT investigate alone — report first, contain together
+# 3. Phase 2: Contain
+## 3.1 Device Compromise — Apple (IRU)
+IRU Console (tsh.iru.io) → Devices → [device] → Lock — use LOCK not Wipe to preserve forensic evidence
+If data protection is priority over forensics: IRU → Wipe
+Check: was device used for client project? If yes — client notification clock starts NOW (PROC-217 Template #1)
+Revoke all Entra ID sessions: Entra Admin → Users → [user] → Revoke sessions
+## 3.2 Account Compromise
+Entra ID → Users → [user] → Disable account + Revoke all sessions
+PIM: revoke any active privileged role activations
+GitHub: remove from org if account believed compromised
+Rotate all credentials the account had access to (check 1Password shared vaults)
+## 3.3 Ransomware / Malware
+IRU Lock (not Wipe) — isolate device while preserving forensics
+Check blast radius: what other systems did the affected device/account have access to?
+Do NOT pay ransom — escalate to Management Board immediately
+For detailed step-by-step playbooks for ransomware, GitHub credential leak, and phishing: see PROC-218 (Incident Response Playbooks).
+# 4. Phase 3: Analyse
+Collect logs: Entra ID audit, IRU activity log, MDE device timeline, GitHub audit log
+Determine: scope of compromise, data accessed, timeline, root cause
+Document findings in REG-009 in real time
+# 5. Phase 4: Notify
+Use PROC-217 (Incident Communication Templates) for all external communications — templates are pre-approved and require only [BRACKET] completion:
+# 6. Phase 5: Eradicate & Recover
+Remove threat: re-image device via IRU/Intune; rotate all compromised credentials
+Restore from clean backup (GitHub for code; Google Drive for documents)
+Verify all controls working before returning device/account to service
+Monitor for 72h post-recovery: Entra ID Identity Protection + MDE
+# 7. Phase 6: Post-Incident Review
+P1/P2: mandatory post-incident report within 2 weeks; presented to Management Board
+Root cause analysis; lessons learned → update training (PROC-207) and policies
+Close REG-009 entry with final details and lessons learned
+Speed of containment beats completeness of investigation every time. Contain first, understand later.
+
+[TABLE]
+Priority | Immediate action | CSO involvement | Comms template
+P1 | STOP — contain now. Call CSO immediately. Do NOT investigate alone. | Incident Commander from minute 1 | PROC-217 Templates #1 and #4
+P2 | Escalate to CSO within 1 hour. Contain affected system. | CSO leads response | PROC-217 Template #1
+P3 | Notify IT Lead. CSO informed. Address within 7 days. | CSO informed only | —
+P4 | Log in REG-009. Address within 30 days. | Weekly briefing | —
+[/TABLE]
+
+
+[TABLE]
+Who | When | Template
+Affected client | Within 24h of identification | PROC-217 Template #1
+Management Board (P1) | Within 1h of P1 classification | PROC-217 Template #4
+UODO — if personal data breach | Within 72h of becoming aware | PROC-217 Template #2 (Polish)
+SDAIA — if Saudi residents' data | Within 72h of becoming aware | PROC-217 Template #3
+Client — incident closure | Within 5 days of resolution | PROC-217 Template #5
+[/TABLE]

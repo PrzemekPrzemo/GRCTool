@@ -1,0 +1,77 @@
+OPERATIONAL RISK PROCEDURE
+BY PRZEMYSŁAW SZULECKI, CSO
+Step-by-step procedure for conducting Operational Risk Assessments at TSH. Covers identification, scoring (5×5 matrix), treatment planning, and register maintenance. Feeds into REG-011.
+TSH-SEC-PROC-213  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines the step-by-step process for conducting Operational Risk Assessments at TSH. It operationalises the Operational Risk Policy (POL-016) and feeds results into the Operational Risk Register (REG-011).
+# 2. When to Conduct an Operational Risk Assessment
+# 3. Step-by-Step Assessment Process
+## Step 1: Scope Definition
+Define what is being assessed: business unit, process, project, or system. Document in REG-011 header row for the assessment cycle.
+Who is involved: CSO (mandatory), relevant Team Lead, IT Lead (for technology risks)
+Duration: 2-hour workshop for project-level; half-day for annual full assessment
+Inputs: previous risk register, recent incidents, post-mortems, supplier reports
+## Step 2: Risk Identification
+Use structured brainstorming across all 8 operational risk categories (see POL-016 Section 2). For each category, ask: 'What could go wrong? What are we dependent on? Where do we have single points of failure?'
+Document each identified risk in REG-011 with: Category, Description, Potential Cause, Potential Impact
+Minimum 2 risks per category for full annual assessment
+## Step 3: Risk Scoring
+Score each risk using the 5×5 likelihood × impact matrix:
+Risk Score = Likelihood × Impact. Record in REG-011: Inherent Score (before controls), Current Controls, Residual Score (after controls).
+## Step 4: Treatment Planning
+For each risk above score 5 (Medium), document a treatment plan:
+Treatment type: Avoid / Mitigate / Transfer / Accept
+Specific action: what will be done, by when, by whom
+Target residual score after treatment
+Review date (when to reassess effectiveness)
+## Step 5: Register Update & Sign-off
+Update REG-011 with all identified risks, scores, and treatment plans
+CSO reviews and signs off — escalates Critical/High to Management Board
+Share summary with Management Board at next quarterly review
+Schedule treatment plan follow-up dates in JIRA
+# 4. Operational Risk Register (REG-011) — Column Guide
+# 5. Client-Facing Operational Risk Disclosure
+When responding to client due diligence questionnaires about operational risk, refer to CLT-406 (Operational Risk — Client Answers). The following standard positions apply:
+TSH does not disclose specific risk scores or individual risk register entries to clients
+TSH provides a summary of operational risk governance framework and key controls
+Material operational risks affecting a specific client engagement are disclosed under NDA
+DORA-required ICT operational risk information is available per Art. 28/30 for regulated clients
+
+[TABLE]
+Trigger | Type | Frequency | Owner
+Scheduled annual review | Full assessment — all risk categories | Annual (Q4) | CSO
+New major client engagement (>3 months) | Project operational risk assessment | At project kick-off | PM + CSO
+New supplier / sub-contractor | Third-party operational risk | Before onboarding | IT Lead + CSO
+Post-incident (P1 or P2) | Incident-triggered risk assessment | Within 2 weeks of incident close | CSO
+Regulatory change (NIS2, DORA, GDPR) | Compliance-triggered assessment | Within 30 days of change | CSO
+Significant technology change (new platform) | Technology risk assessment | Before go-live | IT Lead + CSO
+[/TABLE]
+
+
+[TABLE]
+Score | Likelihood | Impact
+1 | Rare — less than once in 5 years | Negligible — minor process disruption, no client impact
+2 | Unlikely — once in 2–5 years | Minor — internal disruption, no external impact
+3 | Possible — once per year | Moderate — client notices, SLA at risk
+4 | Likely — several times per year | Significant — client SLA breach, potential data exposure
+5 | Almost certain — monthly or more | Severe — data breach, regulatory action, contract termination
+[/TABLE]
+
+
+[TABLE]
+Column | What to Fill In
+Risk ID | Sequential: OPR-001, OPR-002, etc.
+Category | From POL-016 Section 2 (Process / People / Technology / Legal / Third-Party / Delivery / Financial / Reputational)
+Risk Description | One clear sentence: 'Risk that [event] occurs, resulting in [impact]'
+Inherent Likelihood (1–5) | Likelihood without any controls in place
+Inherent Impact (1–5) | Impact severity without any controls
+Inherent Score | = Likelihood × Impact (auto-calculated in REG-011)
+Existing Controls | What controls are already in place (policy, tool, process)
+Residual Likelihood (1–5) | Likelihood with existing controls in place
+Residual Impact (1–5) | Impact with existing controls in place
+Residual Score | = Residual Likelihood × Residual Impact
+Treatment | Avoid / Mitigate / Transfer / Accept
+Treatment Action | Specific action, owner, deadline
+Status | Open / In Progress / Closed / Accepted
+Review Date | Next scheduled reassessment date
+[/TABLE]
