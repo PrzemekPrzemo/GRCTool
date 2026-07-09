@@ -6,9 +6,17 @@
         <h1 class="text-2xl font-semibold">Frameworki Compliance</h1>
         <p class="text-sm text-slate-500 mt-0.5">Biblioteka norm i regulacji dostępnych do oceny</p>
     </div>
-    <a href="{{ route('compliance.index') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
-        ← Oceny
-    </a>
+    <div class="flex gap-2">
+        <a href="{{ route('compliance.coverage') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
+            Pokrycie regulacyjne
+        </a>
+        <a href="{{ route('compliance.gaps') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
+            Luki compliance
+        </a>
+        <a href="{{ route('compliance.index') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
+            ← Oceny
+        </a>
+    </div>
 </div>
 
 @if($frameworks->isEmpty())

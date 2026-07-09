@@ -21,6 +21,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ComplianceAssessmentController;
 use App\Http\Controllers\ComplianceFrameworkAdminController;
+use App\Http\Controllers\ComplianceGapController;
 use App\Http\Controllers\ComplianceOverviewController;
 use App\Http\Controllers\ControlController;
 use App\Http\Controllers\CryptoKeyController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ExceptionController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FindingController;
+use App\Http\Controllers\FrameworkCoverageController;
 use App\Http\Controllers\GdprBreachController;
 use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IncidentController;
@@ -322,6 +324,9 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     // Compliance Management
     Route::get('compliance/frameworks', [ComplianceAssessmentController::class, 'frameworks'])->name('compliance.frameworks');
     Route::get('compliance/overview', [ComplianceOverviewController::class, 'index'])->name('compliance.overview');
+    Route::get('compliance/coverage', [FrameworkCoverageController::class, 'index'])->name('compliance.coverage');
+    Route::get('compliance/gaps', [ComplianceGapController::class, 'index'])->name('compliance.gaps');
+    Route::post('compliance/gaps/{gap}/status', [ComplianceGapController::class, 'updateStatus'])->name('compliance.gaps.status');
     Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
     Route::post('compliance/{assessment}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
     Route::post('compliance/{assessment}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');

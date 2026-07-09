@@ -63,25 +63,91 @@
                 <dd class="font-mono">{{ $policy->code }}</dd>
                 <dt class="text-slate-500">Kategoria</dt>
                 <dd>{{ $policy->category ?? '—' }}</dd>
+                <dt class="text-slate-500">Klasyfikacja</dt>
+                <dd>{{ $policy->classification ?? '—' }}</dd>
                 <dt class="text-slate-500">Właściciel</dt>
-                <dd>{{ $policy->owner?->name ?? '—' }}</dd>
+                <dd>{{ $policy->owner?->name ?? $policy->owner_role ?? '—' }}</dd>
+                <dt class="text-slate-500">Odbiorcy</dt>
+                <dd>{{ $policy->audience ?? '—' }}</dd>
                 <dt class="text-slate-500">Obowiązuje od</dt>
                 <dd>{{ $policy->effective_from?->format('Y-m-d') ?? '—' }}</dd>
+                <dt class="text-slate-500">Cykl przeglądu</dt>
+                <dd>{{ $policy->review_cycle_months ? $policy->review_cycle_months.' mies.' : '—' }}</dd>
                 <dt class="text-slate-500">Termin przeglądu</dt>
                 <dd class="{{ $policy->next_review_due?->isPast() ? 'text-red-700 font-semibold' : '' }}">
                     {{ $policy->next_review_due?->format('Y-m-d') ?? '—' }}
+                </dd>
+                <dt class="text-slate-500">Polityka nadrzędna</dt>
+                <dd>
+                    @if($policy->parentPolicy)
+                        <a href="{{ route('policies.show', $policy->parentPolicy) }}" class="text-blue-600 hover:underline">{{ $policy->parentPolicy->code }}</a>
+                    @else
+                        —
+                    @endif
                 </dd>
                 <dt class="text-slate-500">Zatwierdził</dt>
                 <dd>{{ $policy->approver?->name ?? '—' }}</dd>
                 <dt class="text-slate-500">Data zatwierdzenia</dt>
                 <dd>{{ $policy->approved_at?->format('Y-m-d') ?? '—' }}</dd>
             </dl>
+            @if($policy->scope_description)
+            <div class="mt-4 pt-4 border-t border-slate-100">
+                <h3 class="text-xs font-semibold text-slate-500 uppercase mb-1">Zakres</h3>
+                <p class="text-sm text-slate-700 whitespace-pre-line">{{ $policy->scope_description }}</p>
+            </div>
+            @endif
             @if($policy->description)
             <div class="mt-4 pt-4 border-t border-slate-100">
                 <p class="text-sm text-slate-700 whitespace-pre-line">{{ $policy->description }}</p>
             </div>
             @endif
         </div>
+
+        @if($policy->childPolicies->isNotEmpty())
+        <div class="bg-white rounded shadow p-4">
+            <h3 class="font-semibold text-slate-700 text-sm mb-2">Polityki podrzędne ({{ $policy->childPolicies->count() }})</h3>
+            <div class="flex flex-wrap gap-1.5">
+                @foreach($policy->childPolicies as $child)
+                    <a href="{{ route('policies.show', $child) }}" class="px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 font-mono">{{ $child->code }}</a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($policy->controls->isNotEmpty())
+        <div class="bg-white rounded shadow p-5">
+            <h2 class="font-semibold text-slate-700 mb-3">Kontrole ({{ $policy->controls->count() }})</h2>
+            <div class="space-y-2">
+                @foreach($policy->controls as $control)
+                @php
+                    $ctlStatusBg = match($control->status) {
+                        'implemented'    => 'bg-emerald-100 text-emerald-800',
+                        'partial'        => 'bg-amber-100 text-amber-800',
+                        'planned'        => 'bg-slate-200 text-slate-600',
+                        'not_applicable' => 'bg-slate-100 text-slate-500',
+                        'exception'      => 'bg-purple-100 text-purple-800',
+                        default          => 'bg-slate-100 text-slate-600',
+                    };
+                @endphp
+                <div class="border border-slate-100 rounded p-2.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-mono text-xs text-slate-500">{{ $control->control_code }}</span>
+                        <span class="text-sm font-medium">{{ $control->title }}</span>
+                        <span class="px-1.5 py-0.5 rounded text-xs {{ $ctlStatusBg }}">{{ $control->status }}</span>
+                        <span class="text-xs text-slate-400">{{ $control->control_type }} / {{ $control->implementation_type }}</span>
+                    </div>
+                    @if($control->frameworkMappings->isNotEmpty())
+                    <div class="mt-1.5 flex flex-wrap gap-1">
+                        @foreach($control->frameworkMappings as $m)
+                            <span class="px-1.5 py-0.5 rounded text-[11px] bg-blue-50 text-blue-700" title="{{ $m->control_ref }} ({{ $m->mapping_type }})">{{ $m->framework_code }}</span>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
         @if(!empty($policy->framework_mappings))
         <div class="bg-white rounded shadow p-4">

@@ -65,7 +65,10 @@ class PolicyController extends Controller
     {
         abort_unless(auth()->user()->can('policy.view'), 403);
 
-        $policy->load(['owner', 'approver', 'attestations.user', 'documentLinks.evidence', 'versions.author']);
+        $policy->load([
+            'owner', 'approver', 'attestations.user', 'documentLinks.evidence', 'versions.author',
+            'parentPolicy', 'childPolicies', 'controls.frameworkMappings',
+        ]);
         $userAttestation = $policy->attestations()
             ->where('user_id', auth()->id())
             ->where('policy_version', $policy->current_version)
@@ -199,7 +202,7 @@ class PolicyController extends Controller
         $data = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'exists:policies,id'],
-            'status' => ['nullable', 'in:Draft,Approved,Active,Retired'],
+            'status' => ['nullable', 'in:Draft,Approved,Active,Review,Retired'],
             'owner_id' => ['nullable', 'exists:users,id'],
             'category' => ['nullable', 'string', 'max:64'],
             'next_review_due' => ['nullable', 'date'],
@@ -333,7 +336,7 @@ class PolicyController extends Controller
             'effective_from' => 'nullable|date',
             'next_review_due' => 'nullable|date',
             'owner_id' => 'nullable|exists:users,id',
-            'status' => 'required|in:Draft,Approved,Active,Retired',
+            'status' => 'required|in:Draft,Approved,Active,Review,Retired',
             'framework_mappings' => 'nullable|array',
             'attestation_required' => 'boolean',
         ]);

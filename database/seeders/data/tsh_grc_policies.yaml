@@ -1,0 +1,2099 @@
+# =============================================================================
+# TSH GRC KNOWLEDGE BASE — POLICY & CONTROL REGISTRY
+# =============================================================================
+# Plik: tsh_grc_policies.yaml
+# Przeznaczenie: Import merytoryczny polityk TSH do systemu GRC.
+#   Zawiera: encje polityk, granularne kontrole, mapowania na standardy,
+#   pokrycie regulacyjne (EU/USA/KSA), status implementacji.
+# Użycie: Wgraj do Claude Code jako kontekst. System GRC parsuje YAML
+#   i tworzy encje Policy + Control + FrameworkMapping.
+# Wersja bazy wiedzy: 1.0
+# Ostatnia aktualizacja: 2026-07
+# Właściciel: Head of Cybersecurity / CISO, The Software House
+# =============================================================================
+
+# ── METADATA ──────────────────────────────────────────────────────────────────
+grc_metadata:
+  organization: "The Software House (TSH)"
+  schema_version: "1.0"
+  knowledge_base_id: "tsh-grc-kb-2026"
+  jurisdictions: [EU, USA, KSA]
+  policy_language: pl
+  control_language: pl
+  frameworks_covered:
+    - ISO/IEC 27001:2022
+    - ISO/IEC 27002:2022
+    - NIST CSF 2.0
+    - SOC 2 (AICPA TSC 2017)
+    - GDPR/RODO
+    - NIS2 (Dyrektywa 2022/2555)
+    - DORA (Rozporządzenie 2022/2554)
+    - KSA NCA ECC-1:2018
+    - KSA SAMA CSF
+    - KSA PDPL
+    - HIPAA Security Rule
+    - CMMC 2.0 (Level 2)
+    - OWASP SAMM 2.0
+    - NIST SP 800-218 (SSDF)
+
+# ── SŁOWNIKI ──────────────────────────────────────────────────────────────────
+dictionaries:
+  control_status:
+    implemented:    "Wdrożona — dowody dostępne"
+    partial:        "Częściowa — w trakcie wdrożenia"
+    planned:        "Zaplanowana — brak wdrożenia"
+    not_applicable: "Nie dotyczy — udokumentowane uzasadnienie"
+    exception:      "Wyjątek zatwierdzony — kompensaty zdefiniowane"
+
+  data_classification:
+    L1: "Public — bez ograniczeń"
+    L2: "Internal — tylko pracownicy TSH"
+    L3: "Confidential — need-to-know, dane klienta"
+    L4: "Restricted — dane wrażliwe (PHI, dane finansowe regulowane)"
+
+  risk_levels: [critical, high, medium, low]
+
+  policy_lifecycle:
+    draft:    "Wersja robocza"
+    approved: "Zatwierdzona przez Zarząd"
+    review:   "W przeglądzie"
+    retired:  "Wycofana"
+
+# ── FRAMEWORK REFERENCE MAP ───────────────────────────────────────────────────
+# Skrócone ID standardów używane w mapowaniach kontroli
+framework_ids:
+  ISO27001:  "ISO/IEC 27001:2022"
+  ISO27002:  "ISO/IEC 27002:2022"
+  NIST_CSF:  "NIST CSF 2.0"
+  SOC2:      "SOC 2 TSC 2017"
+  GDPR:      "GDPR/RODO (Rozporządzenie UE 2016/679)"
+  NIS2:      "Dyrektywa NIS2 (2022/2555)"
+  DORA:      "Digital Operational Resilience Act (2022/2554)"
+  NCA_ECC:   "KSA NCA Essential Cybersecurity Controls ECC-1:2018"
+  SAMA_CSF:  "KSA SAMA Cyber Security Framework"
+  PDPL:      "KSA Personal Data Protection Law"
+  HIPAA:     "HIPAA Security Rule (45 CFR Part 164)"
+  CMMC:      "CMMC 2.0 Level 2"
+  OWASP_SAMM: "OWASP SAMM 2.0"
+  NIST_SSDF: "NIST SP 800-218 (SSDF)"
+
+# =============================================================================
+# POLICIES — Lista polityk TSH
+# =============================================================================
+policies:
+
+  # ── ISP MASTER ──────────────────────────────────────────────────────────────
+  - policy_id: ISP
+    title: "Polityka Bezpieczeństwa Informacji — Master"
+    title_en: "Information Security Policy (Master ISP)"
+    document_ref: "TSH_Information_Security_Policy.docx"
+    owner: "Head of Cybersecurity (CISO)"
+    audience: "Wszyscy pracownicy, współpracownicy, kontraktorzy TSH"
+    version: "0.1-DRAFT"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: null
+    child_policies: [POL-01,POL-02,POL-03,POL-04,POL-05,POL-06,POL-07,POL-08,
+                     POL-09,POL-10,POL-11,POL-12,POL-13,POL-14,POL-15,
+                     POL-SSDLC,POL-QA]
+    scope_description: >
+      Obejmuje wszystkich pracowników, współpracowników i kontraktorów TSH
+      oraz wszystkie aktywa informacyjne, systemy i dane przetwarzane
+      w ramach działalności TSH i na rzecz klientów (EU, USA, KSA).
+    isms_type: master_policy
+    frameworks_primary: [ISO27001, ISO27002, NIST_CSF]
+    frameworks_secondary: [GDPR, NIS2, DORA, NCA_ECC, SAMA_CSF, HIPAA, SOC2]
+
+  # ── POLITYKI PRACOWNICZE (POL-01..15) ───────────────────────────────────────
+  - policy_id: POL-01
+    title: "Polityka Klasyfikacji Danych"
+    title_en: "Data Classification Policy"
+    document_ref: "POL-01_Klasyfikacja_Danych.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF]
+    frameworks_secondary: [GDPR, NCA_ECC, HIPAA, SOC2]
+
+  - policy_id: POL-02
+    title: "Polityka Haseł i Uwierzytelniania"
+    title_en: "Password & Authentication Policy"
+    document_ref: "POL-02_Hasla_i_Uwierzytelnianie.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, SOC2]
+    frameworks_secondary: [NCA_ECC, HIPAA, CMMC]
+
+  - policy_id: POL-03
+    title: "Polityka DLP — Zapobieganie Wyciekom Danych"
+    title_en: "Data Loss Prevention Policy"
+    document_ref: "POL-03_DLP.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, GDPR]
+    frameworks_secondary: [NCA_ECC, HIPAA, SOC2, DORA]
+
+  - policy_id: POL-04
+    title: "Polityka Urządzeń, Przeglądarek i BYOD"
+    title_en: "Device, Browser & BYOD Policy"
+    document_ref: "POL-04_Urzadzenia_Przegladarki_BYOD.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF]
+    frameworks_secondary: [NCA_ECC, CMMC, SOC2]
+
+  - policy_id: POL-05
+    title: "Polityka Zarządzania Dostępem"
+    title_en: "Access Control Policy"
+    document_ref: "POL-05_Zarzadzanie_Dostepem.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, Tech Leadzi, właściciele systemów"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, SOC2]
+    frameworks_secondary: [NCA_ECC, HIPAA, CMMC, DORA]
+
+  - policy_id: POL-06
+    title: "Polityka Reagowania na Incydenty"
+    title_en: "Incident Response Policy"
+    document_ref: "POL-06_Reagowanie_na_Incydenty.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, GDPR, NIS2]
+    frameworks_secondary: [DORA, NCA_ECC, HIPAA, SOC2, SAMA_CSF]
+
+  - policy_id: POL-07
+    title: "Polityka Akceptowalnego Użycia"
+    title_en: "Acceptable Use Policy (AUP)"
+    document_ref: "POL-07_Akceptowalne_Uzycie.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF]
+    frameworks_secondary: [NCA_ECC, SOC2]
+
+  - policy_id: POL-08
+    title: "Polityka Bezpiecznego Wytwarzania Oprogramowania (pracownicza)"
+    title_en: "Secure SDLC Policy — Employee Version"
+    document_ref: "POL-08_Bezpieczny_SDLC.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Deweloperzy, Tech Leadzi, DevOps"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, OWASP_SAMM, NIST_SSDF]
+    frameworks_secondary: [NIST_CSF, SOC2, CMMC]
+
+  - policy_id: POL-09
+    title: "Polityka Zarządzania Dostawcami i Stronami Trzecimi"
+    title_en: "Third-Party / Vendor Risk Management Policy"
+    document_ref: "POL-09_Zarzadzanie_Dostawcami.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Kierownicy, PM, osoby zamawiające usługi zewnętrzne"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, DORA]
+    frameworks_secondary: [NCA_ECC, SAMA_CSF, SOC2, GDPR]
+
+  - policy_id: POL-10
+    title: "Polityka Backupu i Ciągłości Działania"
+    title_en: "Backup & Business Continuity Policy"
+    document_ref: "POL-10_Backup_Ciaglosc_Dzialania.docx"
+    owner: "Head of Cybersecurity"
+    audience: "IT, DevOps, Tech Leadzi, Project Managerowie"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF, DORA]
+    frameworks_secondary: [NCA_ECC, SAMA_CSF, HIPAA, SOC2]
+
+  - policy_id: POL-11
+    title: "Polityka Prywatności i Ochrony Danych Osobowych"
+    title_en: "Privacy & Personal Data Protection Policy"
+    document_ref: "POL-11_Prywatnosc_Ochrona_Danych_Osobowych.docx"
+    owner: "DPO / Head of Cybersecurity [placeholder]"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [GDPR, NIS2]
+    frameworks_secondary: [PDPL, HIPAA, ISO27002, NCA_ECC]
+
+  - policy_id: POL-12
+    title: "Polityka Czystego Biurka i Bezpieczeństwa Fizycznego"
+    title_en: "Clean Desk & Physical Security Policy"
+    document_ref: "POL-12_Czyste_Biurko_Bezpieczenstwo_Fizyczne.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIST_CSF]
+    frameworks_secondary: [NCA_ECC, SOC2]
+
+  - policy_id: POL-13
+    title: "Polityka Etyki i Zgłaszania Naruszeń (Whistleblowing)"
+    title_en: "Code of Conduct & Whistleblowing Policy"
+    document_ref: "POL-13_Etyka_Whistleblowing.docx"
+    owner: "Legal / HR / Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, współpracownicy i kontraktorzy TSH"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, NIS2]
+    frameworks_secondary: [GDPR, SOC2]
+
+  - policy_id: POL-14
+    title: "Polityka Korzystania z AI"
+    title_en: "AI Usage Policy"
+    document_ref: "POL-14_Korzystanie_z_AI.docx"
+    owner: "Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, szczególnie deweloperzy"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 6
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, GDPR]
+    frameworks_secondary: [NIS2, NIST_CSF, SOC2]
+
+  - policy_id: POL-15
+    title: "Polityka Retencji i Usuwania Danych"
+    title_en: "Data Retention & Disposal Policy"
+    document_ref: "POL-15_Retencja_Usuwanie_Danych.docx"
+    owner: "DPO / Head of Cybersecurity"
+    audience: "Wszyscy pracownicy, IT, Project Managerowie"
+    version: "1.0"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [GDPR, ISO27002]
+    frameworks_secondary: [HIPAA, NCA_ECC, SOC2, PDPL]
+
+  # ── POLITYKI TECHNICZNE ─────────────────────────────────────────────────────
+  - policy_id: POL-SSDLC
+    title: "Polityka Bezpiecznego Wytwarzania Oprogramowania (formalna)"
+    title_en: "Secure Software Development Lifecycle Policy (Formal)"
+    document_ref: "POL-SSDLC_Formalna.docx"
+    owner: "Head of Cybersecurity (CISO)"
+    audience: "Deweloperzy, Tech Leadzi, DevOps, PM"
+    version: "1.0-DRAFT"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, OWASP_SAMM, NIST_SSDF]
+    frameworks_secondary: [NIST_CSF, SOC2, CMMC, DORA]
+
+  - policy_id: POL-QA
+    title: "Polityka Testowania i Zapewnienia Jakości Oprogramowania"
+    title_en: "Software Quality Assurance & Testing Policy"
+    document_ref: "POL-QA_Formalna.docx"
+    owner: "Head of Engineering / Head of Cybersecurity"
+    audience: "QA Engineers, Testerzy, Deweloperzy, PM"
+    version: "1.0-DRAFT"
+    status: draft
+    classification: L2
+    review_cycle_months: 12
+    parent_policy: ISP
+    frameworks_primary: [ISO27002, OWASP_SAMM]
+    frameworks_secondary: [NIST_CSF, SOC2, NIST_SSDF]
+
+
+# =============================================================================
+# CONTROLS — Granularne kontrole per polityka
+# Schemat każdej kontroli:
+#   control_id:       unikalny ID (POLICY_ID.numer)
+#   title:            nazwa kontroli
+#   description:      co wymaga / co egzekwuje
+#   policy_ref:       ID polityki źródłowej
+#   section_ref:      sekcja w dokumencie
+#   control_type:     preventive | detective | corrective | directive
+#   implementation_type: technical | procedural | physical | managerial
+#   status:           implemented | partial | planned | not_applicable
+#   owner:            rola odpowiedzialna za kontrolę
+#   evidence_type:    co stanowi dowód wdrożenia
+#   review_frequency: jak często weryfikowana
+#   data_classification_scope: [L1,L2,L3,L4] — dla jakich poziomów obowiązuje
+#   framework_mappings:
+#     - framework: ID standardu
+#       control_ref: referencja w standardzie
+#       mapping_type: full | partial | supporting
+# =============================================================================
+controls:
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ISP — GOVERNANCE & MANAGEMENT CONTROLS
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: ISP.GOV.01
+    title: "Zatwierdzenie i własność Polityki Bezpieczeństwa Informacji"
+    description: >
+      ISP jest formalnie zatwierdzony przez Zarząd TSH, ma przypisanego właściciela
+      (CISO), datę zatwierdzenia, wersję i cykl przeglądu. Dokument jest dostępny
+      dla wszystkich pracowników i współpracowników.
+    policy_ref: ISP
+    section_ref: "ISP rozdz. 1, Metadane"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "CISO / Zarząd"
+    evidence_type: "Podpisany dokument ISP z datą zatwierdzenia; protokół z posiedzenia Zarządu"
+    review_frequency: annual
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27001
+        control_ref: "5.1 — Polityki bezpieczeństwa informacji"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.1"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "GV.PO-01"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC1.3 — Board oversight"
+        mapping_type: supporting
+      - framework: NCA_ECC
+        control_ref: "1-1 Cybersecurity Policy"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.1.1"
+        mapping_type: full
+
+  - control_id: ISP.GOV.02
+    title: "Trójpoziomowa struktura zarządzania ISMS"
+    description: >
+      TSH utrzymuje trójpoziomową strukturę governance: strategiczny (Zarząd),
+      taktyczny (CISO), operacyjny (IT, Tech Lead, pracownicy). Role i
+      odpowiedzialności są udokumentowane w ISP rozdz. 5.
+    policy_ref: ISP
+    section_ref: "ISP rozdz. 4-5"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "Zarząd / CISO"
+    evidence_type: "Org chart security; opis ról w ISP; macierz RACI"
+    review_frequency: annual
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27001
+        control_ref: "5.3 — Role, odpowiedzialności i uprawnienia"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.2"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "GV.RR-01, GV.RR-02"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC1.3, CC1.4"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 20 — Governance"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 5 — ICT Risk Management governance"
+        mapping_type: full
+
+  - control_id: ISP.GOV.03
+    title: "Cykl przeglądu i aktualizacji polityki"
+    description: >
+      ISP i polityki zależne są przeglądane minimum raz w roku oraz po istotnych
+      zmianach (incydent, zmiana regulacyjna, zmiana technologiczna). Wyniki
+      przeglądu są dokumentowane w historii zmian dokumentu.
+    policy_ref: ISP
+    section_ref: "ISP rozdz. 12"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "CISO"
+    evidence_type: "Historia zmian dokumentu; protokół przeglądu rocznego"
+    review_frequency: annual
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27001
+        control_ref: "10.2 — Ciągłe doskonalenie"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.1 (review)"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "GV.PO-02"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "1-1-3 Policy review"
+        mapping_type: full
+
+  - control_id: ISP.GOV.04
+    title: "Zarządzanie ryzykiem bezpieczeństwa informacji"
+    description: >
+      TSH prowadzi formalny proces zarządzania ryzykiem oparty na ISO 27005
+      i FAIR: identyfikacja aktywów, ocena zagrożeń i podatności, decyzja o
+      postępowaniu z ryzykiem, rejestr ryzyk aktualizowany minimum kwartalnie.
+    policy_ref: ISP
+    section_ref: "ISP rozdz. 6"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "CISO"
+    evidence_type: "Rejestr ryzyk; raporty oceny ryzyka; protokoły akceptacji ryzyka rezydualnego"
+    review_frequency: quarterly
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27001
+        control_ref: "6.1.2 — Ocena ryzyka; 6.1.3 — Postępowanie z ryzykiem"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.3"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "GV.RM-01, GV.RM-02, ID.RA-01..06"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC3.1..CC3.4 — Risk Assessment"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 21(2)(a) — Risk analysis"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 6 — ICT Risk Management framework"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "1-3 Cybersecurity Risk Management"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.2 — Risk Management"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-01 — KLASYFIKACJA DANYCH
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL01.DC.01
+    title: "Czterostopniowy model klasyfikacji danych (L1–L4)"
+    description: >
+      TSH stosuje czterostopniowy model klasyfikacji: L1 (Public), L2 (Internal),
+      L3 (Confidential), L4 (Restricted). Każdy pracownik jest zobowiązany do
+      klasyfikowania informacji przed jej udostępnieniem lub przetworzeniem.
+    policy_ref: POL-01
+    section_ref: "POL-01 sekcja JAK? — 4 poziomy"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "CISO / wszyscy pracownicy"
+    evidence_type: "Opublikowana polityka POL-01; szkolenia potwierdzające zapoznanie"
+    review_frequency: annual
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.12 — Klasyfikacja informacji"
+        mapping_type: full
+      - framework: ISO27001
+        control_ref: "A.5.12"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "ID.AM-05"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.1 — Logical access (classification basis)"
+        mapping_type: supporting
+      - framework: NCA_ECC
+        control_ref: "2-2 Information Classification"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(a)(1) — Access control (PHI = L4)"
+        mapping_type: supporting
+
+  - control_id: POL01.DC.02
+    title: "Domyślna klasyfikacja L3 dla danych projektów klientów"
+    description: >
+      W braku odmiennego ustalenia kontraktowego, wszystkie dane i kod
+      udostępniane przez klienta są domyślnie klasyfikowane jako L3 (Confidential).
+      Dane zdrowotne, finansowe regulowane lub dane szczególnych kategorii RODO
+      automatycznie uzyskują klasyfikację L4 (Restricted).
+    policy_ref: POL-01
+    section_ref: "POL-01 Annex A.5"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "Project Manager / Tech Lead"
+    evidence_type: "Dokumentacja projektu z zapisem klasyfikacji; szablony project charter"
+    review_frequency: per_project
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.12, 5.13"
+        mapping_type: full
+      - framework: GDPR
+        control_ref: "Art. 25 — Privacy by design and by default"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-2-1"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(1) — Risk Analysis (PHI identification)"
+        mapping_type: full
+      - framework: PDPL
+        control_ref: "Art. 5 — Data Processing Principles"
+        mapping_type: supporting
+
+  - control_id: POL01.DC.03
+    title: "Minimalne kontrole ochrony danych L3 i L4"
+    description: >
+      Dane L3 wymagają: szyfrowania w spoczynku (AES-256), TLS 1.2+ w transmisji,
+      kontroli dostępu RBAC z MFA, pełnego DLP. Dane L4 wymagają dodatkowo:
+      dedykowanego KMS, just-in-time access, real-time alertów DLP, zakazu
+      lokalnego przechowywania.
+    policy_ref: POL-01
+    section_ref: "POL-01 Annex A.2 — tabela kontroli"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / CISO"
+    evidence_type: "Konfiguracja szyfrowania; polityki MDM; raporty DLP; logi dostępu"
+    review_frequency: quarterly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.24 — Kryptografia; 8.5 — Bezpieczne uwierzytelnianie"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.DS-01, PR.DS-02"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.7 — Encryption"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(a)(2)(iv) — Encryption; 164.312(e)(2)(ii)"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-6 Cryptography"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "SC.L2-3.13.10 — Employ cryptographic mechanisms"
+        mapping_type: full
+
+  - control_id: POL01.DC.04
+    title: "Transfery międzynarodowe danych osobowych (poza UE/EOG)"
+    description: >
+      Przekazywanie danych osobowych poza UE/EOG (do USA lub KSA) wymaga
+      odpowiednich mechanizmów prawnych: SCC, Data Privacy Framework (USA),
+      Transfer Impact Assessment dla KSA. Wymóg dotyczy projektów z danymi L3/L4.
+    policy_ref: POL-01
+    section_ref: "POL-01 Annex A.7"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "DPO / Legal"
+    evidence_type: "Podpisane SCC; dokumentacja TIA; rejestr transferów międzynarodowych"
+    review_frequency: per_transfer
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: GDPR
+        control_ref: "Art. 44–49 — Transfers to third countries"
+        mapping_type: full
+      - framework: PDPL
+        control_ref: "Art. 29 — Cross-border data transfer"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.33 — Protection of records"
+        mapping_type: supporting
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-02 — HASŁA I UWIERZYTELNIANIE
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL02.AUTH.01
+    title: "Minimalna długość i złożoność hasła (NIST 800-63B)"
+    description: >
+      Minimalna długość hasła: 14 znaków dla kont standardowych, 16+ dla
+      kont uprzywilejowanych. TSH stosuje model passphrase (NIST 800-63B).
+      Zakaz haseł z list wyciekłych (walidacja Have I Been Pwned lub równoważna).
+      Brak wymuszonej rotacji bez incydentu.
+    policy_ref: POL-02
+    section_ref: "POL-02 sekcja B.1; Annex B"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / Administrator SSO"
+    evidence_type: "Konfiguracja polityki haseł w IdP (screenshot/export); testy weryfikacyjne"
+    review_frequency: annual
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.17 — Informacje uwierzytelniające"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-01"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.1 — Logical and physical access controls"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(5)(ii)(D) — Password management"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-1 Authentication"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "IA.L2-3.5.7, IA.L2-3.5.8"
+        mapping_type: full
+
+  - control_id: POL02.AUTH.02
+    title: "Obowiązkowe MFA dla wszystkich kont z dostępem do systemów produkcyjnych"
+    description: >
+      MFA jest wymagane dla: poczty służbowej, repozytoriów kodu, środowisk
+      chmurowych, systemów HR/finansowych, VPN/ZTNA, systemów klientów.
+      Preferowane metody: FIDO2/WebAuthn lub TOTP. SMS jako ostateczność.
+      Dla kont uprzywilejowanych wymagane phishing-resistant MFA (FIDO2).
+    policy_ref: POL-02
+    section_ref: "POL-02 sekcja B.2; Annex B"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / Administrator SSO"
+    evidence_type: "Konfiguracja MFA enforcement w IdP; Conditional Access policies; raport MFA adoption"
+    review_frequency: quarterly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.5 — Bezpieczne uwierzytelnianie"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-01, PR.AA-02"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.1"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 21(2)(j) — Multi-factor authentication"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-1"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(d) — Person or entity authentication"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "IA.L2-3.5.3 — MFA"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.3.6 — Authentication"
+        mapping_type: full
+
+  - control_id: POL02.AUTH.03
+    title: "Zarządzanie kontami uprzywilejowanymi (PAM)"
+    description: >
+      Konta administracyjne są oddzielone od kont roboczych. Dostęp
+      uprzywilejowany do środowisk produkcyjnych realizowany jako just-in-time
+      z rejestrowaniem sesji. Sekrety kont serwisowych przechowywane w vault
+      z automatyczną rotacją.
+    policy_ref: POL-02
+    section_ref: "POL-02 sekcja B.3; Annex B"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / CISO"
+    evidence_type: "Rejestr kont uprzywilejowanych; konfiguracja vault; logi sesji PAM"
+    review_frequency: quarterly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.2 — Uprzywilejowane prawa dostępu"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-05"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.3 — Privileged access"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-2 Privileged Access Management"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "AC.L2-3.1.6 — Use non-privileged accounts"
+        mapping_type: full
+
+  - control_id: POL02.AUTH.04
+    title: "Centralizacja uwierzytelniania (SSO + Conditional Access)"
+    description: >
+      TSH centralizuje uwierzytelnianie przez dostawcę identity (IdP) z federacją
+      SSO do aplikacji służbowych. Conditional Access wymusza MFA i compliance
+      urządzenia jako warunek dostępu do zasobów firmowych.
+    policy_ref: POL-02
+    section_ref: "POL-02 sekcja B.4; Annex B"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT"
+    evidence_type: "Konfiguracja IdP; polityki Conditional Access; lista aplikacji SSO-federated"
+    review_frequency: annual
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.16 — Zarządzanie tożsamością"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-03"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.1, CC6.2"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5 Identity and Access Management"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-03 — DLP
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL03.DLP.01
+    title: "DLP na poziomie poczty e-mail (Gmail DLP)"
+    description: >
+      Reguły DLP skanują wychodzącą pocztę pod kątem danych L3/L4 (PII, IBAN,
+      klucze API, PHI). Dane L3: WARN + log; Dane L4: BLOCK + kwarantanna +
+      alert CISO. Wdrożenie Google Workspace DLP w trybie Audit → Enforce
+      (2 tygodnie audit przed enforcement).
+    policy_ref: POL-03
+    section_ref: "POL-03 sekcja C.2.2; Wytyczne Config DLP"
+    control_type: preventive
+    implementation_type: technical
+    status: partial
+    owner: "IT / CISO"
+    evidence_type: "Konfiguracja reguł Google DLP; raporty alertów tygodniowych; log blokad"
+    review_frequency: monthly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.12 — Zapobieganie wyciekom danych"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.DS-05"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.7"
+        mapping_type: full
+      - framework: GDPR
+        control_ref: "Art. 32 — Security of processing"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(e)(1) — Transmission security"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-3-4 Data Leakage Prevention"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 9 — Protection and prevention"
+        mapping_type: supporting
+
+  - control_id: POL03.DLP.02
+    title: "DLP na poziomie nośników wymiennych i cloud"
+    description: >
+      Kopiowanie danych L4 na nośniki wymienne jest domyślnie zablokowane przez
+      MDM (Kandji). Upload danych L3/L4 do niezatwierdzonych usług chmurowych
+      jest blokowany przez CASB lub politykę sieci. Kontrola Google Drive:
+      blokada publicznych linków dla plików L3/L4.
+    policy_ref: POL-03
+    section_ref: "POL-03 sekcja C.2.1, C.2.3"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / CISO"
+    evidence_type: "Konfiguracja MDM (USB blocking); konfiguracja Google Drive DLP; raporty"
+    review_frequency: quarterly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.12, 7.10 — Nośniki"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.DS-05"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-3-4"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.310(d)(1) — Device and media controls"
+        mapping_type: full
+
+  - control_id: POL03.DLP.03
+    title: "Zakaz Shadow AI — ochrona przed wyciekiem przez narzędzia GenAI"
+    description: >
+      Wprowadzanie danych L3/L4 do publicznych niezatwierdzonych narzędzi GenAI
+      jest zabronione. CISO publikuje i aktualizuje listę zatwierdzonych narzędzi
+      AI (enterprise, z gwarancją braku trenowania na danych). Monitoring
+      i blokowanie nieautoryzowanych narzędzi AI na poziomie sieciowym/endpoint.
+    policy_ref: POL-03
+    section_ref: "POL-03 sekcja C.5; POL-14"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "CISO"
+    evidence_type: "Lista zatwierdzonych narzędzi AI; szkolenia; konfiguracja blokad sieciowych"
+    review_frequency: quarterly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.12, 6.7 — Praca zdalna"
+        mapping_type: supporting
+      - framework: GDPR
+        control_ref: "Art. 28 — Processor; Art. 32"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 21(2)(a) — Risk policies"
+        mapping_type: supporting
+      - framework: NIST_CSF
+        control_ref: "PR.DS-05"
+        mapping_type: supporting
+
+  - control_id: POL03.DLP.04
+    title: "Secret scanning w repozytoriach kodu"
+    description: >
+      Repozytoria kodu są skanowane pod kątem przypadkowo wklejonych sekretów
+      (klucze API, certyfikaty, hasła) w każdym commicie przez pipeline CI/CD.
+      Wykryte sekrety blokują merge i wymagają unieważnienia (rotate) niezależnie
+      od późniejszego usunięcia z kodu.
+    policy_ref: POL-03
+    section_ref: "POL-03 sekcja C.3; POL-SSDLC sekcja 3.3.1"
+    control_type: detective
+    implementation_type: technical
+    status: planned
+    owner: "DevOps / Tech Lead"
+    evidence_type: "Konfiguracja secret scanning (Gitleaks/.yaml); log blokad pipeline"
+    review_frequency: continuous
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.12, 8.25 — Bezpieczny cykl życia oprogramowania"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "PW.6.1 — Configure scans"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Implementation/Secure Build/2"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC8.1 — Change management"
+        mapping_type: supporting
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-04 — URZĄDZENIA, PRZEGLĄDARKI I BYOD
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL04.DEV.01
+    title: "MDM/UEM — zarządzanie flotą urządzeń (Kandji)"
+    description: >
+      Wszystkie urządzenia korporacyjne są zarządzane przez Kandji MDM.
+      Urządzenia BYOD wymagają rejestracji w MDM (model MAM/kontener firmowy).
+      Conditional Access blokuje urządzenia niespełniające minimalnych wymagań
+      (szyfrowanie, screensaver, aktualny OS, aktywny EDR).
+    policy_ref: POL-04
+    section_ref: "POL-04 sekcja D.1, D.2; Wytyczne Config Kandji"
+    control_type: preventive
+    implementation_type: technical
+    status: partial
+    owner: "IT"
+    evidence_type: "Kandji compliance dashboard; enrollment report; Conditional Access config"
+    review_frequency: monthly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.1 — Urządzenia użytkownika końcowego"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-05, PR.PS-01"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.8 — Endpoint security"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-4-1 Endpoint Protection"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "CM.L2-3.4.1 — Baseline configurations"
+        mapping_type: full
+
+  - control_id: POL04.DEV.02
+    title: "Hardening macOS — Kandji Blueprint"
+    description: >
+      Standardowy blueprint Kandji wymusza: FileVault 2 (szyfrowanie dysku,
+      escrow w Kandji), screensaver lock po 5 min, Firewall macOS (stealth mode),
+      Gatekeeper (App Store + identified developers only), SIP włączone,
+      automatyczne patche bezpieczeństwa (0 dni odroczenia), EDR aktywny.
+    policy_ref: POL-04
+    section_ref: "POL-04 Annex D; Wytyczne Config Kandji sekcja 1.1"
+    control_type: preventive
+    implementation_type: technical
+    status: partial
+    owner: "IT"
+    evidence_type: "Kandji blueprint config export; compliance score dashboard (cel ≥ 95%)"
+    review_frequency: monthly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.9 — Zarządzanie konfiguracją"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.PS-01, PR.PS-02"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-4-1, 2-4-2"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "CM.L2-3.4.2 — Security configuration settings"
+        mapping_type: full
+
+  - control_id: POL04.DEV.03
+    title: "Whitelist aplikacji (Kandji Managed Software)"
+    description: >
+      Tylko aplikacje z zatwierdzonej listy mogą być zainstalowane na urządzeniach
+      korporacyjnych. Kandji Managed Software wymusza listę w trybie Warn
+      (tymczasowo) → Block (po zatwierdzeniu whitelisty). Gatekeeper na poziomie
+      OS jako dodatkowa warstwa.
+    policy_ref: POL-04
+    section_ref: "POL-04 sekcja D.3; POL-07; Wytyczne Config Kandji sekcja 1.2"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / CISO"
+    evidence_type: "Whitelist dokument zatwierdzony; konfiguracja Kandji Managed Software"
+    review_frequency: quarterly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.19 — Zarządzanie oprogramowaniem"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.PS-01"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-4-3 Application Whitelisting"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "CM.L2-3.4.8 — Authorized software"
+        mapping_type: full
+
+  - control_id: POL04.DEV.04
+    title: "Procedura utraty/kradzieży urządzenia i zdalne czyszczenie"
+    description: >
+      Utrata lub kradzież urządzenia z dostępem do systemów TSH musi być zgłoszona
+      w ciągu 1 godziny do IT/CISO. IT blokuje konta użytkownika i wykonuje
+      zdalne czyszczenie przez Kandji (corporate-owned: pełne wipe;
+      BYOD: selektywne wipe kontenera firmowego).
+    policy_ref: POL-04
+    section_ref: "POL-04 sekcja D.5; POL-06"
+    control_type: corrective
+    implementation_type: procedural
+    status: planned
+    owner: "IT / CISO"
+    evidence_type: "Procedura IR dla utraty urządzeń; log zdarzeń Kandji remote wipe"
+    review_frequency: per_incident
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "7.9 — Bezpieczeństwo aktywów poza siedzibą"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "RS.MA-01"
+        mapping_type: supporting
+      - framework: GDPR
+        control_ref: "Art. 32, Art. 33 — Breach notification"
+        mapping_type: supporting
+      - framework: NCA_ECC
+        control_ref: "2-4-4 Mobile Device Management"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-05 — ZARZĄDZANIE DOSTĘPEM
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL05.AC.01
+    title: "Zasada najmniejszego przywileju (Least Privilege) i RBAC"
+    description: >
+      Dostęp do systemów i danych jest nadawany wyłącznie w zakresie niezbędnym
+      do realizacji obowiązków (need-to-know/need-to-have). Uprawnienia przypisywane
+      do ról/zespołów/projektów (RBAC), nie indywidualnie ad-hoc. Dostęp do danych
+      klienta ograniczony do zespołu projektowego.
+    policy_ref: POL-05
+    section_ref: "POL-05 sekcja E.1; Annex E"
+    control_type: preventive
+    implementation_type: technical
+    status: planned
+    owner: "IT / właściciele systemów"
+    evidence_type: "Konfiguracja ról RBAC w systemach; dokumentacja struktury dostępu"
+    review_frequency: quarterly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.3 — Ograniczenie dostępu do informacji"
+        mapping_type: full
+      - framework: ISO27001
+        control_ref: "A.9.1.2"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-05"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.3 — Role-based access"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(a)(1) — Access control"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-3 Access Control"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "AC.L2-3.1.2 — Limit system access to authorized users"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 9(4)(b) — Access rights"
+        mapping_type: full
+
+  - control_id: POL05.AC.02
+    title: "Formalny proces onboardingu dostępu"
+    description: >
+      Wniosek o dostęp inicjowany przez przełożonego/PM. Dostęp do systemów
+      wrażliwych (L3/L4) wymaga zatwierdzenia przez właściciela systemu. Konto
+      tworzone przez centralnego IdP (SSO) z domyślnym MFA. Nowy pracownik
+      przechodzi szkolenie security przed dostępem do systemów produkcyjnych.
+    policy_ref: POL-05
+    section_ref: "POL-05 procedura Onboarding; Annex E.2"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "IT / HR / przełożony"
+    evidence_type: "Ticket wniosku o dostęp; zatwierdzenie właściciela systemu; log tworzenia konta"
+    review_frequency: per_event
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.18 — Prawa dostępu"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-02"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.1, CC6.2"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-3-1 User Registration"
+        mapping_type: full
+
+  - control_id: POL05.AC.03
+    title: "Przegląd uprawnień (Access Recertification)"
+    description: >
+      Uprawnienia do systemów krytycznych i danych L3/L4 są przeglądane
+      kwartalnie przez właścicieli systemów. Wyniki przeglądu dokumentowane
+      i archiwizowane jako dowód compliance. Raport zbiorczy trafia do CISO.
+    policy_ref: POL-05
+    section_ref: "POL-05 procedura Access Recertification; Annex E.3"
+    control_type: detective
+    implementation_type: procedural
+    status: planned
+    owner: "CISO / właściciele systemów"
+    evidence_type: "Rejestr access review; snapshot uprawnień przed/po; raport zbiorczy"
+    review_frequency: quarterly
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.2 — Uprzywilejowane prawa dostępu (review)"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-06"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.2 — Periodic access review"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(4)(ii)(C) — Access establishment and modification"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 9(4)(b)"
+        mapping_type: full
+
+  - control_id: POL05.AC.04
+    title: "Natychmiastowy offboarding dostępu"
+    description: >
+      Odebranie dostępu przy zakończeniu współpracy następuje maksymalnie
+      w dniu zakończenia (natychmiast przy zwolnieniu dyscyplinarnym).
+      IT wyłącza konto w IdP (automatycznie odbiera dostęp SSO). Checklist
+      obejmuje systemy poza SSO, dostęp fizyczny, sprzęt firmowy i konta
+      serwisowe.
+    policy_ref: POL-05
+    section_ref: "POL-05 procedura Offboarding; Annex E.4"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "IT / HR"
+    evidence_type: "Log wyłączenia konta; checklist offboardingu podpisany; protokół zwrotu sprzętu"
+    review_frequency: per_event
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.18 — Prawa dostępu (revocation)"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.AA-02"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.2 — Termination procedures"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-5-3-2 User De-registration"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(3)(ii)(C) — Termination procedures"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-06 — REAGOWANIE NA INCYDENTY
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL06.IR.01
+    title: "Formalny plan reagowania na incydenty (IRP)"
+    description: >
+      TSH posiada udokumentowany plan reagowania na incydenty (IRP) z: definicją
+      incydentu, klasyfikacją SEV-1..4, procesem 6-etapowym (Identify → Contain →
+      Eradicate → Recover → Lessons Learned), rolami i listą kontaktów.
+      Plan testowany co najmniej raz w roku (tabletop exercise).
+    policy_ref: POL-06
+    section_ref: "POL-06 pełna; Annex F"
+    control_type: corrective
+    implementation_type: procedural
+    status: planned
+    owner: "CISO"
+    evidence_type: "Dokument IRP; protokół tabletop exercise; raport post-mortem"
+    review_frequency: annual
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.26 — Reagowanie na incydenty"
+        mapping_type: full
+      - framework: ISO27001
+        control_ref: "A.5.24, A.5.26"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "RS.MA-01..05, RC.RP-01"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC7.3, CC7.4, CC7.5"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 21(2)(b) — Incident handling"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 17 — ICT-related incident management"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-7 Incident Management"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.4 — Incident Response"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(6) — Security Incident Procedures"
+        mapping_type: full
+
+  - control_id: POL06.IR.02
+    title: "Notyfikacje regulacyjne: GDPR 72h, NIS2 24h/72h, DORA"
+    description: >
+      TSH posiada udokumentowaną procedurę notyfikacji organów nadzorczych
+      i klientów przy naruszeniach danych. GDPR: zgłoszenie do UODO w 72h
+      (jeśli ryzyko dla osób). NIS2/KSC: early warning 24h + zgłoszenie 72h.
+      Klienci (DPA): 24-48h od wykrycia. DORA: zgodnie z wymogami kontraktowymi.
+    policy_ref: POL-06
+    section_ref: "POL-06 sekcja F.4; Annex F"
+    control_type: directive
+    implementation_type: procedural
+    status: planned
+    owner: "DPO / Legal / CISO"
+    evidence_type: "Procedura notyfikacji; szablony zgłoszeń; log powiadomień historycznych"
+    review_frequency: annual
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: GDPR
+        control_ref: "Art. 33 — Notification to SA; Art. 34 — Communication to DS"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 23 — Reporting obligations (24h/72h/1 month)"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 19 — Major incident reporting"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.408 — Notification to Secretary; 164.410 — Individual"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-7-3 Incident Reporting"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-09 — ZARZĄDZANIE DOSTAWCAMI
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL09.TPR.01
+    title: "Ocena ryzyka dostawcy przed nawiązaniem współpracy"
+    description: >
+      Każdy nowy dostawca/narzędzie SaaS z dostępem do danych TSH/klientów
+      wymaga formalnej oceny ryzyka: weryfikacja certyfikatów (ISO 27001, SOC 2),
+      przegląd umowy (klauzule security, DPA), klasyfikacja krytyczności
+      (critical/important/standard). Decyzja w ciągu 5 dni roboczych.
+    policy_ref: POL-09
+    section_ref: "POL-09 sekcja; Annex procedura"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "CISO / Legal"
+    evidence_type: "Rejestr dostawców z klasyfikacją; kopie certyfikatów; zaakceptowane umowy DPA"
+    review_frequency: per_event
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "5.19 — Bezpieczeństwo w relacjach z dostawcami"
+        mapping_type: full
+      - framework: ISO27001
+        control_ref: "A.5.19, A.5.20"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "GV.SC-01..06, ID.SC-01..05"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC9.2 — Vendor risk management"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 28 — ICT third-party risk; Art. 30 — Register"
+        mapping_type: full
+      - framework: NIS2
+        control_ref: "Art. 21(2)(d) — Supply chain security"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-9 Third Party and Cloud Computing"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.7 — Third Party Management"
+        mapping_type: full
+      - framework: GDPR
+        control_ref: "Art. 28 — Processor contracts"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-10 — BACKUP I CIĄGŁOŚĆ DZIAŁANIA
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL10.BCP.01
+    title: "Automatyczne kopie zapasowe z zdefiniowanymi RPO/RTO"
+    description: >
+      Systemy i dane krytyczne objęte są automatycznym backupem zgodnie z
+      zdefiniowanymi RPO/RTO per system (uzgodnionymi z klientem). Test odtworzenia
+      (test restore) przeprowadzany minimum raz w roku. Wyniki dokumentowane.
+    policy_ref: POL-10
+    section_ref: "POL-10 sekcja; Annex procedura"
+    control_type: corrective
+    implementation_type: technical
+    status: planned
+    owner: "IT / DevOps"
+    evidence_type: "Konfiguracja backupu; dokumentacja RPO/RTO per system; raport z test restore"
+    review_frequency: annual
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.13 — Kopia zapasowa"
+        mapping_type: full
+      - framework: ISO27001
+        control_ref: "A.8.13"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "PR.IP-04, RC.RP-01"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "A1.2 — Availability (backup)"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 12 — Backup policies and restoration"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-8 Business Continuity Management"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.308(a)(7)(ii)(A) — Data backup plan"
+        mapping_type: full
+      - framework: SAMA_CSF
+        control_ref: "3.5 — Business Continuity"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-11 — PRYWATNOŚĆ I OCHRONA DANYCH OSOBOWYCH
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: POL11.PRIV.01
+    title: "Rejestr czynności przetwarzania (RoPA)"
+    description: >
+      TSH prowadzi Rejestr Czynności Przetwarzania (RoPA) dla danych osobowych
+      przetwarzanych jako administrator (dane HR) i jako procesor (dane klientów).
+      RoPA aktualizowany na bieżąco, przeglądany co roku.
+    policy_ref: POL-11
+    section_ref: "POL-11 Annex procedura DPO"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "DPO / Legal"
+    evidence_type: "Dokument RoPA; data ostatniej aktualizacji"
+    review_frequency: annual
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: GDPR
+        control_ref: "Art. 30 — Records of processing activities"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.34 — Prywatność i ochrona danych osobowych"
+        mapping_type: full
+      - framework: NCA_ECC
+        control_ref: "2-10-1 Privacy"
+        mapping_type: supporting
+      - framework: PDPL
+        control_ref: "Art. 12 — Data Controller obligations"
+        mapping_type: full
+
+  - control_id: POL11.PRIV.02
+    title: "Umowy powierzenia przetwarzania (DPA) z klientami i podwykonawcami"
+    description: >
+      Wszystkie projekty obejmujące przetwarzanie danych osobowych klientów
+      są regulowane umową DPA (Data Processing Agreement). DPA jest przeglądam
+      przez Legal przed podpisaniem i archiwizowane. Podwykonawcy przetwarzający
+      dane osobowe mają podpisane DPA z TSH (sub-processor).
+    policy_ref: POL-11
+    section_ref: "POL-11 sekcja; ISP rozdz. 6.4"
+    control_type: directive
+    implementation_type: managerial
+    status: planned
+    owner: "Legal / DPO"
+    evidence_type: "Archiwum podpisanych DPA; rejestr procesorów i sub-procesorów"
+    review_frequency: per_contract
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: GDPR
+        control_ref: "Art. 28 — Processor; Art. 29"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "5.19, 5.20"
+        mapping_type: supporting
+      - framework: HIPAA
+        control_ref: "164.308(b) — Business Associate Contracts"
+        mapping_type: full
+      - framework: PDPL
+        control_ref: "Art. 29 — Data Processing Agreements"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-SSDLC — SECURE SDLC (FORMALNA)
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: SSDLC.REQ.01
+    title: "Wymagania bezpieczeństwa definiowane na etapie planowania"
+    description: >
+      Na etapie inicjowania projektu Tech Lead/PM określa klasyfikację danych,
+      identyfikuje wymagania regulacyjne (GDPR, HIPAA, PCI-DSS) i uwzględnia
+      wymagania bezpieczeństwa w Definition of Done dla User Stories.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.1"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "Tech Lead / PM"
+    evidence_type: "DoD z klauzulami security; dokumentacja klasyfikacji projektu"
+    review_frequency: per_project
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.26 — Wymagania bezpieczeństwa aplikacji"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Design/Security Requirements/1"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "PW.1.1 — Define security requirements"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "ID.RA-01"
+        mapping_type: supporting
+      - framework: CMMC
+        control_ref: "CA.L2-3.12.1 — Security assessment"
+        mapping_type: supporting
+
+  - control_id: SSDLC.DEV.01
+    title: "Obowiązkowe code review z perspektywą bezpieczeństwa"
+    description: >
+      Każda zmiana kodu trafiająca do głównej gałęzi wymaga co najmniej
+      jednego peer review przez osobę inną niż autor. Reviewer weryfikuje
+      m.in.: brak sekretów, walidacja danych wejściowych, poprawna autoryzacja,
+      brak oczywistych podatności OWASP Top 10. Branch protection wymuszone.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.4"
+    control_type: detective
+    implementation_type: procedural
+    status: planned
+    owner: "Tech Lead"
+    evidence_type: "Branch protection rules w repozytorium; historia PR z review"
+    review_frequency: continuous
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.28 — Bezpieczne kodowanie"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Implementation/Secure Build/2"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "RV.1.1 — Identify vulnerabilities"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC8.1 — Change management (review)"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "SA.L2-3.14.2 — Security review"
+        mapping_type: full
+
+  - control_id: SSDLC.DEV.02
+    title: "SAST w pipeline CI/CD (Semgrep, Bandit, ESLint Security i in.)"
+    description: >
+      Statyczna analiza bezpieczeństwa kodu (SAST) uruchamiana automatycznie
+      w pipeline CI/CD przy każdym PR do main. Narzędzia open-source per stack:
+      Semgrep (wielojęzykowy), Bandit (Python), ESLint Security (JS/TS),
+      Gosec (Go), SpotBugs (Java), Brakeman (Ruby). BLOKADA merge przy
+      severity CRITICAL/HIGH bez udokumentowanego wyjątku.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.4; SSDLC-DEV Annex A"
+    control_type: detective
+    implementation_type: technical
+    status: planned
+    owner: "DevOps / Tech Lead"
+    evidence_type: "Konfiguracja pipeline (YAML); raporty SAST z CI; log blokad merge"
+    review_frequency: continuous
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.28, 8.29 — Testy bezpieczeństwa"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Verification/Security Testing/2"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "PW.7.1 — Perform code review; RV.1.3"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC8.1"
+        mapping_type: full
+      - framework: CMMC
+        control_ref: "SA.L2-3.14.1 — Identify and report flaws"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 25 — Testing of ICT systems"
+        mapping_type: supporting
+
+  - control_id: SSDLC.DEV.03
+    title: "SCA — skanowanie zależności open-source (Trivy, npm audit, pip-audit)"
+    description: >
+      Biblioteki open-source skanowane pod kątem znanych CVE w pipeline CI/CD
+      (Trivy, OWASP Dependency-Check, npm audit, pip-audit). BLOKADA merge
+      przy CVSS ≥ 9.0. Automatyczne PR aktualizujące zależności (Dependabot,
+      Renovate). Tygodniowe skanowanie produkcji.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.4, 3.7; SSDLC-DEV Annex A"
+    control_type: detective
+    implementation_type: technical
+    status: planned
+    owner: "DevOps / Tech Lead"
+    evidence_type: "Konfiguracja Trivy/Dependabot; raporty SCA; log naprawionych CVE"
+    review_frequency: continuous
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.29, 8.8 — Zarządzanie podatnościami technicznymi"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Implementation/Secure Build/1 (SCA)"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "PW.4.1 — Reuse existing secure components"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "ID.RA-01"
+        mapping_type: supporting
+      - framework: CMMC
+        control_ref: "RA.L2-3.11.2 — Vulnerability scan"
+        mapping_type: full
+
+  - control_id: SSDLC.DEV.04
+    title: "Threat Modeling dla projektów wysokiego ryzyka"
+    description: >
+      Projekty obejmujące dane L3/L4 lub systemy krytyczne klienta wymagają
+      udokumentowanego Threat Model (metodologia STRIDE) przed startem
+      implementacji. Minimum: diagram DFD + tabela zagrożeń + mitygacje.
+      Przeprowadzany przez Tech Leada z opcjonalnym wsparciem CISO.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.2; Annex B"
+    control_type: preventive
+    implementation_type: managerial
+    status: planned
+    owner: "Tech Lead / CISO"
+    evidence_type: "Dokument Threat Model per projekt; DFD; tabela STRIDE"
+    review_frequency: per_project
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.27 — Bezpieczne zasady inżynierii systemów"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Design/Threat Assessment/2"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "PW.1.2 — Identify threats"
+        mapping_type: full
+      - framework: NIST_CSF
+        control_ref: "ID.RA-03"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 25 — Advanced testing (TLPT)"
+        mapping_type: supporting
+
+  - control_id: SSDLC.SEC.01
+    title: "Testy bezpieczeństwa przed wdrożeniem produkcyjnym (DAST)"
+    description: >
+      Dla projektów L3/L4: OWASP ZAP (pasywny scan) uruchamiany przed każdym
+      wdrożeniem na staging/produkcję. Zewnętrzny pentest dla nowych systemów
+      produkcyjnych klientów regulowanych oraz cyklicznie (minimum raz w roku).
+      Wyniki dokumentowane i śledzone do zamknięcia.
+    policy_ref: POL-SSDLC
+    section_ref: "POL-SSDLC sekcja 3.5"
+    control_type: detective
+    implementation_type: technical
+    status: planned
+    owner: "QA / CISO"
+    evidence_type: "Raporty OWASP ZAP; raporty pentestów; tracker podatności"
+    review_frequency: per_release
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.29 — Testy bezpieczeństwa w SDLC"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Verification/Security Testing/3"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "RV.1.2 — Conduct testing"
+        mapping_type: full
+      - framework: DORA
+        control_ref: "Art. 25 — Testing of ICT systems; Art. 26 — TLPT"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC4.2 — Penetration testing"
+        mapping_type: full
+
+# ─────────────────────────────────────────────────────────────────────────────
+# POL-QA — TESTOWANIE I QA
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - control_id: QA.TEST.01
+    title: "Pokrycie testami automatycznymi — unit, integration, E2E"
+    description: >
+      Każda zmiana kodu w projektach TSH wymaga odpowiedniego pokrycia testami:
+      unit tests (deweloper, ≥70% logiki biznesowej), integration tests
+      (dev+QA), E2E tests (QA, na staging przed każdym wdrożeniem produkcyjnym).
+      Żadna funkcjonalność nie jest uznana za ukończoną bez testów w DoD.
+    policy_ref: POL-QA
+    section_ref: "POL-QA sekcja 3.1..3.3"
+    control_type: preventive
+    implementation_type: procedural
+    status: planned
+    owner: "Tech Lead / QA Engineer"
+    evidence_type: "Raporty coverage (Istanbul, JaCoCo); wyniki E2E w CI; DoD per projekt"
+    review_frequency: per_sprint
+    data_classification_scope: [L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.29 — Testy bezpieczeństwa w SDLC"
+        mapping_type: supporting
+      - framework: OWASP_SAMM
+        control_ref: "Verification/Requirements-driven Testing/1"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC8.1 — Change management testing"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "RV.1.2"
+        mapping_type: supporting
+
+  - control_id: QA.TEST.02
+    title: "Zakaz używania danych produkcyjnych w środowiskach testowych"
+    description: >
+      Kopiowanie danych produkcyjnych (szczególnie PII, PHI, dane finansowe)
+      do środowisk dev/staging jest bezwzględnie zabronione. Wymagane jest
+      używanie danych syntetycznych (Faker.js, Faker Python, Mockaroo) lub
+      zanonimizowanych. Naruszenie stanowi incydent GDPR.
+    policy_ref: POL-QA
+    section_ref: "POL-QA sekcja 5; QA-DEV"
+    control_type: preventive
+    implementation_type: directive
+    status: planned
+    owner: "Tech Lead / QA"
+    evidence_type: "Polityka środowisk testowych; szkolenia; audyt środowisk testowych"
+    review_frequency: quarterly
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: GDPR
+        control_ref: "Art. 5(1)(b) — Purpose limitation; Art. 25 — Privacy by design"
+        mapping_type: full
+      - framework: ISO27002
+        control_ref: "8.33 — Dane testowe"
+        mapping_type: full
+      - framework: HIPAA
+        control_ref: "164.312(a)(1) — Access control (PHI in test env)"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.6 — Logical access to production data"
+        mapping_type: full
+
+  - control_id: QA.TEST.03
+    title: "Testy autoryzacji i kontroli dostępu (IDOR, unauthorized access)"
+    description: >
+      QA Engineer testuje każdy endpoint API pod kątem: braku tokenu (→401),
+      niewystarczających uprawnień (→403), próby dostępu do zasobu innego
+      użytkownika (IDOR check). Testy walidacji danych wejściowych (XSS,
+      SQLi w polach, edge cases). Wyniki bugów security → zgłoszenie do CISO.
+    policy_ref: POL-QA
+    section_ref: "POL-QA sekcja 3.6; QA-DEV sekcja testy bezpieczeństwa"
+    control_type: detective
+    implementation_type: procedural
+    status: planned
+    owner: "QA Engineer"
+    evidence_type: "Scenariusze testowe BDD z IDOR; wyniki testów autoryzacji; logi testów"
+    review_frequency: per_release
+    data_classification_scope: [L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.29"
+        mapping_type: full
+      - framework: OWASP_SAMM
+        control_ref: "Verification/Security Testing/2"
+        mapping_type: full
+      - framework: NIST_SSDF
+        control_ref: "RV.1.2"
+        mapping_type: full
+      - framework: SOC2
+        control_ref: "CC6.3"
+        mapping_type: supporting
+
+  - control_id: QA.TEST.04
+    title: "Klasyfikacja i SLA naprawy defektów"
+    description: >
+      TSH stosuje czterostopniową klasyfikację defektów: Critical (hotfix <24h),
+      High (<3 dni robocze), Medium (najbliższy sprint), Low (backlog).
+      Defekty bezpieczeństwa (niezależnie od priorytetu) wymagają dodatkowego
+      zgłoszenia do CISO. Retest przez QA przed zamknięciem każdego defektu.
+    policy_ref: POL-QA
+    section_ref: "POL-QA sekcja 4"
+    control_type: corrective
+    implementation_type: procedural
+    status: planned
+    owner: "QA Engineer / Tech Lead"
+    evidence_type: "System ticketowy z SLA; historia defektów; raporty metryki escape rate"
+    review_frequency: per_sprint
+    data_classification_scope: [L1,L2,L3,L4]
+    framework_mappings:
+      - framework: ISO27002
+        control_ref: "8.8 — Zarządzanie podatnościami technicznymi"
+        mapping_type: supporting
+      - framework: OWASP_SAMM
+        control_ref: "Operations/Incident Management/1"
+        mapping_type: supporting
+      - framework: SOC2
+        control_ref: "CC7.2 — Defect tracking"
+        mapping_type: full
+
+
+# =============================================================================
+# COMPLIANCE COVERAGE MATRIX
+# Podsumowanie pokrycia regulacyjnego per framework
+# Użycie: GRC może renderować to jako dashboard / heat map
+# =============================================================================
+compliance_coverage:
+
+  - framework: ISO27001
+    standard_full: "ISO/IEC 27001:2022"
+    jurisdiction: [EU, USA, KSA, Global]
+    total_controls_in_standard: 93
+    controls_mapped: 38
+    coverage_estimate_pct: 65
+    status: partial
+    gaps_note: >
+      Pokrycie governance, access control, cryptography, incident response,
+      supplier relations, SDLC. Brakuje formalnego SoA (Statement of
+      Applicability), Asset Inventory jako dokumentu, formalnego programu
+      audytów wewnętrznych i certyfikacji. Szacowane pokrycie 65% — do
+      uzupełnienia w trakcie gap analysis przed certyfikacją.
+    next_steps:
+      - "Sporządzić SoA (Statement of Applicability)"
+      - "Zbudować Asset Inventory i Risk Register jako formalne dokumenty"
+      - "Zaplanować audyt wewnętrzny ISMS (Q4 2026)"
+      - "Decyzja o ścieżce certyfikacji (Q1 2027)"
+
+  - framework: ISO27002
+    standard_full: "ISO/IEC 27002:2022"
+    jurisdiction: [EU, USA, KSA, Global]
+    total_controls_in_standard: 93
+    controls_mapped: 38
+    coverage_estimate_pct: 65
+    status: partial
+    gaps_note: >
+      Jak ISO 27001 — 27002 dostarcza implementacyjne wytyczne.
+      Pokryte domeny: 5 (org), 6 (people), 7 (physical, częściowo), 8 (tech).
+      Brakuje: formalnego programu patchingu, pełnego monitoringu sieci (IDS/IPS),
+      formalnej polityki change management.
+
+  - framework: NIST_CSF
+    standard_full: "NIST Cybersecurity Framework 2.0"
+    jurisdiction: [USA, Global]
+    total_controls_in_standard: 106
+    controls_mapped: 31
+    coverage_estimate_pct: 58
+    status: partial
+    gaps_note: >
+      Funkcje Govern/Identify/Protect najlepiej pokryte.
+      Detect: brak SIEM/SOC — planowany 2027.
+      Respond: IRP istnieje, brak formalnego tabletop w 2026 (planowany Q4).
+      Recover: BCP/DRP jako dokumenty — w planowaniu.
+
+  - framework: SOC2
+    standard_full: "SOC 2 Trust Services Criteria (AICPA 2017)"
+    jurisdiction: [USA]
+    total_controls_in_standard: 64
+    controls_mapped: 22
+    coverage_estimate_pct: 55
+    status: partial
+    gaps_note: >
+      Security (CC) TSC: access control, change management, risk assessment —
+      częściowo pokryte. Brakuje: formalnego programu monitoringu (CC7),
+      polityki change management (CC8 — planowana POL-16 2027),
+      formalnego vendor management procesu (CC9). Audyt SOC 2 Type II —
+      planowany 2027 po ISO 27001.
+
+  - framework: GDPR
+    standard_full: "GDPR/RODO — Rozporządzenie (UE) 2016/679"
+    jurisdiction: [EU]
+    total_controls_in_standard: 99
+    controls_mapped: 18
+    coverage_estimate_pct: 70
+    status: partial
+    gaps_note: >
+      Pokryte: klasyfikacja danych osobowych, DPA z klientami, transfery
+      międzynarodowe (SCC), retencja, notyfikacje naruszeń (72h).
+      Brakuje: formalnego procesu DPIA (planowany POL-Q2 2027),
+      wyznaczonego DPO (placeholder w POL-11), pełnego rejestru RoPA.
+    dpo_status: "Niewyznaczony — placeholder w POL-11 [WYMAGA DECYZJI]"
+
+  - framework: NIS2
+    standard_full: "Dyrektywa NIS2 (2022/2555) / KSC"
+    jurisdiction: [EU, PL]
+    total_controls_in_standard: 52
+    controls_mapped: 14
+    coverage_estimate_pct: 60
+    status: partial
+    gaps_note: >
+      Pokryte: zarządzanie incydentami (art. 21b), supply chain security (21d),
+      MFA (21j), governance (art. 20). Brakuje: formalna kwalifikacja TSH jako
+      podmiotu ważnego/kluczowego lub dostawcy ICT (wymaga analizy prawnej),
+      rejestracja w KSC, pełna implementacja art. 21 wymagań technicznych.
+    classification_note: >
+      Status TSH wg KSC/NIS2: [DO WERYFIKACJI z Legal — czy TSH kwalifikuje
+      się jako dostawca usług ICT dla podmiotów kluczowych/ważnych wg ustawy
+      o KSC po nowelizacji 2026]
+
+  - framework: DORA
+    standard_full: "Digital Operational Resilience Act (Rozp. 2022/2554)"
+    jurisdiction: [EU]
+    total_controls_in_standard: 68
+    controls_mapped: 12
+    coverage_estimate_pct: 45
+    status: partial
+    gaps_note: >
+      Relevantne dla TSH wyłącznie jako dostawca ICT dla instytucji finansowych
+      UE (klienci fintech). Pokryte: ICT risk management, incident management,
+      third-party risk (art. 28), rejestr dostawców. Brakuje: TLPT (art. 26)
+      — planowany pentest 2027, pełna implementacja wymogów kontraktowych
+      art. 30 (klauzule w umowach z klientami finansowymi).
+    applicability: "Stosuje się do TSH w zakresie, w jakim klienci TSH są instytucjami finansowymi UE — wymagania przenoszone kontraktowo."
+
+  - framework: NCA_ECC
+    standard_full: "KSA NCA Essential Cybersecurity Controls ECC-1:2018"
+    jurisdiction: [KSA]
+    total_controls_in_standard: 114
+    controls_mapped: 16
+    coverage_estimate_pct: 40
+    status: partial
+    gaps_note: >
+      Relevantne dla projektów TSH dla klientów regulowanych w KSA (rząd,
+      sektor krytyczny). Pokryte: governance (1-1), klasyfikacja (2-2),
+      access control (2-5), incident management (2-7), third-party (2-9).
+      Brakuje: pełna implementacja domeny 2-10 (Privacy per PDPL), 2-11
+      (Physical Security formalna), formal assessment. Kwestia: TSH entity
+      w KSA (Riyadh — wrzesień 2026) może wymagać lokalnego compliance.
+    local_entity_note: >
+      Otwarcie entity TSH w Rijadzie (wrzesień 2026) — weryfikacja lokalnych
+      wymagań NCA dla podmiotów zarejestrowanych w KSA.
+
+  - framework: SAMA_CSF
+    standard_full: "KSA SAMA Cyber Security Framework"
+    jurisdiction: [KSA]
+    total_controls_in_standard: 53
+    controls_mapped: 8
+    coverage_estimate_pct: 35
+    status: partial
+    gaps_note: >
+      Stosuje się wyłącznie do projektów TSH dla klientów z sektora finansowego
+      KSA (banki, instytucje nadzorowane przez SAMA). Pokryte: governance,
+      risk management, BCP, incident response, third-party. Brakuje: lokalnej
+      oceny SAMA compliance per projekt klienta finansowego.
+
+  - framework: PDPL
+    standard_full: "KSA Personal Data Protection Law"
+    jurisdiction: [KSA]
+    total_controls_in_standard: 28
+    controls_mapped: 4
+    coverage_estimate_pct: 30
+    status: partial
+    gaps_note: >
+      Stosuje się do projektów TSH przetwarzających dane osób fizycznych z KSA.
+      Pokryte: klasyfikacja danych osobowych, DPA, transfery. Brakuje: lokalna
+      analiza wymagań PDPL per projekt z danymi obywateli KSA, rejestracja
+      jako Data Controller/Processor w KSA (jeśli wymagana).
+
+  - framework: HIPAA
+    standard_full: "HIPAA Security Rule (45 CFR Part 164)"
+    jurisdiction: [USA]
+    total_controls_in_standard: 45
+    controls_mapped: 12
+    coverage_estimate_pct: 50
+    status: partial
+    gaps_note: >
+      Stosuje się wyłącznie do projektów obejmujących PHI (Protected Health
+      Information) dla klientów healthtech działających w USA. Pokryte:
+      access control, encryption, incident response, backup, BAA requirement.
+      Brakuje: BAA (Business Associate Agreement) jako odrębny szablon
+      (analogiczny do DPA), formalny HIPAA Risk Analysis per projekt PHI.
+    applicability: >
+      TSH jako Business Associate — wymaga podpisania BAA z każdym klientem
+      healthtech podlegającym HIPAA przed przetwarzaniem PHI.
+
+  - framework: CMMC
+    standard_full: "Cybersecurity Maturity Model Certification 2.0 (Level 2)"
+    jurisdiction: [USA]
+    total_controls_in_standard: 110
+    controls_mapped: 8
+    coverage_estimate_pct: 20
+    status: planned
+    gaps_note: >
+      Stosuje się wyłącznie jeśli TSH wejdzie w projekty związane z DoD USA
+      lub CUI (Controlled Unclassified Information). Aktualnie poza zakresem
+      działalności — pokrycie wyłącznie przez nakładanie się z innymi kontrolami.
+      Gap analysis CMMC wymagana przed ewentualnym projektem US Defense.
+    applicability: "Aktualnie nie dotyczy — do weryfikacji przy nowych projektach US gov/defense."
+
+  - framework: OWASP_SAMM
+    standard_full: "OWASP Software Assurance Maturity Model 2.0"
+    jurisdiction: [Global]
+    total_controls_in_standard: 72
+    controls_mapped: 15
+    coverage_estimate_pct: 55
+    status: partial
+    gaps_note: >
+      Pokryte domeny: Design (Threat Assessment, Security Requirements),
+      Implementation (Secure Build, Secure Deployment), Verification (Security Testing).
+      Brakuje: formalne Governance/SDLC Policy (poziom 2+), Education & Guidance
+      program, Operations/Incident Management SAMM-level. Rekomendacja:
+      formalna ocena SAMM maturity score po wdrożeniu POL-SSDLC w Q3 2026.
+
+  - framework: NIST_SSDF
+    standard_full: "NIST SP 800-218 — Secure Software Development Framework"
+    jurisdiction: [USA, Global]
+    total_controls_in_standard: 42
+    controls_mapped: 10
+    coverage_estimate_pct: 48
+    status: partial
+    gaps_note: >
+      Pokryte: PW (Produce Well-Secured Software) — wymagania, design, implementacja,
+      SAST/SCA. Brakuje: formalne PS (Prepare the Organization) — szkolenia SDLC,
+      RV (Respond to Vulnerabilities) — formalny VDP (Vulnerability Disclosure Policy).
+
+# =============================================================================
+# COVERAGE GAPS — Luki wymagające działania
+# =============================================================================
+coverage_gaps:
+
+  critical_gaps:
+    - gap_id: GAP-01
+      title: "Brak wyznaczonego DPO"
+      description: >
+        POL-11 zawiera placeholder dla DPO. GDPR art. 37 może wymagać DPO
+        dla TSH jako procesora danych dla klientów — weryfikacja z Legal.
+      affected_frameworks: [GDPR, PDPL]
+      remediation: "Analiza prawna obowiązku DPO; decyzja Zarządu; wyznaczenie DPO lub udokumentowanie braku obowiązku"
+      target_date: "Q3 2026"
+
+    - gap_id: GAP-02
+      title: "Brak kanału whistleblowingowego"
+      description: >
+        POL-13 zawiera placeholder dla kanału zgłoszeń anonimowych. Dyrektywa
+        UE o sygnalistach (2019/1937) może wymagać formalnego kanału.
+      affected_frameworks: [NIS2, GDPR]
+      remediation: "Wdrożenie narzędzia (np. EthicsPoint, Vault Platform, prosty formularz) lub ocena progu zatrudnienia"
+      target_date: "Q3 2026"
+
+    - gap_id: GAP-03
+      title: "Brak SoA (Statement of Applicability)"
+      description: >
+        ISO 27001 wymaga formalnego SoA dokumentującego, które kontrole z Annex A
+        są stosowane, a które wyłączone z uzasadnieniem. Wymagany do certyfikacji.
+      affected_frameworks: [ISO27001]
+      remediation: "Przeprowadzić gap analysis ISO 27001 i sporządzić SoA (szacowany nakład: ~20h CISO)"
+      target_date: "Q4 2026"
+
+    - gap_id: GAP-04
+      title: "Brak formalnego Asset Inventory i Risk Register"
+      description: >
+        ISO 27001 i NIST CSF wymagają formalnych dokumentów. Aktualnie ISP
+        opisuje procesy, ale nie istnieją jako odrębne, aktualizowane artefakty.
+      affected_frameworks: [ISO27001, NIST_CSF, NCA_ECC]
+      remediation: "Zbudować Asset Inventory (IT+dane+systemy klientów) i Risk Register w systemie GRC"
+      target_date: "Q4 2026"
+
+    - gap_id: GAP-05
+      title: "Brak polityki Change Management (POL-16)"
+      description: >
+        SOC 2 CC8 wymaga formalnego procesu zarządzania zmianą. Aktualnie
+        opisany w SSDLC ale bez dedykowanej polityki.
+      affected_frameworks: [SOC2, ISO27001]
+      remediation: "Opracować POL-16 Change Management (planowane Q3 2027)"
+      target_date: "Q3 2027"
+
+  high_gaps:
+    - gap_id: GAP-06
+      title: "Brak SIEM / Security Monitoring"
+      description: >
+        Detect function w NIST CSF i wymagania monitoringu NIS2/DORA nie są
+        w pełni pokryte bez centralnego systemu korelacji zdarzeń.
+      affected_frameworks: [NIST_CSF, NIS2, DORA, ISO27001]
+      remediation: "Google Chronicle lub alternatywa — planowany Q2-Q3 2027"
+      target_date: "Q3 2027"
+
+    - gap_id: GAP-07
+      title: "Brak formalnego programu zarządzania podatnościami"
+      description: >
+        Brakuje cyklicznego skanowania infrastruktury/środowisk chmurowych
+        z SLA patchingowym (CVE Critical ≤ 7 dni) jako udokumentowanego procesu.
+      affected_frameworks: [ISO27002, NIST_CSF, DORA, NCA_ECC]
+      remediation: "Vulnerability Management Program — Q1-Q2 2027"
+      target_date: "Q2 2027"
+
+    - gap_id: GAP-08
+      title: "Brak zewnętrznego pentstu"
+      description: >
+        Polityki przewidują testy penetracyjne, ale nie zostały przeprowadzone.
+        Wymagane przez DORA (TLPT), SOC 2 (CC4.2), klientów enterprise.
+      affected_frameworks: [DORA, SOC2, ISO27002, NCA_ECC]
+      remediation: "Zamówienie zewnętrznego pentstu — Q1 2027"
+      target_date: "Q1 2027"
+
+# =============================================================================
+# IMPORT INSTRUCTIONS — dla Claude Code
+# =============================================================================
+import_instructions:
+  description: >
+    Ten plik YAML stanowi kompletną bazę wiedzy polityk i kontroli TSH.
+    Claude Code powinien go zinterpretować jako źródło prawdy dla systemu GRC.
+  entities_to_create:
+    - entity: Policy
+      source: policies[]
+      key_field: policy_id
+      relations:
+        - field: parent_policy
+          target_entity: Policy
+          relation_type: parent_of
+        - field: child_policies
+          target_entity: Policy
+          relation_type: has_children
+    - entity: Control
+      source: controls[]
+      key_field: control_id
+      relations:
+        - field: policy_ref
+          target_entity: Policy
+          relation_type: implements_policy
+        - field: framework_mappings[].framework
+          target_entity: Framework
+          relation_type: maps_to_framework
+    - entity: FrameworkCoverage
+      source: compliance_coverage[]
+      key_field: framework
+      computed_fields:
+        - name: covered_controls
+          logic: "COUNT(controls WHERE framework IN framework_mappings[].framework)"
+        - name: coverage_pct
+          logic: "covered_controls / total_controls_in_standard * 100"
+    - entity: CoverageGap
+      source: coverage_gaps.critical_gaps + coverage_gaps.high_gaps
+      key_field: gap_id
+  queries_to_support:
+    - "Które kontrole pokrywają dany standard (np. ISO27001)?"
+    - "Jakie jest pokrycie TSH dla GDPR?"
+    - "Które kontrole mają status 'planned' — co jest do wdrożenia?"
+    - "Które polityki obejmują dane L4?"
+    - "Jakie są krytyczne luki compliance?"
+    - "Które kontrole mają owner = CISO?"
+    - "Jakie dowody (evidence_type) są wymagane dla kontroli SOC 2?"

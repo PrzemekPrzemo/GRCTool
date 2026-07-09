@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             ComplianceFrameworkSeeder::class,
             // Middle East / KSA compliance frameworks (SAMA-CSF, NCA-CCC, UAE-IA, Qatar-NIAS, BH-PDL)
             MiddleEastFrameworkSeeder::class,
+            // TSH policy & control knowledge base (Policy, PolicyControl, FrameworkCoverage, ComplianceGap)
+            TshGrcKnowledgeBaseSeeder::class,
             // Admin user last (depends on roles)
             AdminUserSeeder::class,
         ]);
