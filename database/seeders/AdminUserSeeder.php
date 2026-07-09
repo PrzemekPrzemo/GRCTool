@@ -27,7 +27,10 @@ class AdminUserSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         );
-        $admin->syncRoles(['admin']);
+        // Master admin dostaje też rolę 'ciso', żeby domyślne konto miało pełną
+        // funkcjonalność merytoryczną (np. third_party.*) mimo że rola 'admin'
+        // sama w sobie celowo nie edytuje danych merytorycznych (SoD).
+        $admin->syncRoles(['admin', 'ciso']);
 
         $ciso = User::firstOrCreate(
             ['email' => 'ciso@grc.local'],
