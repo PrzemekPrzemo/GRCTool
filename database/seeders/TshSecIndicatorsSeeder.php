@@ -16,12 +16,25 @@ class TshSecIndicatorsSeeder extends Seeder
 {
     private ?int $cisoId = null;
 
+    /** @var array<string,?int> */
+    private array $roleMap = [];
+
     public function run(): void
     {
         $this->cisoId = User::where('email', 'ciso@grc.local')->value('id');
+        $this->roleMap = [
+            'CSO' => $this->cisoId,
+            'IT Lead' => User::where('email', 'it.lead@grc.local')->value('id'),
+            'Tech Lead' => User::where('email', 'tech.lead@grc.local')->value('id'),
+        ];
 
         $this->seedKpis();
         $this->seedKris();
+    }
+
+    private function resolveOwner(string $ownerRole): ?int
+    {
+        return $this->roleMap[$ownerRole] ?? null;
     }
 
     /**
@@ -114,7 +127,7 @@ class TshSecIndicatorsSeeder extends Seeder
             [
                 'name' => $name, 'type' => 'KRI', 'unit' => $unit,
                 'amber_threshold' => $amber, 'red_threshold' => $red, 'direction' => $direction,
-                'frequency' => 'monthly', 'owner_id' => $ownerRole === 'CSO' ? $this->cisoId : null,
+                'frequency' => 'monthly', 'owner_id' => $this->resolveOwner($ownerRole),
                 'consumer_audience' => 'CISO', 'data_source' => 'TSH-SEC-REG-013',
             ]
         );
