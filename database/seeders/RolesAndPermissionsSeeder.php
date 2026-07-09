@@ -115,6 +115,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'permissions' => [
                         'report.view', 'indicator.view', 'risk.view', 'audit_engagement.view',
                         'training.view', 'exception.view', 'certificate.view', 'bcp.view',
+                        'compliance.view',
                     ],
                 ],
                 'asset_owner' => [
