@@ -1,0 +1,50 @@
+THIRD-PARTY VENDOR RISK POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines how TSH classifies, onboards, and manages security risks from vendors and sub-contractors. Four-tier classification; contractual requirements including DPA and DORA provisions.
+TSH-SEC-POL-006  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines how TSH manages security risks from third-party vendors, suppliers, and sub-contractors. Applies to any external party with access to TSH systems, data, or that TSH relies upon to deliver services to clients.
+# 2. Vendor Classification
+# 3. Vendor Onboarding
+## 3.1 Due Diligence (Tier 1 & 2)
+Security questionnaire completed by vendor
+Review vendor's latest SOC 2 Type II report or ISO 27001 certificate
+Confirm data residency (EU-only or documented cross-border transfer mechanism)
+Confirm sub-processor list and any fourth-party risk
+Review vendor's incident notification commitment
+## 3.2 Contractual Requirements
+# 4. Sub-contractor Management
+Sub-contractors require PM + CSO approval before engagement
+Client consent required before any sub-contractor accesses client environment or data
+Sub-contractors must sign TSH NDA and security requirements schedule
+Access limited to what is required; revoked within 5 days of engagement end (PROC-210)
+Sub-contractors listed in DPA Annex 3 for relevant client projects
+# 5. Open Source Software (OSS)
+SCA (Snyk + Dependabot) mandatory in all CI/CD pipelines — blocks critical CVEs
+Licence review at project inception — GPL, AGPL, LGPL require CSO review before use in client deliverable
+SBOM (SPDX 2.3 or CycloneDX 1.4+) delivered with every production release
+No OSS libraries with known critical/high CVEs in production deliverables without written client acceptance
+# 6. Vendor Register
+IT Lead maintains REG-010 (Third-Party Register) with all Tier 1 and Tier 2 vendors. Register reviewed quarterly. DORA register information (Art. 28/30) maintained separately for applicable client engagements.
+Tier 1 vendors must be reassessed annually regardless of whether any incident has occurred. Reassessment uses the same due diligence checklist as initial onboarding.
+
+[TABLE]
+Tier | Definition | Examples | Requirements
+Tier 1 — Critical | Direct access to client data or RESTRICTED TSH data; critical service continuity dependency | GitHub Enterprise, Google Workspace, Entra ID, IRU (Apple MDM), Atlassian, AWS/GCP/Azure (client projects) | Annual security assessment; SOC 2/ISO 27001 evidence; DPA mandatory; audit rights; 24h breach notification; BCP review
+Tier 2 — Important | Access to CONFIDENTIAL TSH data; project delivery dependency | Slack, 1Password, Jira (with project data), Zoom, CI/CD tools | Bi-annual review; DPA if processing personal data; security questionnaire; NDA
+Tier 3 — Standard | Limited data access; replaceable without significant impact | Design tools, analytics tools, minor SaaS | Annual review; privacy policy review; NDA recommended
+Tier 4 — Low | No sensitive data access | Office supplies, courier services | Standard contract; no specific security requirements
+[/TABLE]
+
+
+[TABLE]
+Clause | Required For | Notes
+Confidentiality / NDA | All tiers | Before any access to TSH or client data
+Data Processing Agreement (DPA) | Any vendor processing personal data | GDPR Art. 28 compliant; TSH template CLT-403 as starting point
+Security obligations | Tier 1 & 2 | Minimum controls aligned to TSH standards
+Audit rights | Tier 1 | Right to audit on 30 days notice; or accept SOC 2/ISO cert in lieu
+Incident notification | Tier 1 & 2 | 24 hours for incidents affecting TSH or client data
+Sub-contracting | Tier 1 | No sub-outsourcing without TSH written consent
+Exit/transition assistance | Tier 1 | Minimum 3-month exit support; data return/deletion
+DORA Art. 28 provisions | Tier 1 vendors for EU financial institution projects | Full DORA contractual provisions via CLT-404
+[/TABLE]

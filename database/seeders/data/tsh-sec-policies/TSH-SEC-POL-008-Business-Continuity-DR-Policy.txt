@@ -1,0 +1,49 @@
+BUSINESS CONTINUITY & DR POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines TSH's approach to business continuity and disaster recovery. RTO/RPO targets per system, key risk scenarios, backup requirements, and annual testing obligations.
+TSH-SEC-POL-008  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines TSH's approach to maintaining business continuity and recovering from disruptive events. TSH's 90% remote model and cloud-native architecture provide inherent resilience that this policy builds upon.
+# 2. Recovery Objectives
+# 3. Key Risks & Continuity Plans
+## 3.1 Cloud Provider Outage
+Primary cloud (Google/Microsoft): switch to backup communication channels (Teams if Google down; Google Meet if Teams down)
+Code access: all developers maintain local clone of active branches
+IRU MDM outage: device policies persist locally; defer policy changes until service restored
+## 3.2 Ransomware / Destructive Attack
+Immediate: isolate affected devices via IRU Remote Lock / Intune isolate; do NOT pay ransom
+Restore from GitHub (code) and Google Vault (documents) — not from affected devices
+Activate incident response (PROC-202); notify Management Board and CSO immediately
+## 3.3 Key Person Unavailability
+CSO: documented deputy; break-glass accounts with Management Board
+IT Lead: two documented deputies; all IT procedures documented in Confluence
+Critical knowledge: documented in Confluence — no single-person knowledge silos
+# 4. Backup Requirements
+# 5. Testing
+Annual BCP tabletop exercise — scenario-based; CSO leads; Management Board participates
+Annual DR test — restore from backup; verify RTO targets met
+Quarterly backup restoration test — random sample of files/repos
+Semi-annual emergency communication test — can we reach all personnel in 1 hour?
+TSH's 90% remote model is itself a BCP control — no single office failure can disable the workforce. This advantage should be explicitly communicated to clients during RFP due diligence.
+
+[TABLE]
+System / Service | RTO | RPO | Notes
+Microsoft Entra ID (identity) | 2 hours | Near-zero | Cloud-native; break-glass accounts for emergency access
+GitHub Enterprise (code repos) | 2 hours | 1 hour | All repos cloned locally; GitLab mirror maintained
+Google Workspace (email/docs) | 4 hours | 24 hours | Switch to Microsoft Teams/Exchange backup
+Atlassian (Jira/Confluence) | 4 hours | 24 hours | Regular exports to Google Drive
+Slack | 2 hours | N/A (communications only) | Switch to Teams; no persistent data loss
+IRU (Apple MDM) | 8 hours | N/A (device policies persist locally) | Manual emergency device procedures documented
+Microsoft Intune | 8 hours | N/A (device policies persist locally) | Entra ID fallback for device compliance
+Development laptops (total loss) | 24 hours | 1 hour (via GitHub) | Replacement device + IRU/Intune re-enrollment
+[/TABLE]
+
+
+[TABLE]
+Data Type | Backup Method | Frequency | Retention | Test Frequency
+Source code | GitHub Enterprise (geo-redundant) + local clones | Continuous (git) | Indefinite | Monthly — restore test
+Project documentation | Google Drive versioning + Vault | Continuous | 5 years | Quarterly
+Configuration data | Terraform/IaC in GitHub | Continuous | Indefinite | Per deployment
+IRU device config | IRU cloud backup | Continuous | Indefinite | Annually
+Email & chat | Google Vault; Slack export | Continuous | 2 years | Annually
+[/TABLE]

@@ -1,0 +1,98 @@
+APPROVED APPLICATIONS POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+This policy defines which applications TSH personnel may install and use on managed devices. It covers the pre-approved baseline, prohibited software, and the approval process for new tools. IRU manages Apple devices; Intune manages Windows.
+TSH-SEC-POL-015  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines which applications TSH personnel are permitted to install and use on TSH-managed devices and in TSH projects. It establishes the approval process for new tools and the standards for removing unauthorized software.
+Scope: all TSH-managed devices (macOS via IRU, Windows via Intune, iOS/iPadOS via IRU), all SaaS tools accessing TSH or client data, and all developer tooling used in client projects.
+# 2. Application Categories
+# 3. Pre-Approved Application Baseline
+## 3.1 Productivity & Collaboration
+## 3.2 Development Tools
+## 3.3 Security Tools
+# 4. Prohibited Applications
+Installing or using prohibited applications on TSH-managed devices is a disciplinary matter. IRU (macOS/iOS) and Intune (Windows) block prohibited applications automatically where technically possible.
+# 5. Application Approval Process
+## 5.1 How to Request a New Application
+Submit Jira ticket: Project: IT-SECURITY, Type: App Approval Request
+Include: application name, vendor, intended use, data it accesses, number of users
+IT Lead reviews: data access scope, vendor security posture, license model
+CSO approval required for: SaaS accessing client data, AI tools, developer security tools
+Decision within 5 business days. Approved apps added to IRU/Intune catalog.
+## 5.2 Criteria for Approval
+Vendor has documented security practices (SOC 2, ISO 27001, or equivalent)
+Data processed is proportionate to business need
+Application does not transmit TSH or client data to unapproved third parties
+License covers TSH's intended use
+Application can be managed/monitored via IRU or Intune (for endpoint software)
+# 6. IRU (Apple MDM) Application Management
+On TSH Apple devices, applications are managed through IRU:
+Pre-approved apps: pushed automatically to all devices via IRU Blueprint
+Role-specific apps: pushed on-demand when IT Lead activates in IRU for specific device group
+Prohibited apps: blocked via IRU restriction profile — users cannot install them from App Store
+BYOD (personal devices with MAM): only managed apps can access TSH data; personal apps remain separate
+If you need an app that is not in the IRU catalog, submit an IT request. Do not install unapproved software — IRU compliance check will flag it and trigger an IT alert.
+# 7. Browser Policy
+See CFG-306 (macOS Browser & Settings Guide) and CFG-307 (Chrome Management Guide) for full browser configuration requirements. Summary:
+Google Chrome: primary browser — managed via Chrome Enterprise policy pushed by Google Admin
+Safari: permitted on macOS — privacy settings enforced by IRU profile
+Firefox: permitted with IT-approved configuration — no admin extensions without approval
+Browser extensions: only extensions from the approved list (managed by Google Admin for Chrome; IRU profile for Safari)
+Password manager extension: 1Password — mandatory; no browser built-in password saving for work accounts
+
+[TABLE]
+Category | Definition | Approval Required? | Where Managed
+Pre-approved (Baseline) | Standard tools approved for all TSH personnel | No — auto-installed via IRU/Intune | IRU Blueprint / Intune App catalog
+Approved (On-request) | Tools approved for specific roles or projects | Manager + IT Lead approval | Jira request → IRU/Intune push
+Provisional | Under evaluation — 90-day trial with monitoring | CSO + IT Lead approval | Manual install, usage tracked
+Prohibited | Tools that may not be installed or used | N/A — never permitted | Blocked by IRU/Intune policy
+Client-provided | Tools mandated by client environment | PM + CSO acknowledgment | Project-specific, scoped access
+[/TABLE]
+
+
+[TABLE]
+Application | Platform | Notes
+Google Workspace (Gmail, Drive, Docs, Meet) | All | Primary collaboration suite
+Microsoft Teams | All | Client meetings; secondary comms
+Slack Enterprise | All | Internal team communication
+Zoom | macOS, Windows | Video conferencing — approved plan only
+1Password Business | All | Mandatory password manager
+Notion (TSH workspace) | All | Internal knowledge base
+[/TABLE]
+
+
+[TABLE]
+Application | Platform | Notes
+Visual Studio Code | macOS, Windows | Primary IDE — approved extensions list applies
+JetBrains IDEs (WebStorm, PhpStorm, etc.) | macOS, Windows | Licensed via TSH JetBrains account
+Docker Desktop | macOS, Windows | Standard container tooling
+Git / GitHub CLI | All | Mandatory — GitHub Enterprise
+GitHub Copilot Business | macOS, Windows | AI coding assist — see POL-013 for data rules
+Node.js / npm | macOS, Windows | Via nvm; versions per project
+Homebrew | macOS | IRU-managed; approved package list
+TablePlus / DBeaver | macOS, Windows | Database clients — no client PII
+Postman / Bruno | macOS, Windows | API testing — no client credentials stored
+iTerm2 / Terminal | macOS | Standard terminal emulators
+[/TABLE]
+
+
+[TABLE]
+Application | Platform | Notes
+Microsoft Defender for Endpoint | macOS, Windows | Mandatory EDR — auto-installed via IRU/Intune
+IRU agent (Apple MDM) | macOS, iOS | Mandatory device management — auto-enrolled
+Microsoft Intune Company Portal | Windows | Mandatory device management
+Grammarly (non-client data) | Browser extension | No client source code or PII in Grammarly
+[/TABLE]
+
+
+[TABLE]
+Category | Examples | Reason
+Unauthorized AI/LLM tools | ChatGPT Desktop, Claude Desktop, Gemini apps (non-approved) | Data exfiltration risk — see POL-013 for approved AI tools
+Peer-to-peer / torrenting | BitTorrent, uTorrent, LimeWire | Malware vector; legal risk
+Remote access (unauthorized) | TeamViewer (personal), AnyDesk (personal) | Unauthorized remote access vector
+Cryptocurrency wallets/miners | Any crypto mining or trading software | Resource abuse; security risk
+Personal cloud sync on work data | Dropbox personal, personal iCloud Drive for work files | Data residency and leakage risk
+Game clients on managed devices | Steam, Epic Games (on work machine) | Resource and distraction; policy violation
+Anonymizing tools | Tor Browser, anonymous VPNs (non-TSH) | Circumvents security monitoring
+Outdated browsers without MDM policy | Internet Explorer, older Firefox without IT management | Security patching risk
+[/TABLE]

@@ -1,0 +1,51 @@
+PRIVACY & DATA PROTECTION POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+TSH's commitment to GDPR and PDPL compliance. Covers processor obligations for client project data, controller obligations for HR data, and breach notification timelines.
+TSH-SEC-POL-009  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines TSH's commitment to protecting the personal data of employees, clients, and individuals whose data TSH processes. TSH operates under GDPR (EU) as both a Controller (own HR/marketing data) and a Processor (client project data). KSA PDPL applies to data of Saudi residents.
+# 2. Data Protection Principles (GDPR Art. 5)
+# 3. TSH as Data Processor (Client Projects)
+When TSH processes personal data on behalf of a client, TSH acts as a Data Processor. Requirements:
+Data Processing Agreement (CLT-403) in place before any processing begins
+Process only on documented client instructions
+Implement appropriate technical and organisational measures (this ISMS)
+Assist client with Data Subject Rights requests within 30 days
+Notify client of personal data breach within 24 hours (to support their 72-hour GDPR obligation)
+Delete or return all personal data within 30 days of project close
+Sub-processors listed in DPA Annex 3; client notified of changes with 30 days notice
+# 4. Legal Bases — TSH as Controller
+# 5. Cross-Border Transfers
+EU personal data: processed in EU by default (Google EU region, Microsoft EU region)
+Transfers outside EEA: Standard Contractual Clauses (SCCs) in all relevant vendor DPAs
+KSA personal data (PDPL): not transferred outside KSA without SDAIA approval or applicable exception
+UK personal data: UK SCCs or adequacy decision applies
+# 6. Breach Notification
+Personal data breaches follow PROC-205 (Data Breach Notification Procedure). Key timelines:
+Client notification: within 24 hours of TSH becoming aware (to support client's 72h GDPR obligation)
+UODO notification: within 72 hours if risk to data subjects' rights and freedoms
+Data subject notification: without undue delay if high risk
+SDAIA (KSA): within 72 hours for Saudi residents' data
+# 7. Data Subject Rights
+TSH respects and facilitates all data subject rights: access, rectification, erasure, restriction, portability, objection. Requests responded to within 30 days. Contact: privacy@tsh.io.
+
+[TABLE]
+Principle | TSH Implementation
+Lawfulness, fairness, transparency | Legal basis documented for all processing; privacy notices maintained
+Purpose limitation | Data collected for specified purpose only; no secondary use without consent or legal basis
+Data minimisation | Only data strictly necessary for the purpose is collected and retained
+Accuracy | Processes to keep personal data accurate and up to date
+Storage limitation | Retention schedules maintained; data deleted per PROC-209 after retention period
+Integrity & confidentiality | Encryption, access controls, IRU/Intune endpoint management; ISMS controls
+Accountability | This policy + ROPA + PROC-206 risk assessment + CSO as DPO function
+[/TABLE]
+
+
+[TABLE]
+Processing Activity | Legal Basis | Data Subjects
+Employee payroll, contracts, HR | Contract (Art. 6(1)(b)) + Legal obligation (Art. 6(1)(c)) | TSH employees
+Contractor agreements | Contract (Art. 6(1)(b)) | Contractors
+Marketing to prospects | Legitimate interests (Art. 6(1)(f)) — with opt-out | Prospects
+Website analytics | Consent (via cookie banner) | Website visitors
+Security monitoring (employee) | Legitimate interests (Art. 6(1)(f)) — proportionate, documented | TSH personnel
+[/TABLE]

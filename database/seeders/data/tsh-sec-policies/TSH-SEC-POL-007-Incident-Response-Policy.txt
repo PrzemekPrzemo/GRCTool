@@ -1,0 +1,53 @@
+INCIDENT RESPONSE POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Incident classification (P1–P4), roles, notification timelines with template references (PROC-217), scenario playbooks (PROC-218), and post-incident review obligations.
+TSH-SEC-POL-007  |  v2.1  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines the framework for responding to information security incidents at TSH. It establishes classification, roles, notification obligations, and response principles. See PROC-202 for step-by-step procedure, PROC-217 for communication templates, and PROC-218 for scenario-specific playbooks.
+# 2. Incident Classification
+# 3. Response Principles
+Contain first, investigate second — stop the spread before determining root cause
+Preserve evidence — use IRU Lock (not Wipe) on Apple devices during active investigation
+Need-to-know communications — incident details restricted to response team
+Document everything in real time — update REG-009 throughout
+Never pay ransom without Management Board + legal counsel decision
+# 4. Roles
+# 5. Notification Obligations
+When in doubt about notification — notify. The cost of over-notifying is far lower than the cost of late notification. Use PROC-217 templates — they are pre-approved.
+# 6. Communication Templates & Playbooks
+PROC-217 (Incident Communication Templates) contains six pre-approved, ready-to-send templates covering all notification scenarios. Use these during incidents — they are pre-approved and require only [BRACKET] completion.
+PROC-218 (Incident Response Playbooks) provides step-by-step guides for three high-probability scenarios: ransomware/malware, GitHub credential leak, and phishing/account takeover.
+# 7. Post-Incident Review
+P1 incidents: mandatory post-incident report within 2 weeks; presented to Management Board
+P2 incidents: post-incident review within 2 weeks; CSO reviews with IT Lead
+All P1/P2: root cause analysis; lessons learned fed into training (PROC-207) and policy updates
+All incidents: logged in REG-009; retained 3 years
+
+[TABLE]
+Priority | Definition | Examples | Response SLA
+P1 — Critical | Active attack or confirmed breach; business operations severely disrupted | Ransomware; confirmed data exfiltration; admin account compromised | 15 min containment start; CSO leads; Management Board within 1h; client within 24h
+P2 — High | Suspected breach; significant control failure; high-risk vulnerability exploited | Phishing with credential harvest; malware on device; GitHub secret exposed in public repo | Escalate to CSO within 1h; client notification within 24h
+P3 — Medium | Security policy violation; anomalous access; medium CVE in production | Unauthorised software; access review anomaly; Dependabot high finding | IT Lead responds within 4h; CSO informed; address within 7 days
+P4 — Low | Minor policy violation; informational security event | Phishing email reported (no click); wrong-recipient email (no sensitive data) | IT Lead within 24h; log in REG-009; remediate within 30 days
+[/TABLE]
+
+
+[TABLE]
+Role | Responsibility
+CSO | Incident Commander for P1/P2; owns all external notifications; approves containment decisions; post-incident review
+IT Lead | Technical response: device isolation (IRU/Intune), account revocation (Entra ID), log collection, MDE investigation
+Management Board | Notified of P1 within 1 hour; approves major decisions (ransom, client disclosure, press)
+Project Manager | Client communication liaison — coordinates with CSO; updates project risk log
+All Personnel | Report immediately; do not discuss externally; follow IT instructions; do not attempt solo investigation
+[/TABLE]
+
+
+[TABLE]
+Audience | Trigger | Deadline | Template
+Client | Incident affecting client data or delivery capability | 24h from identification | PROC-217 Template #1
+Client — closure | After incident resolved | Within 5 days | PROC-217 Template #5
+UODO (Polish DPA) | Personal data breach — GDPR Art. 33 | 72h from awareness | PROC-217 Template #2
+SDAIA (KSA) | Personal data breach affecting Saudi residents | 72h from awareness | PROC-217 Template #3
+Management Board | P1 incident | Within 1h of P1 classification | PROC-217 Template #4
+NIS2/CERT Polska | Significant incident (NIS2 entities) | 24h early warning; 72h full report | PROC-202 + CSO
+[/TABLE]

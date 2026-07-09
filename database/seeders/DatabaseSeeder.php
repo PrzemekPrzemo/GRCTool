@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             MiddleEastFrameworkSeeder::class,
             // TSH policy & control knowledge base (Policy, PolicyControl, FrameworkCoverage, ComplianceGap)
             TshGrcKnowledgeBaseSeeder::class,
+            // Pełna treść 17 polityk TSH-SEC-POL-001..017, zastępujących merytorycznie starsze POL-XX
+            TshSecPoliciesSeeder::class,
             // Admin user last (depends on roles)
             AdminUserSeeder::class,
         ]);

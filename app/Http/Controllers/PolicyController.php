@@ -67,7 +67,7 @@ class PolicyController extends Controller
 
         $policy->load([
             'owner', 'approver', 'attestations.user', 'documentLinks.evidence', 'versions.author',
-            'parentPolicy', 'childPolicies', 'controls.frameworkMappings',
+            'parentPolicy', 'childPolicies', 'controls.frameworkMappings', 'supersedes', 'supersededBy',
         ]);
         $userAttestation = $policy->attestations()
             ->where('user_id', auth()->id())

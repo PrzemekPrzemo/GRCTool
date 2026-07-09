@@ -1,0 +1,40 @@
+DATA CLASSIFICATION POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines TSH's four-level information classification scheme (RESTRICTED → PUBLIC) and minimum handling requirements for each level.
+TSH-SEC-POL-002  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines TSH's information classification scheme and minimum handling requirements for each level. Correct classification is the foundation of proportionate data protection.
+# 2. Classification Levels
+Client data is CONFIDENTIAL by default and may only be reclassified upward (to RESTRICTED), never downward. When in doubt — classify higher.
+# 3. Classification Rules
+## 3.1 Default Classification
+All information created within TSH projects is classified CONFIDENTIAL by default unless explicitly reclassified by the data owner.
+## 3.2 Always RESTRICTED (regardless of context)
+Authentication credentials — passwords, API keys, tokens, certificates
+Cryptographic private keys
+Personal data of natural persons (GDPR definition)
+Client source code and proprietary algorithms
+Vulnerability reports and penetration test results
+Legal documents and regulatory correspondence
+Financial data — client and TSH
+## 3.3 Labelling
+RESTRICTED and CONFIDENTIAL documents must carry a visible classification label. Digital documents: document metadata and header/footer label. Emails: [RESTRICTED] or [CONFIDENTIAL] in subject line. Code comments: // RESTRICTED: description.
+## 3.4 Handling by Level
+Credentials (passwords, API keys, tokens) must NEVER be stored in code repositories, emails, chat tools, or documents. Use 1Password exclusively. Violations are treated as P2 security incidents.
+
+[TABLE]
+Level | Definition | Examples | Minimum Controls
+RESTRICTED | Highest sensitivity — unauthorised disclosure causes severe harm | Client source code, credentials, keys, PII, financial data | AES-256 encryption at rest + transit; MFA; audit log; NDA; need-to-know access only
+CONFIDENTIAL | Sensitive — disclosure would harm TSH or clients | Security policies, contracts, client project data, architecture diagrams | Encryption in transit; access control; NDA recommended
+INTERNAL | For TSH use only | Internal procedures, meeting notes, staff handbooks | Access control; not shared externally without approval
+PUBLIC | Approved for public release | Marketing materials, public website, job postings | Standard quality control only
+[/TABLE]
+
+
+[TABLE]
+Level | Storage | Sharing | Email | Deletion
+RESTRICTED | Approved encrypted systems only; no unencrypted local storage | NDA mandatory; need-to-know; no third parties without CSO approval | Encrypted email only; no forwarding | Cryptographic erasure; deletion certificate
+CONFIDENTIAL | Standard TSH approved systems; encryption in transit | Clients and NDA-covered third parties permitted | Standard email with care; no mass distribution | Secure deletion within 30 days of project close
+INTERNAL | Any TSH system | TSH personnel only | Internal email OK | Standard deletion on device refresh
+PUBLIC | No restrictions | Anyone | No restrictions | No special process
+[/TABLE]

@@ -837,7 +837,7 @@ controls:
     title: "DLP na poziomie nośników wymiennych i cloud"
     description: >
       Kopiowanie danych L4 na nośniki wymienne jest domyślnie zablokowane przez
-      MDM (Kandji). Upload danych L3/L4 do niezatwierdzonych usług chmurowych
+      MDM (IRU). Upload danych L3/L4 do niezatwierdzonych usług chmurowych
       jest blokowany przez CASB lub politykę sieci. Kontrola Google Drive:
       blokada publicznych linków dla plików L3/L4.
     policy_ref: POL-03
@@ -928,19 +928,19 @@ controls:
 # ─────────────────────────────────────────────────────────────────────────────
 
   - control_id: POL04.DEV.01
-    title: "MDM/UEM — zarządzanie flotą urządzeń (Kandji)"
+    title: "MDM/UEM — zarządzanie flotą urządzeń (IRU, dawniej Kandji)"
     description: >
-      Wszystkie urządzenia korporacyjne są zarządzane przez Kandji MDM.
+      Wszystkie urządzenia korporacyjne są zarządzane przez IRU MDM.
       Urządzenia BYOD wymagają rejestracji w MDM (model MAM/kontener firmowy).
       Conditional Access blokuje urządzenia niespełniające minimalnych wymagań
       (szyfrowanie, screensaver, aktualny OS, aktywny EDR).
     policy_ref: POL-04
-    section_ref: "POL-04 sekcja D.1, D.2; Wytyczne Config Kandji"
+    section_ref: "POL-04 sekcja D.1, D.2; Wytyczne Config IRU"
     control_type: preventive
     implementation_type: technical
     status: partial
     owner: "IT"
-    evidence_type: "Kandji compliance dashboard; enrollment report; Conditional Access config"
+    evidence_type: "IRU compliance dashboard; enrollment report; Conditional Access config"
     review_frequency: monthly
     data_classification_scope: [L2,L3,L4]
     framework_mappings:
@@ -961,19 +961,19 @@ controls:
         mapping_type: full
 
   - control_id: POL04.DEV.02
-    title: "Hardening macOS — Kandji Blueprint"
+    title: "Hardening macOS — IRU Blueprint"
     description: >
-      Standardowy blueprint Kandji wymusza: FileVault 2 (szyfrowanie dysku,
-      escrow w Kandji), screensaver lock po 5 min, Firewall macOS (stealth mode),
+      Standardowy blueprint IRU wymusza: FileVault 2 (szyfrowanie dysku,
+      escrow w IRU), screensaver lock po 5 min, Firewall macOS (stealth mode),
       Gatekeeper (App Store + identified developers only), SIP włączone,
       automatyczne patche bezpieczeństwa (0 dni odroczenia), EDR aktywny.
     policy_ref: POL-04
-    section_ref: "POL-04 Annex D; Wytyczne Config Kandji sekcja 1.1"
+    section_ref: "POL-04 Annex D; Wytyczne Config IRU sekcja 1.1"
     control_type: preventive
     implementation_type: technical
     status: partial
     owner: "IT"
-    evidence_type: "Kandji blueprint config export; compliance score dashboard (cel ≥ 95%)"
+    evidence_type: "IRU blueprint config export; compliance score dashboard (cel ≥ 95%)"
     review_frequency: monthly
     data_classification_scope: [L2,L3,L4]
     framework_mappings:
@@ -991,19 +991,19 @@ controls:
         mapping_type: full
 
   - control_id: POL04.DEV.03
-    title: "Whitelist aplikacji (Kandji Managed Software)"
+    title: "Whitelist aplikacji (IRU Managed Software)"
     description: >
       Tylko aplikacje z zatwierdzonej listy mogą być zainstalowane na urządzeniach
-      korporacyjnych. Kandji Managed Software wymusza listę w trybie Warn
+      korporacyjnych. IRU Managed Software wymusza listę w trybie Warn
       (tymczasowo) → Block (po zatwierdzeniu whitelisty). Gatekeeper na poziomie
       OS jako dodatkowa warstwa.
     policy_ref: POL-04
-    section_ref: "POL-04 sekcja D.3; POL-07; Wytyczne Config Kandji sekcja 1.2"
+    section_ref: "POL-04 sekcja D.3; POL-07; Wytyczne Config IRU sekcja 1.2"
     control_type: preventive
     implementation_type: technical
     status: planned
     owner: "IT / CISO"
-    evidence_type: "Whitelist dokument zatwierdzony; konfiguracja Kandji Managed Software"
+    evidence_type: "Whitelist dokument zatwierdzony; konfiguracja IRU Managed Software"
     review_frequency: quarterly
     data_classification_scope: [L2,L3,L4]
     framework_mappings:
@@ -1025,7 +1025,7 @@ controls:
     description: >
       Utrata lub kradzież urządzenia z dostępem do systemów TSH musi być zgłoszona
       w ciągu 1 godziny do IT/CISO. IT blokuje konta użytkownika i wykonuje
-      zdalne czyszczenie przez Kandji (corporate-owned: pełne wipe;
+      zdalne czyszczenie przez IRU (corporate-owned: pełne wipe;
       BYOD: selektywne wipe kontenera firmowego).
     policy_ref: POL-04
     section_ref: "POL-04 sekcja D.5; POL-06"
@@ -1033,7 +1033,7 @@ controls:
     implementation_type: procedural
     status: planned
     owner: "IT / CISO"
-    evidence_type: "Procedura IR dla utraty urządzeń; log zdarzeń Kandji remote wipe"
+    evidence_type: "Procedura IR dla utraty urządzeń; log zdarzeń IRU remote wipe"
     review_frequency: per_incident
     data_classification_scope: [L2,L3,L4]
     framework_mappings:

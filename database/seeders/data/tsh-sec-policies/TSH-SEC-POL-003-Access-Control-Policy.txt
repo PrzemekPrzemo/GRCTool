@@ -1,0 +1,79 @@
+ACCESS CONTROL POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+This policy defines how access to TSH systems is granted, managed, reviewed, and revoked. It covers identity management, MFA, privileged access, and the full provisioning lifecycle.
+TSH-SEC-POL-003  |  v2.1  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines how access to TSH systems and data is granted, managed, reviewed, and revoked. It applies to all TSH personnel, contractors, and third parties.
+# 2. Identity & Access Principles
+Least privilege — access granted only to what is needed for the role
+Need to know — data access justified by business need
+Separation of duties — no single person controls complete sensitive processes
+Zero trust — no implicit trust based on network location
+Just-in-time — privileged access activated on demand, not permanently assigned
+# 3. Identity Management
+## 3.1 Identity Providers
+## 3.2 Account Types
+# 4. MFA Requirements
+Multi-factor authentication is mandatory for all accounts without exception.
+SMS OTP is NOT permitted as sole authentication factor for any account. It may only be used as a last-resort emergency fallback with prior CSO approval.
+# 5. Privileged Access Management
+## 5.1 Entra ID PIM (Just-in-Time)
+No permanent privileged role assignments — all elevated roles via PIM activation
+Maximum activation duration: 4 hours. Requires business justification.
+All PIM activations logged and reviewed weekly by IT Lead
+Emergency access (break-glass) accounts: two accounts, stored offline, CSO and IT Lead only
+## 5.2 Privileged Actions Requiring PIM
+Entra ID Global Admin, Privileged Role Admin, Security Admin
+Google Workspace Super Admin
+GitHub Enterprise Owner
+IRU (Apple MDM) admin actions — device wipe, policy push, enrollment changes
+Production environment access (client systems)
+# 6. Access Provisioning & Deprovisioning
+## 6.1 Onboarding
+Accounts provisioned T-2 business days before start date. IT receives HR notification via automated workflow. Standard role profile applied; additional access requires line manager approval in Jira ticket.
+## 6.2 Offboarding
+# 7. Access Reviews
+All user accounts: quarterly review — IT Lead coordinates, managers confirm
+Privileged accounts: monthly — CSO reviews PIM activation logs
+Service accounts: quarterly — IT Lead validates each account's active use
+External/contractor accounts: at project milestones and at engagement end
+Unconfirmed accounts in access review are suspended after 7 calendar days of non-response. Access is not deleted until manager explicitly confirms removal.
+
+[TABLE]
+System | Primary IdP | Provisioning | Notes
+All corporate apps | Microsoft Entra ID | SCIM automated | Primary SSO source of truth
+Google Workspace | Entra ID via SAML | SCIM from Entra | Federated; no direct Google login
+GitHub Enterprise | Entra ID (SAML) | SCIM from Entra | SSO enforced; PATs restricted
+Atlassian (Jira/Confluence) | Entra ID (SAML) | SCIM from Entra | SSO mandatory
+Apple devices (macOS/iOS) | IRU (Apple MDM) | ABM + IRU enrollment | IRU = TSH Apple device management platform
+Windows devices | Microsoft Intune | Autopilot + Entra join | Entra hybrid join
+Slack Enterprise | Entra ID (SAML) | SCIM from Entra | SSO enforced
+[/TABLE]
+
+
+[TABLE]
+Type | Description | MFA Requirement | Review Frequency
+Standard User | All TSH employees and contractors | Mandatory — TOTP or push | Quarterly
+Admin Account | IT Lead, CSO, designated admins | Mandatory — FIDO2/passkey only | Monthly
+Service Account | CI/CD, automation, integrations | N/A (certificate/secret) | Quarterly
+Shared Account | Forbidden except approved exceptions | CSO approval required | Monthly
+Guest/External | Client project access only | Mandatory — TOTP minimum | Per project end
+[/TABLE]
+
+
+[TABLE]
+Account Type | Required MFA Method | Fallback Allowed?
+Admin accounts (Entra PIM, Google Super Admin) | FIDO2 hardware key or passkey | No — FIDO2 only
+Standard employees | Microsoft Authenticator (number matching) | TOTP app as fallback
+Contractors | Authenticator app (TOTP) | No SMS
+Service accounts | Certificate-based or managed identity | No interactive MFA
+[/TABLE]
+
+
+[TABLE]
+Scenario | Revocation Timeline | Method
+Voluntary resignation | End of last working day | SCIM deprovision; IRU device retire/wipe
+Involuntary termination | Within 1 hour of HR notification | Immediate Entra disable; emergency IRU wipe if needed
+Contractor end of engagement | Within 4 hours of contract end | SCIM deprovision; all access reviewed
+Security incident (insider) | Immediate — IT on-call | Emergency disable; escalate to CSO
+[/TABLE]
