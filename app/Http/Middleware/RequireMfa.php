@@ -13,6 +13,10 @@ class RequireMfa
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (! config('security.mfa_required', true)) {
+            return $next($request);
+        }
+
         $user = $request->user();
         if (! $user) {
             return $next($request);
