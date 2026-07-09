@@ -97,10 +97,11 @@
         <div class="pt-2 border-t border-slate-100">
             <label class="flex items-center gap-3 cursor-pointer">
                 <div class="relative" x-data="{ enabled: {{ $settings['azure_enabled'] === '1' ? 'true' : 'false' }} }">
-                    <input type="checkbox" name="azure_enabled" value="1" class="sr-only"
-                           {{ $settings['azure_enabled'] === '1' ? 'checked' : '' }}>
-                    <div class="w-10 h-6 rounded-full border-2 transition-colors cursor-pointer
-                                {{ $settings['azure_enabled'] === '1' ? 'bg-emerald-500 border-emerald-500' : 'bg-slate-200 border-slate-300' }}">
+                    <input type="checkbox" name="azure_enabled" value="1" class="sr-only" x-model="enabled">
+                    <div class="w-10 h-6 rounded-full border-2 transition-colors cursor-pointer"
+                         :class="enabled ? 'bg-emerald-500 border-emerald-500' : 'bg-slate-200 border-slate-300'">
+                        <div class="w-4 h-4 bg-white rounded-full shadow transform transition-transform mt-0.5"
+                             :class="enabled ? 'translate-x-4' : 'translate-x-0.5'"></div>
                     </div>
                 </div>
                 <div>
