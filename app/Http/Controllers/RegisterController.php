@@ -6,6 +6,7 @@ use App\Models\AiTool;
 use App\Models\AssetDisposal;
 use App\Models\ChangeRequest;
 use App\Models\ComplianceCalendarTask;
+use App\Models\ComplianceObligation;
 use App\Models\RaciEntry;
 use Illuminate\View\View;
 
@@ -60,5 +61,14 @@ class RegisterController extends Controller
         $tasks = ComplianceCalendarTask::orderBy('ref')->get()->groupBy('frequency');
 
         return view('registers.compliance-calendar', compact('tasks'));
+    }
+
+    public function complianceObligations(): View
+    {
+        abort_unless(auth()->user()->can('compliance.view'), 403);
+
+        $obligations = ComplianceObligation::with('owner')->orderBy('sort_order')->get()->groupBy('category');
+
+        return view('registers.compliance-obligations', compact('obligations'));
     }
 }

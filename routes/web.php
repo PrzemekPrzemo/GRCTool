@@ -340,6 +340,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('registers/change-requests', [RegisterController::class, 'changeRequests'])->name('registers.change-requests');
     Route::get('registers/disposals', [RegisterController::class, 'disposals'])->name('registers.disposals');
     Route::get('registers/compliance-calendar', [RegisterController::class, 'complianceCalendar'])->name('registers.compliance-calendar');
+    Route::get('registers/compliance-obligations', [RegisterController::class, 'complianceObligations'])->name('registers.compliance-obligations');
     Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
     Route::post('compliance/{assessment}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
     Route::post('compliance/{assessment}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');

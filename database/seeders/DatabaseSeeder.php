@@ -38,6 +38,8 @@ class DatabaseSeeder extends Seeder
             TshSecNewRegistersSeeder::class,
             // KPI/KRI dashboard (REG-013)
             TshSecIndicatorsSeeder::class,
+            // Rejestr obowiązków compliance (REG-014)
+            TshSecComplianceObligationsSeeder::class,
         ]);
     }
 }
