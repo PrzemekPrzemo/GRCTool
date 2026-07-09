@@ -18,18 +18,31 @@ use Illuminate\Support\Str;
  * do już istniejących modeli GRCTool. Rejestry bez odpowiednika w schemacie
  * (REG-003, 004, 006, 007, 013, 015) mają osobne seedery.
  *
- * Rejestr "owner"/"approved by" podaje nazwy ról (CSO, IT Lead, Tech Lead...),
- * nie realne konta — jedyna rola z realnym kontem w systemie to CSO
- * (ciso@grc.local). Inne role są pomijane (owner_id = null) zamiast
- * fabrykować błędne powiązania.
+ * Rejestr "owner"/"approved by" podaje nazwy ról (CSO, IT Lead, Tech Lead...).
+ * Role z jednoznacznym, pojedynczym właścicielem mają realne konto
+ * (patrz TshTeamUsersSeeder); role zbiorowe/bez wskazanej osoby (np.
+ * "Developer") pozostają owner_id = null zamiast fabrykować powiązanie.
  */
 class TshSecRegistersSeeder extends Seeder
 {
     private ?int $cisoId = null;
 
+    /** @var array<string,?int> */
+    private array $roleMap = [];
+
     public function run(): void
     {
         $this->cisoId = User::where('email', 'ciso@grc.local')->value('id');
+        $this->roleMap = [
+            'CSO' => $this->cisoId,
+            'IT Lead' => User::where('email', 'it.lead@grc.local')->value('id'),
+            'Tech Lead' => User::where('email', 'tech.lead@grc.local')->value('id'),
+            'Dev Lead' => User::where('email', 'tech.lead@grc.local')->value('id'),
+            'HR Lead' => User::where('email', 'hr.lead@grc.local')->value('id'),
+            'HR' => User::where('email', 'hr.lead@grc.local')->value('id'),
+            'PM' => User::where('email', 'pm@grc.local')->value('id'),
+            'CEO' => User::where('email', 'ceo@grc.local')->value('id'),
+        ];
 
         $this->seedRisks();
         $this->seedOperationalRisks();
@@ -40,9 +53,22 @@ class TshSecRegistersSeeder extends Seeder
         $this->seedExceptions();
     }
 
+    /**
+     * Rejestr podaje czasem złożone przypisania ("CSO / IT Lead", "PM (per project)").
+     * Za realnego właściciela przyjmujemy pierwszą rolę wymienioną w polu, bo to ona
+     * jest w źródle wypisana jako accountable/primary.
+     */
     private function resolveOwner(string $role): ?int
     {
-        return str_contains($role, 'CSO') ? $this->cisoId : null;
+        $primary = trim(preg_split('/[\/+]/', $role)[0]);
+
+        foreach ($this->roleMap as $pattern => $userId) {
+            if ($userId && str_starts_with($primary, $pattern)) {
+                return $userId;
+            }
+        }
+
+        return null;
     }
 
     private function seedRisks(): void
