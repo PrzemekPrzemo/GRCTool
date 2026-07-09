@@ -1,0 +1,29 @@
+CLEAR DESK & SCREEN POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Minimises risk of information exposure through unattended screens and unsecured documents. Covers screen lock enforcement (IRU/Intune), screen sharing protocol, clear desk, and shared spaces.
+TSH-SEC-POL-012  |  v2.1  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This policy reduces the risk of unauthorised access to information through unattended screens, printed documents, and unsecured workspaces. It applies to all TSH personnel — remote workers and any office or co-working space use.
+# 2. Screen Security
+## 2.1 Screen Lock
+Lock your screen whenever you leave your device — even briefly. Shortcut: Cmd+Ctrl+Q (macOS) or Win+L (Windows).
+Automatic screen lock after 5 minutes of inactivity — enforced by IRU (macOS/iOS) and Intune (Windows). Do not disable or extend this.
+Strong password or biometric (Touch ID / Face ID) required to unlock — never use no-lock or a simple PIN on work devices.
+Require password immediately after screen lock — set to "immediately" in macOS System Settings → Lock Screen.
+## 2.2 Before Screen Sharing
+Lock or close any windows containing CONFIDENTIAL or RESTRICTED information before starting screen share.
+Share only the specific window needed — not full screen — when sensitive content is visible elsewhere.
+Check background before joining video calls: no whiteboards, sensitive documents, or second screens with confidential content visible.
+Disable notifications during calls: macOS → Focus → Do Not Disturb. Notifications may reveal sensitive message previews.
+# 3. Clear Desk
+No physical documents classified CONFIDENTIAL or higher left face-up on desk when unattended.
+At end of working session: all documents stored securely or face-down; nothing left visible overnight.
+Printed documents: collect immediately from printer; do not leave unattended.
+Documents no longer needed: cross-cut shred — do not put in general bin or recycling.
+Whiteboard: photograph sensitive content, then erase before leaving the space.
+# 4. Visitors & Shared Spaces
+Clear all sensitive materials from view before any visitor enters your workspace.
+In co-working spaces: treat every surrounding person as a potential observer — use privacy screen, position monitor away from walkways.
+Never leave device unattended and unlocked in any shared or public space — this is a P3 security incident if discovered.
+# 5. Compliance
+Violations are reported to CSO. IT Lead performs periodic random compliance checks (quarterly). Repeated violations addressed through HR process. IRU and Intune enforce screen lock technically — any attempt to disable will be logged and flagged.

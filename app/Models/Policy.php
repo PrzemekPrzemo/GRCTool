@@ -20,6 +20,7 @@ class Policy extends Model
         'isms_type', 'classification', 'current_version', 'effective_from', 'next_review_due',
         'review_cycle_months', 'owner_id', 'owner_role', 'status', 'approved_by', 'approved_at',
         'framework_mappings', 'attestation_required', 'parent_policy_id', 'document_ref', 'audience',
+        'supersedes_policy_id',
     ];
 
     protected $casts = [
@@ -68,5 +69,15 @@ class Policy extends Model
     public function controls(): HasMany
     {
         return $this->hasMany(PolicyControl::class);
+    }
+
+    public function supersedes(): BelongsTo
+    {
+        return $this->belongsTo(Policy::class, 'supersedes_policy_id');
+    }
+
+    public function supersededBy(): HasMany
+    {
+        return $this->hasMany(Policy::class, 'supersedes_policy_id');
     }
 }

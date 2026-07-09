@@ -1,0 +1,48 @@
+ACCEPTABLE USE POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines acceptable and unacceptable use of TSH systems, devices, and data for all personnel. Covers devices (IRU/Intune), passwords, email, AI tools, and prohibited activities.
+TSH-SEC-POL-004  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines acceptable and unacceptable use of TSH systems, networks, devices, and data. It applies to all TSH employees, contractors, and third parties. Violations may result in disciplinary action up to and including termination.
+# 2. Acceptable Use
+## 2.1 Work Devices
+Use TSH-managed devices (IRU-enrolled for Apple; Intune-enrolled for Windows) for TSH work
+Keep devices up to date — critical patches deploy automatically via IRU/Intune; do not defer more than 48 hours
+Lock screen when leaving device unattended — enforced automatically after 5 minutes
+Do not share your device with family or other non-TSH personnel
+Only install applications from the TSH approved list (POL-015); request new apps via Jira IT ticket
+## 2.2 Accounts & Passwords
+Use 1Password for all passwords — no other password managers, no browser password saving for work accounts
+Never share credentials — each person has their own account; shared accounts are prohibited except CSO-approved exceptions
+Never reuse passwords across systems
+Report suspected account compromise to IT immediately
+## 2.3 Internet & Email
+Acceptable: work-related research, professional development, reasonable personal use that does not consume excessive resources
+Email: apply the same care as written correspondence — once sent, cannot be recalled
+Do not click links or open attachments in suspicious emails — report to IT (it@tsh.io)
+Do not forward work emails to personal email accounts
+## 2.4 Data Handling
+Access only data necessary for your role (least privilege)
+Store work data in approved TSH systems (Google Drive, GitHub, Confluence) — not personal cloud storage
+Do not copy client RESTRICTED data to personal devices or services without CSO approval
+Follow data classification labels — do not share CONFIDENTIAL data beyond its permitted audience
+## 2.5 AI Tools
+AI tools are permitted only per the approved list in POL-013. Never submit client source code, personal data, or CONFIDENTIAL/RESTRICTED information to any AI tool not explicitly approved by the CSO. This includes public ChatGPT, Gemini, Claude web interfaces unless approved.
+# 3. Unacceptable Use
+The following activities are prohibited on TSH systems and managed devices, without exception.
+# 4. Monitoring
+TSH monitors use of managed devices and corporate systems for security purposes. This includes endpoint telemetry via Microsoft Defender, device compliance via IRU/Intune, email scanning, and access logs. Monitoring is proportionate and focused on security threats, not general surveillance.
+# 5. Reporting Violations
+Report suspected violations of this policy to the CSO (cso@tsh.io) or IT Lead (it@tsh.io). Reports made in good faith will not result in retaliation. Anonymous reporting: security@tsh.io.
+
+[TABLE]
+Category | Prohibited Activities
+Illegal activity | Accessing, storing, or distributing illegal content; copyright infringement; fraud
+Harassment | Any form of harassment, bullying, or discrimination via TSH systems
+Circumventing security | Disabling MDE, IRU/Intune management, firewalls, or any security control; using Tor or anonymising proxies to bypass monitoring
+Unauthorised access | Accessing systems, accounts, or data you are not authorised to access
+Prohibited software | Installing unapproved software, torrenting tools, crypto miners, game clients on managed devices
+Data exfiltration | Transferring bulk company or client data to personal storage without authorisation
+AI misuse | Submitting client code, PII, or CONFIDENTIAL data to unapproved AI services (see POL-013)
+Credential misuse | Storing passwords in browsers, sharing credentials, using others' accounts
+[/TABLE]

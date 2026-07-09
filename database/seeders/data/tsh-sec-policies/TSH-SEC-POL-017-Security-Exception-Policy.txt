@@ -1,0 +1,37 @@
+SECURITY EXCEPTION POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines the process for requesting, approving, and tracking exceptions to TSH security policies. All exceptions require CSO approval, have a maximum 6-month duration, and are logged in REG-012.
+TSH-SEC-POL-017  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines the process for requesting, approving, documenting, and reviewing exceptions to TSH security policies. Security exceptions are necessary when a strict policy requirement cannot be met without unacceptable business impact. This policy applies to all TSH personnel and all 16 TSH security policies.
+# 2. Exception Principles
+No exception is permanent — all exceptions have a defined end date (maximum 6 months)
+All exceptions require CSO approval — verbal approvals are not valid
+Exceptions are compensating controls, not policy bypasses — the risk must still be managed
+Exceptions are auditable — documented in REG-012 (Exception Register)
+Zero tolerance exceptions — certain areas cannot be excepted: MFA requirement; encryption of RESTRICTED data; client data handling rules; GDPR breach notification timelines
+# 3. Exception Types
+# 4. Exception Request Process
+Submit exception request to CSO via Jira: IT-SECURITY → Security Exception Request
+Include: policy affected; specific requirement being excepted; business justification; risk assessment; proposed compensating controls; requested duration
+CSO reviews within 3 business days; may request additional information
+If approved: CSO documents in REG-012 with approval, conditions, and review date
+If rejected: requester notified with reason; may escalate to Management Board
+Exception tracked until expiry; IT Lead sends reminder 14 days before expiry
+At expiry: exception either remediated (control gap fixed), renewed (with fresh approval), or escalated
+# 5. Compensating Controls
+Every approved exception must include compensating controls that reduce the residual risk to acceptable level. Examples:
+Cannot apply MFA to legacy system → network isolation + additional monitoring
+Cannot encrypt data at rest on legacy platform → additional access logging + quarterly access review
+Cannot rotate API key immediately → rotate within 48h; add key to monitoring for anomalous use
+# 6. Exception Register (REG-012)
+IT Lead maintains REG-012 (Security Exception Register). Monthly review by CSO. Quarterly summary to Management Board. All exceptions visible to CSO and Management Board — no hidden exceptions.
+If you are working around a security control because it is inconvenient, that is a policy violation — not an exception. Exceptions exist for genuine business or technical constraints. When in doubt, ask CSO.
+
+[TABLE]
+Type | Example | Maximum Duration | Escalation
+Technical exception | Legacy system cannot support TLS 1.2 immediately | 90 days (renewable once) | IT Lead + CSO
+Process exception | Onboarding delay prevents training completion on Day 1 | 30 days | Line manager + CSO
+Client-driven exception | Client requires specific tool not on TSH approved list | Project duration | PM + CSO
+Regulatory/contractual | Conflict between two regulatory requirements | Until resolved | CSO + Legal
+[/TABLE]

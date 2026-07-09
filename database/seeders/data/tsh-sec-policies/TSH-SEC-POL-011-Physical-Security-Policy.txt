@@ -1,0 +1,24 @@
+PHYSICAL SECURITY POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Physical security requirements for TSH's remote-first workforce: home offices, co-working spaces, device handling, and lost/stolen device procedures (IRU/Intune remote wipe).
+TSH-SEC-POL-011  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+TSH operates ~90% remotely. This policy defines physical security requirements for home offices, co-working spaces, client premises, and device handling. Applies to all TSH personnel.
+# 2. Home Office Requirements
+Dedicated workspace with door that can be closed during sensitive calls or video meetings
+Screen not visible to non-TSH household members during work
+Device locked when leaving workspace — enforced automatically by IRU/Intune after 5 minutes
+Printed Confidential documents: stored securely; cross-cut shredded when no longer needed — not binned
+No physical access by non-TSH persons to work device storage areas
+# 3. Co-working & Public Spaces
+Privacy screen recommended for MacBooks and Windows laptops in public
+Sensitive calls and video meetings: use headphones; step to a private area
+Never leave device unattended — even briefly — in a public space
+Public Wi-Fi: VPN mandatory (IRU/Intune enforce Always-On VPN profile for public networks)
+Shoulder surfing: be aware of surroundings; position screen to minimise exposure
+# 4. Device Physical Security
+Theft/loss: report to IT within 1 HOUR — IRU Remote Wipe (Apple) or Intune Wipe (Windows) will be initiated
+Handover of device to repair shop: create Activation Lock bypass via IRU before any service; retrieve device promptly
+Device disposal: follow PROC-209 (Asset Disposal & Media Sanitisation) — no device given away or sold without secure erasure
+Company devices: do not allow personal use by children or family members
+Lost or stolen device: call IT immediately — it@tsh.io / [IT emergency number]. Time matters. IRU Remote Wipe will be activated immediately to protect client data.

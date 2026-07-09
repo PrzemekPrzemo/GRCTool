@@ -1,0 +1,72 @@
+SECURITY LOGGING & MONITORING POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+No-SIEM monitoring architecture (Entra ID + MDE + Google + GitHub), three-layer DLP (Google Admin + MDE + IRU MAM), email authentication (SPF/DKIM/DMARC), log retention, and alert triggers. DLP config: CFG-308.
+TSH-SEC-POL-014  |  v2.2  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines TSH's security monitoring architecture, logging requirements, DLP controls, and alert triggers. TSH uses a native-platform monitoring approach — see Section 2. DLP configuration details are in CFG-308.
+# 2. Monitoring Architecture — No-SIEM Decision
+TSH has made an explicit, documented decision not to operate a dedicated SIEM. This is appropriate for a cloud-native, infrastructure-free operational model. Equivalent coverage is achieved through four integrated platforms:
+This no-SIEM decision is documented in REG-001 (Risk Register). Annual review confirms continued appropriateness. If TSH starts hosting own infrastructure, SIEM evaluation is triggered automatically.
+# 3. Data Loss Prevention (DLP)
+TSH implements DLP across three layers. Configuration details and step-by-step setup: CFG-308 (DLP Configuration Guide).
+# 4. Email Authentication
+TSH enforces email authentication for the tsh.io domain to prevent spoofing and phishing using our domain. Configuration details: CFG-301 Section 6.
+# 5. Mandatory Log Sources
+# 6. Alert Triggers — Immediate CSO Notification
+Admin account sign-in from new country or outside 08:00–22:00 CET
+PIM activation for Global Admin, Privileged Role Admin, Security Admin
+IRU device wipe/erase command executed (who, when, which device)
+MDE: malware detection or ransomware behaviour
+MDE DLP: RESTRICTED data copied to USB or unapproved cloud
+GitHub: secret pushed to any repository
+Google Workspace: government-backed attack warning
+Google DLP: RESTRICTED-labelled file shared externally
+Entra ID Identity Protection: HIGH risk user or sign-in
+5+ failed MFA attempts on any account within 10 minutes
+# 7. Review Schedule
+
+[TABLE]
+Platform | What it monitors | SIEM function
+Microsoft Entra ID Identity Protection | All sign-ins, MFA events, risky users/sign-ins, PIM activations, admin changes | Identity threat detection; impossible travel; credential stuffing
+Microsoft Defender for Endpoint (MDE) | All managed endpoints via IRU (macOS/iOS) and Intune (Windows): behaviour, file activity, network, vulnerability status, DLP violations | EDR; behavioural detection; endpoint DLP; automated response
+Google Workspace Security Center | Gmail phishing/malware, Drive anomalies, admin audit, DLP matches, government-backed attack warnings | Collaboration threat detection; data access monitoring
+GitHub Advanced Security | Secret scanning, Dependabot CVE alerts, CodeQL SAST, push protection violations, org audit log | CI/CD and supply chain monitoring
+[/TABLE]
+
+
+[TABLE]
+Layer | Platform | What it controls
+Email & Drive DLP | Google Workspace Admin — Security → DLP | Content scanning: RESTRICTED/CONFIDENTIAL labels, credit cards, IBAN, PII patterns. Actions: block external share (RESTRICTED), warn (CONFIDENTIAL), alert IT Lead.
+Endpoint DLP | Microsoft Defender for Endpoint (MDE) | File operations on all managed devices (macOS via IRU, Windows via Intune): USB copy, upload to unapproved cloud, print of sensitive content. RESTRICTED violations alert IT Lead immediately.
+Mobile/BYOD DLP | IRU App Protection Policy (Apple MAM) | BYOD iPhones: blocks copy-paste from managed apps to personal apps; blocks screen capture; selective wipe on offboarding without touching personal data.
+[/TABLE]
+
+
+[TABLE]
+Standard | Status | Purpose
+SPF (Sender Policy Framework) | Active — verify via: dig TXT tsh.io | grep spf | Authorises legitimate senders (Google, Atlassian) for tsh.io
+DKIM (DomainKeys Identified Mail) | Active — verify via: mxtoolbox.com/dkim.aspx | Cryptographic signature proving emails are from TSH and unmodified
+DMARC | Active — target: p=reject | Instructs receiving servers to reject spoofed tsh.io emails; daily abuse reports to IT Lead
+[/TABLE]
+
+
+[TABLE]
+System | What to Log | Retention | Platform
+Microsoft Entra ID | All sign-ins, MFA events, PIM activations, admin actions, CA results, Identity Protection risks | 90 days (Entra) + 12 months (Log Analytics) | Entra ID + Azure Monitor
+Google Workspace | Admin audit, login audit, Drive activity, Gmail metadata, DLP matches | 6 months (Vault); 1 year (Audit Logs) | Google Admin + Vault
+GitHub Enterprise | Org audit: push, merge, secret scanning alerts, access changes, workflow runs | 90 days GitHub; monthly export to Drive | GitHub Enterprise Audit
+IRU (Apple MDM) | Enrollment/unenrollment, wipe commands, policy push, compliance changes, admin actions | 6 months | IRU Admin Console
+Microsoft Defender for Endpoint | Alerts, device timeline, vulnerability findings, DLP policy matches | 180 days | MDE Security portal
+[/TABLE]
+
+
+[TABLE]
+Review | Frequency | Owner
+Entra ID Identity Protection risk events | Weekly | IT Lead
+IRU device compliance report | Weekly | IT Lead
+MDE alert queue | Weekly | IT Lead
+Google DLP incident review | Weekly | IT Lead
+GitHub secret scanning + Dependabot critical | Daily (automated) + weekly manual | IT Lead / Tech Lead
+Full cross-platform security review | Monthly | CSO
+SIEM architecture decision review | Annual | CSO
+[/TABLE]

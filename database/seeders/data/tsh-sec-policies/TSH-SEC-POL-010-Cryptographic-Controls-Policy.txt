@@ -1,0 +1,57 @@
+CRYPTOGRAPHIC CONTROLS POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Defines approved algorithms (AES-256, TLS 1.3, Ed25519), prohibited algorithms (MD5, SHA-1, DES, RC4, TLS 1.0/1.1), and key management requirements including IRU-escrowed FileVault keys.
+TSH-SEC-POL-010  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy defines approved cryptographic algorithms, key lengths, and protocols for all TSH systems and client deliverables. It establishes prohibited algorithms and key management requirements.
+# 2. Approved Algorithms & Minimum Key Lengths
+# 3. Prohibited (Do Not Use)
+The following are permanently prohibited in all new implementations and must be removed from existing ones on next update cycle.
+# 4. Key Management
+## 4.1 Key Generation
+Keys generated using cryptographically secure random number generator (OS CSPRNG)
+Keys generated at the highest classification level of data they protect
+Asymmetric key pairs: private key never leaves the system/service that generated it
+## 4.2 Key Storage
+RESTRICTED data keys: Cloud KMS (Google Cloud KMS, AWS KMS, Azure Key Vault) — CMEK preferred
+Device encryption keys: IRU-escrowed (FileVault recovery key) or Intune-escrowed (BitLocker)
+Code signing keys: certificate-based via TSH PKI or cloud CA
+Application secrets: 1Password or platform secret manager (GitHub Secrets, GCP Secret Manager)
+## 4.3 Key Rotation
+Certificate inventory maintained in REG-005 (Certificate & Key Tracker). IT Lead reviews expiring certificates weekly.
+Any cryptographic key compromise must be treated as a P1 security incident. All systems using the compromised key must be identified and re-keyed immediately.
+
+[TABLE]
+Use Case | Algorithm | Minimum Key Length | Notes
+Symmetric encryption (data at rest) | AES-GCM | 256-bit | Platform-native: BitLocker (Windows), FileVault (macOS/IRU), cloud KMS
+Data in transit | TLS 1.3 (preferred); TLS 1.2 minimum | N/A | TLS 1.0, 1.1, SSL v2/v3 prohibited
+Asymmetric / key exchange | ECDH P-256; RSA | P-256 / RSA 4096-bit | TLS handshake; key wrapping
+Digital signatures | Ed25519; ECDSA P-256 | 256-bit | Code signing; SSH keys; document signing
+Password hashing | Argon2id | m=64MB, t=3, p=4 | bcrypt cost≥12 as alternative; scrypt N≥16384
+Hashing (integrity) | SHA-256 / SHA-384 / SHA-512 | 256-bit minimum | MD5 and SHA-1 prohibited for all security uses
+Certificate validity | 90 days (ACME/Let's Encrypt) | P-256 or RSA 4096 | Automated renewal; tracked in REG-005
+[/TABLE]
+
+
+[TABLE]
+Prohibited | Reason | Migration Path
+MD5 | Broken — collision attacks | SHA-256 or SHA-3
+SHA-1 | Weakened — practical collision attacks demonstrated | SHA-256
+DES / 3DES | Key length insufficient; deprecated | AES-256-GCM
+RC4 | Multiple practical attacks | ChaCha20-Poly1305 or AES-GCM
+SSL v2/v3 | Numerous vulnerabilities (POODLE, DROWN) | TLS 1.3
+TLS 1.0 / TLS 1.1 | Deprecated by RFC 8996; BEAST, POODLE attacks | TLS 1.2 minimum; TLS 1.3 preferred
+RSA < 2048-bit | Factorisation risk | RSA 4096-bit or ECDSA P-256
+ECB mode | Does not hide data patterns | CBC with IV or GCM
+[/TABLE]
+
+
+[TABLE]
+Key Type | Rotation Frequency | Method
+TLS certificates (Let's Encrypt) | 90 days | Automated via ACME/certbot; tracked in REG-005
+API keys / service tokens | Annual minimum; on personnel change; on compromise | Rotation via 1Password; update downstream references
+SSH keys | Annual; on device change | Revoke old key in GitHub/Entra; generate new Ed25519
+Encryption keys (cloud KMS) | Annual (automatic rotation enabled) | Cloud KMS automatic rotation
+FileVault recovery keys (macOS/IRU) | On device re-enrollment or on suspicion of compromise | IRU-managed re-escrow
+LAPS local admin passwords (macOS/IRU) | 30 days automatic | IRU LAPS automated rotation
+[/TABLE]

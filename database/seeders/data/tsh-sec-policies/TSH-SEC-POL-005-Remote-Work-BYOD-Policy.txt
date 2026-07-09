@@ -1,0 +1,45 @@
+REMOTE WORK & BYOD POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+TSH is ~90% remote. Device requirements: IRU for all Apple devices (MacBook/iPhone/iPad), Intune for Windows. BYOD via IRU MAM. Network security, physical requirements, and incident reporting.
+TSH-SEC-POL-005  |  v2.2  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+TSH operates as a ~90% remote company. This policy defines security requirements for remote work, home offices, co-working spaces, and personal device (BYOD) use. Applies to all TSH personnel globally.
+# 2. Device Requirements
+## 2.1 Company-Issued Devices
+IRU is TSH's Apple device management platform. All Apple devices — MacBooks, iPhones, iPads — are managed exclusively through IRU. Do not attempt to enroll Apple devices in any other MDM system.
+## 2.2 Personal Devices (BYOD)
+Personal devices may only access TSH Confidential data after enrollment in the appropriate platform:
+macOS personal: IRU user enrollment (limited scope — work data isolated, personal data untouched)
+iOS/iPadOS personal: IRU App Protection Policy (MAM without full enrollment)
+Windows personal: Microsoft Intune MAM enrollment
+Android personal: Microsoft Intune MAM work profile
+BYOD devices never used for RESTRICTED data without explicit CSO approval
+# 3. Network Security
+## 3.1 Home Networks
+WPA3 or WPA2-AES minimum — WEP and WPA (TKIP) prohibited
+Router default password must be changed
+Dedicated work SSID recommended (separate from IoT/family devices)
+No VPN required for standard corporate apps — Entra ID Conditional Access enforces MFA + device compliance
+## 3.2 Public Wi-Fi
+Always-on VPN required when using public Wi-Fi (airports, hotels, cafes)
+Mobile hotspot preferred over untrusted public networks
+VPN policy enforced by IRU (Apple) and Intune (Windows) MDM profiles
+# 4. Physical Security at Remote Locations
+Screen lock within 5 minutes of inactivity — enforced by IRU/Intune
+Privacy screen recommended in public spaces
+Laptop never left unattended in public — theft reported to IT within 1 hour
+Sensitive calls and video meetings conducted in private — headphones in public
+Printed Confidential documents: cross-cut shredded when no longer needed
+# 5. Incident Reporting
+Report immediately to IT Lead (it@tsh.io) and CSO (cso@tsh.io):
+Lost or stolen device — IRU (Apple) or Intune (Windows) remote wipe initiated immediately
+Suspected compromise of any work account
+Lost/stolen device: call IT Lead immediately. IRU remote wipe will be activated within minutes. Time is critical — act within 1 hour of discovering the loss.
+
+[TABLE]
+Device Type | Management Platform | Minimum Requirements
+MacBook (macOS) | IRU — Apple MDM (tsh.iru.io) | IRU enrolled via ABM; FileVault ON (escrowed to IRU); MDE agent; IRU-enforced password policy and screen lock
+iPhone / iPad (iOS/iPadOS) | IRU — Apple MDM (tsh.iru.io) | IRU supervised enrollment via ABM; passcode enforced; managed apps only; jailbreak detection
+Windows laptop | Microsoft Intune | Autopilot-enrolled; BitLocker ON (key escrowed to Entra ID); MDE agent; Intune-enforced policy
+ChromeOS | Google Admin (MDM) | Domain-enrolled; Chrome OS policies enforced
+[/TABLE]

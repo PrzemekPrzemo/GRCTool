@@ -85,11 +85,29 @@
                         —
                     @endif
                 </dd>
+                <dt class="text-slate-500">Zastępuje</dt>
+                <dd>
+                    @if($policy->supersedes)
+                        <a href="{{ route('policies.show', $policy->supersedes) }}" class="text-blue-600 hover:underline">{{ $policy->supersedes->code }}</a>
+                    @else
+                        —
+                    @endif
+                </dd>
                 <dt class="text-slate-500">Zatwierdził</dt>
                 <dd>{{ $policy->approver?->name ?? '—' }}</dd>
                 <dt class="text-slate-500">Data zatwierdzenia</dt>
                 <dd>{{ $policy->approved_at?->format('Y-m-d') ?? '—' }}</dd>
             </dl>
+            @if($policy->supersededBy->isNotEmpty())
+            <div class="mt-4 pt-4 border-t border-amber-100 bg-amber-50 -mx-5 px-5 py-3">
+                <p class="text-sm text-amber-800">
+                    Zastąpiona pełną treścią:
+                    @foreach($policy->supersededBy as $newer)
+                        <a href="{{ route('policies.show', $newer) }}" class="font-medium text-amber-900 hover:underline">{{ $newer->code }}</a>@if(!$loop->last), @endif
+                    @endforeach
+                </p>
+            </div>
+            @endif
             @if($policy->scope_description)
             <div class="mt-4 pt-4 border-t border-slate-100">
                 <h3 class="text-xs font-semibold text-slate-500 uppercase mb-1">Zakres</h3>

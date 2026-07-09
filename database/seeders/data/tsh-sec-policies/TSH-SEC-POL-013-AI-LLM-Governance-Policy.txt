@@ -1,0 +1,36 @@
+AI / LLM GOVERNANCE POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Governs use of AI tools at TSH. Defines approved tools, strict data rules (never submit client code/PII), GitHub Copilot Business requirements, and the AI tool inventory.
+TSH-SEC-POL-013  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This policy governs the use of AI and Large Language Model (LLM) tools at TSH. It defines approved tools, data handling rules, and prohibited uses. TSH embraces AI productivity tools where they can be used safely. Applies to all personnel.
+# 2. AI Tool Categories
+# 3. Data Rules — What MAY be submitted to approved AI tools
+Public information and publicly available code
+Generic technical questions not containing TSH or client context
+Personal learning and skill development (no TSH/client data)
+TSH INTERNAL classified text where AI processing adds clear value and no client data is involved
+# 4. What Must NEVER be submitted to any external AI
+These rules apply to ALL AI tools — including GitHub Copilot — unless the tool has an enterprise contract with TSH and specific data handling guarantees.
+Client source code, architecture, or system descriptions
+Personal data (GDPR/PDPL) of any individual
+Authentication credentials, API keys, tokens, certificates
+RESTRICTED or CONFIDENTIAL TSH data
+Unreleased product plans or client business information
+Security vulnerability details, penetration test results
+# 5. GitHub Copilot — Specific Rules
+GitHub Copilot Business subscription only — not personal plan
+Copilot telemetry: telemetry and code snippet collection disabled at org level (verified by IT Lead annually)
+Copilot Chat: same data rules as above — do not paste client code into Copilot Chat
+Copilot suggestions: review all suggestions before accepting — do not accept code you cannot explain
+# 6. AI Tool Inventory
+All AI tools in use at TSH are tracked in REG-004 (AI Tool Inventory). IT Lead reviews quarterly. Any new AI tool must be approved via PROC-214 before use with TSH data.
+When in doubt: do not submit the data to an AI tool. Send a Jira IT ticket asking for guidance. The CSO responds within 1 business day.
+
+[TABLE]
+Category | Description | Examples | Status
+Approved — Enterprise | TSH-contracted tools with data privacy protections | GitHub Copilot Business (no training on TSH data), Claude for Work (if contracted) | Approved — see limits below
+Approved — On-Request | Tools approved for specific use cases after CSO review | Cursor (with privacy mode), specific AI APIs with DPA | Approved with conditions
+Personal/Public | Free or personal-plan AI tools without enterprise data protections | ChatGPT (free), Claude.ai (free), Gemini (free) | RESTRICTED use only — see rules
+Prohibited | AI tools with no privacy controls or unclear data handling | Unknown LLM APIs, AI browser extensions not on approved list | Never use with TSH data
+[/TABLE]

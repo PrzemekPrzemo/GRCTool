@@ -1,0 +1,120 @@
+INFORMATION SECURITY POLICY
+BY PRZEMYSŁAW SZULECKI, CSO
+Top-level ISMS policy. Complete document map: 17 POL, 18 PROC, 15 REG, 8 CFG, 10 CLT, 1 REF, 1 RFP pack. v2.3 adds PROC-217/218/REF-001 references.
+TSH-SEC-POL-001  |  v2.3  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose & Scope
+This Information Security Policy establishes the management framework and direction for information security at The Software House (TSH). It applies to all TSH employees, contractors, and third parties with access to TSH systems, data, or premises — regardless of location.
+# 2. ISMS Framework
+## 2.1 Management System
+TSH maintains an Information Security Management System (ISMS) aligned to ISO/IEC 27001:2022. The ISMS consists of:
+17 policies (POL-001–017)
+18 procedures (PROC-201–218)
+15 registers (REG-001–015)
+8 technical configuration guides (CFG-301–308)
+10 client-facing documents (CLT-401–410)
+1 quick reference guide (REF-001)
+1 RFP response pack (RFP-001) with 2 supporting registers
+## 2.2 Governance
+# 3. Policy Statements
+## 3.1 Risk Management
+Annual information security risk assessment (PROC-206). Monthly operational risk review (PROC-213). Results in REG-001 and REG-011. Quarterly report to Management Board (CLT-410 template). Security exceptions governed by POL-017, tracked in REG-012.
+## 3.2 Access Control & Device Management
+Access on least-privilege principle. MFA mandatory for all — FIDO2 for admins, phishing-resistant push for standard users. Entra ID PIM for privileged access (max 4 hours JIT). Apple devices (MacBook/iPhone/iPad): IRU (Apple MDM) — formerly Kandji. Windows: Microsoft Intune. Non-enrolled devices blocked by Conditional Access. See POL-003, CFG-302, CFG-303, CFG-305.
+## 3.3 Secure Development
+Security integrated throughout SDLC (PROC-204). SAST + SCA + secret scanning as mandatory CI/CD blocking gates. SBOM with every production release. AI tools governed by POL-013. Developer security quick reference: REF-001.
+## 3.4 Monitoring, DLP & Email Security
+No dedicated SIEM — coverage via Entra ID Identity Protection + MDE + Google Workspace Security Center + GitHub Advanced Security (documented decision, REG-001). Three-layer DLP: Google Admin content scanning + MDE endpoint DLP + IRU MAM for BYOD (CFG-308, POL-014). Email authentication: SPF + DKIM + DMARC enforced for tsh.io (CFG-301).
+## 3.5 Incident Response
+Incidents classified P1–P4 (POL-007). Immediate reporting to CSO. Detailed response steps in PROC-202. Communication templates for client/UODO/SDAIA/Management Board in PROC-217. Specific attack playbooks (ransomware, GitHub credential leak, phishing) in PROC-218. Incidents logged in REG-009 for 3 years.
+## 3.6 Compliance & Regulatory
+Compliance obligations tracked in REG-014 (42 obligations across GDPR, NIS2, DORA, KSA PDPL, Polish law, ISO 27001). Compliance calendar in REG-015. Regulatory changes managed via PROC-215. CSO quarterly report to Management Board: CLT-410.
+## 3.7 Approved Applications & Offboarding
+Only approved applications on managed devices (POL-015, PROC-214). Browser policy via CFG-306 and CFG-307. Employee/contractor offboarding: full security checklist in PROC-211. Project/client offboarding: PROC-210.
+# 4. Complete ISMS Document Map
+This policy is reviewed annually and following any material security incident or significant regulatory change. All personnel must acknowledge at onboarding and annually thereafter. Contact: cso@tsh.io
+
+[TABLE]
+Role | Responsibility | Accountability
+Management Board | Approve security policy; set risk appetite; security budget; quarterly security review | Ultimate accountability for ISMS
+Chief Security Officer (CSO) | Own ISMS; manage risk registers; chair security reviews; approve exceptions; quarterly board reporting | Day-to-day ISMS accountability
+IT Lead | Implement and maintain technical controls; manage IRU/Intune/Entra ID; DLP; vulnerability management | Technical controls
+Project Managers | Apply security requirements in delivery; complete CLT-405 at kick-off; manage client offboarding | Project-level compliance
+All Personnel | Follow policies; complete training; report incidents immediately; follow AUP (POL-004) | Personal compliance
+[/TABLE]
+
+
+[TABLE]
+ID | Document | Category
+POL-001 | Information Security Policy (this document) | Governance
+POL-002 | Data Classification Policy | Data
+POL-003 | Access Control Policy | Identity
+POL-004 | Acceptable Use Policy | People
+POL-005 | Remote Work & BYOD Policy | Endpoint
+POL-006 | Third-Party Vendor Risk Policy | Supply Chain
+POL-007 | Incident Response Policy | IR
+POL-008 | Business Continuity & DR Policy | Resilience
+POL-009 | Privacy & Data Protection Policy | Privacy
+POL-010 | Cryptographic Controls Policy | Crypto
+POL-011 | Physical Security Policy | Physical
+POL-012 | Clear Desk & Screen Policy | Physical
+POL-013 | AI / LLM Governance Policy | AI
+POL-014 | Security Logging & Monitoring Policy | Operations
+POL-015 | Approved Applications Policy | Operations
+POL-016 | Operational Risk Policy | Risk
+POL-017 | Security Exception Policy | Governance
+PROC-201 | User Lifecycle Management | People
+PROC-202 | Incident Response Procedure | IR
+PROC-203 | Vulnerability Management | Technical
+PROC-204 | Secure SDLC | Development
+PROC-205 | Data Breach Notification | Privacy
+PROC-206 | Risk Assessment | Risk
+PROC-207 | Security Awareness Training | People
+PROC-208 | Change Management | Operations
+PROC-209 | Asset Disposal & Media Sanitisation | Operations
+PROC-210 | Supplier & Client Project Offboarding | Projects
+PROC-211 | Employee Offboarding Procedure | People
+PROC-212 | Security Audit & Review Procedure | Governance
+PROC-213 | Operational Risk Procedure | Risk
+PROC-214 | Application Management Procedure | Operations
+PROC-215 | Regulatory Change Management | Compliance
+PROC-216 | Business Impact Analysis | Resilience
+PROC-217 | Incident Communication Templates | IR
+PROC-218 | Incident Response Playbooks | IR
+REG-001 | Information Security Risk Register | Risk
+REG-002 | Asset Inventory | Assets
+REG-003 | RACI Matrix | Governance
+REG-004 | AI Tool Inventory | AI
+REG-005 | Certificate & Key Tracker | Crypto
+REG-006 | Change Register | Operations
+REG-007 | Asset Disposal Register | Operations
+REG-008 | Crypto Quick Reference | Crypto
+REG-009 | Incident Register | IR
+REG-010 | Third-Party Register | Supply Chain
+REG-011 | Operational Risk Register | Risk
+REG-012 | Security Exception Register | Governance
+REG-013 | Security KPI & KRI Dashboard | Metrics
+REG-014 | Compliance Obligation Register | Compliance
+REG-015 | Compliance Calendar | Compliance
+CFG-301 | Google Workspace Admin Security Guide | Technical
+CFG-302 | Entra ID Security Guide | Technical
+CFG-303 | Endpoint Security Baseline (IRU + Intune) | Technical
+CFG-304 | Code Repository Security Guide | Technical
+CFG-305 | Apple MDM & IRU Step-by-Step Guide (PL) | Technical
+CFG-306 | macOS Browser & Settings Guide | Technical
+CFG-307 | Chrome Management — Google Admin Guide | Technical
+CFG-308 | DLP Configuration Guide | Technical
+CLT-401 | Security Overview (PUBLIC) | Client
+CLT-402 | Security Questionnaire Answers (NDA) | Client
+CLT-403 | Data Processing Agreement — Template | Client
+CLT-404 | Security in Contracts Checklist | Client
+CLT-405 | Client Environment Security Requirements | Client
+CLT-406 | Operational Risk — Client Answers (NDA) | Client
+CLT-407 | CSO Attestation Letter — Template | Client
+CLT-408 | DORA Exit & Transition Plan — Template | Client
+CLT-409 | Data Location Confirmation Letter — Template | Client
+CLT-410 | CSO Quarterly Report — Template | Client
+REF-001 | Developer Security Quick Reference | Reference
+RFP-001 | Security Response Pack (EU/US/KSA) | RFP
+RFP-REG-001 | Regulatory Mapping Matrix | RFP
+RFP-CHK-001 | RFP Attachment Checklist | RFP
+[/TABLE]
