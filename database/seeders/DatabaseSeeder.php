@@ -10,6 +10,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolesAndPermissionsSeeder::class,
+            // Admin user wcześnie — kolejne TshSec* seedery odwołują się do ciso@grc.local
+            AdminUserSeeder::class,
             FrameworksSeeder::class,
             ScenarioTemplatesSeeder::class,
             IndicatorsSeeder::class,
@@ -28,8 +30,12 @@ class DatabaseSeeder extends Seeder
             TshSecPoliciesSeeder::class,
             // Procedury operacyjne TSH-SEC-PROC-201..218
             TshSecProceduresSeeder::class,
-            // Admin user last (depends on roles)
-            AdminUserSeeder::class,
+            // Rejestry (REG-001,002,005,009,010,011,012) -> istniejące modele (Risk, Asset, Certificate/Key, Incident, ThirdParty, Exception)
+            TshSecRegistersSeeder::class,
+            // Rejestry bez odpowiednika w schemacie (REG-003,004,006,007,015)
+            TshSecNewRegistersSeeder::class,
+            // KPI/KRI dashboard (REG-013)
+            TshSecIndicatorsSeeder::class,
         ]);
     }
 }

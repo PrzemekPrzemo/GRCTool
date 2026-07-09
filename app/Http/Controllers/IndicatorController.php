@@ -17,7 +17,7 @@ class IndicatorController extends Controller
         if ($type = $request->string('type')->toString()) {
             $q->where('type', $type);
         }
-        $indicators = $q->orderBy('type')->orderBy('code')->paginate(50)->withQueryString();
+        $indicators = $q->orderBy('type')->orderBy('code')->paginate(100)->withQueryString();
 
         return view('indicators.index', compact('indicators'));
     }

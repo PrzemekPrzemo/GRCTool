@@ -44,6 +44,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\ProcessingActivityController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RiskAcceptanceController;
 use App\Http\Controllers\RiskController;
@@ -332,6 +333,13 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('compliance/coverage', [FrameworkCoverageController::class, 'index'])->name('compliance.coverage');
     Route::get('compliance/gaps', [ComplianceGapController::class, 'index'])->name('compliance.gaps');
     Route::post('compliance/gaps/{gap}/status', [ComplianceGapController::class, 'updateStatus'])->name('compliance.gaps.status');
+
+    // Registers bez dedykowanego modułu (RACI, AI Tools, Change, Disposal, Compliance Calendar)
+    Route::get('registers/raci', [RegisterController::class, 'raci'])->name('registers.raci');
+    Route::get('registers/ai-tools', [RegisterController::class, 'aiTools'])->name('registers.ai-tools');
+    Route::get('registers/change-requests', [RegisterController::class, 'changeRequests'])->name('registers.change-requests');
+    Route::get('registers/disposals', [RegisterController::class, 'disposals'])->name('registers.disposals');
+    Route::get('registers/compliance-calendar', [RegisterController::class, 'complianceCalendar'])->name('registers.compliance-calendar');
     Route::resource('compliance', ComplianceAssessmentController::class)->except(['destroy']);
     Route::post('compliance/{assessment}/complete', [ComplianceAssessmentController::class, 'complete'])->name('compliance.complete');
     Route::post('compliance/{assessment}/publish', [ComplianceAssessmentController::class, 'publish'])->name('compliance.publish');
