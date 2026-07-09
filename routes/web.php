@@ -30,6 +30,7 @@ use App\Http\Controllers\DpiaController;
 use App\Http\Controllers\DsarRequestController;
 use App\Http\Controllers\EvidenceController;
 use App\Http\Controllers\ExceptionController;
+use App\Http\Controllers\ExecutiveDashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FindingController;
 use App\Http\Controllers\FrameworkCoverageController;
@@ -105,6 +106,7 @@ Route::middleware('auth')->group(function (): void {
 Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/export', [DashboardController::class, 'exportPdf'])->name('dashboard.export');
+    Route::get('dashboard/executive', [ExecutiveDashboardController::class, 'index'])->name('dashboard.executive');
 
     // Assets
     Route::get('assets/import', [AssetController::class, 'showImport'])->name('assets.import.show');
