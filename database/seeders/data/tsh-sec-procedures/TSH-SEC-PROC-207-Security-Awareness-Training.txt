@@ -1,0 +1,26 @@
+SECURITY AWARENESS TRAINING
+BY CSO / HR
+TSH security awareness programme: onboarding foundation training, annual refresh, developer OWASP training, Security Champions programme, and quarterly phishing simulations.
+TSH-SEC-PROC-207  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines TSH's security awareness programme for all personnel. Trained people are the most effective security control.
+# 2. Training Programme
+# 3. Phishing Simulation Programme
+Frequency: quarterly simulation via approved tool
+Target click rate: ≤5% across all simulations
+Personnel who click: mandatory remedial micro-training within 5 business days — not punitive
+Results reported to CSO quarterly; trend tracked in PROC-207 KPI dashboard
+# 4. Tracking & Compliance
+Training completion tracked in HR system + Google Classroom (or equivalent)
+Non-completion after 14-day grace period: IT Lead notified; manager escalated; access restriction if 30+ days overdue
+Training records retained for 3 years (GDPR accountability + ISO 27001 evidence)
+Security Champions are the multiplier. One Security Champion per project team delivers better security outcomes than annual all-hands training alone.
+
+[TABLE]
+Module | Audience | Frequency | Content
+Foundation (onboarding) | All new starters | Within 5 business days of start | ISMS overview, data classification, password hygiene, phishing recognition, incident reporting, IRU/device basics
+Annual refresh | All personnel | Annually (Q4) | Updated threat landscape, policy changes, lessons from TSH incidents, AI tool rules (POL-013)
+Secure Coding (OWASP) | All developers | Annually | OWASP Top 10, ASVS Level 2, common vulnerability patterns, secure code review
+Security Champions | Designated per team | Quarterly | Advanced: threat modelling, SAST/SCA tooling, security architecture review
+Management | CSO, Management Board | Annually | DORA/NIS2/GDPR obligations, operational risk (POL-016), breach notification
+[/TABLE]

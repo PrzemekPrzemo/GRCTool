@@ -41,6 +41,7 @@ use App\Http\Controllers\McrController;
 use App\Http\Controllers\Nis2AssessmentController;
 use App\Http\Controllers\OrgMetricsController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\ProcessingActivityController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
@@ -279,6 +280,10 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('policies/{policy}/documents', [PolicyController::class, 'attachDocument'])->name('policies.documents.store');
     Route::delete('policies/{policy}/documents/{document}', [PolicyController::class, 'detachDocument'])->name('policies.documents.destroy');
     Route::post('policies/{policy}/documents/{document}/sync', [PolicyController::class, 'syncDocument'])->name('policies.documents.sync');
+
+    // Procedures
+    Route::get('procedures', [ProcedureController::class, 'index'])->name('procedures.index');
+    Route::get('procedures/{procedure}', [ProcedureController::class, 'show'])->name('procedures.show');
 
     // Training & Awareness
     Route::resource('trainings', TrainingController::class)->except(['destroy']);

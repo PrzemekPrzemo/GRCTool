@@ -1,0 +1,80 @@
+INCIDENT COMMUNICATION TEMPLATES
+BY PRZEMYSŁAW SZULECKI, CSO
+Gotowe szablony emaili na czas incydentu: powiadomienie klienta (24h), notyfikacja UODO (72h), notyfikacja SDAIA (72h), eskalacja do Management Board (1h), zamknięcie incydentu, zdarzenie bez naruszenia.
+TSH-SEC-PROC-217  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+Szablony do użycia podczas incydentu. Uzupełnij [NAWIASY] przed wysłaniem. Nie czekaj na perfekcję — wyślij w ciągu SLA, doprecyzuj w kolejnym emailu.
+# Jak używać tych szablonów
+# Szablon #1 — Wczesne powiadomienie klienta (P1/P2, 24h SLA)
+Wyślij ten email nawet jeśli nie znasz jeszcze pełnego zakresu incydentu. Lepiej powiadomić za wcześnie niż za późno — klient musi mieć czas na własną ocenę i ewentualne powiadomienie regulatora.
+# Szablon #2 — Notyfikacja UODO (GDPR Art. 33, 72h SLA)
+Wypełnij na portalu uodo.gov.pl — formularz online. Ten szablon to przygotowanie treści przed wypełnieniem formularza. Pole 'Opis naruszenia' musi być po polsku.
+# Szablon #3 — Notyfikacja SDAIA (KSA PDPL, 72h SLA)
+# Szablon #4 — Eskalacja do Management Board (P1, 1h SLA)
+Wysyłasz ten email PODCZAS incydentu P1, nie po. Zarząd musi wiedzieć że coś się dzieje — pełne informacje przyjdą później.
+# Szablon #5 — Zamknięcie incydentu / Update do klienta
+# Szablon #6 — Informacja o zdarzeniu bez naruszenia danych (P2)
+# Checklist przed wysłaniem każdego szablonu
+
+[TABLE]
+Sytuacja | Szablon | SLA | Kto wysyła
+P1/P2 — incydent może dotyczyć danych klienta | #1 — Wczesne powiadomienie klienta | W ciągu 24h od wykrycia | PM + CSO
+P1 — dane osobowe naruszone (GDPR) | #2 — Notyfikacja UODO | W ciągu 72h od wykrycia | CSO
+P1 — dane osobowe Saudyjczyków | #3 — Notyfikacja SDAIA | W ciągu 72h | CSO
+P1 — natychmiastowa eskalacja wewnętrzna | #4 — Eskalacja do Management Board | W ciągu 1h od klasyfikacji P1 | CSO
+Incydent zamknięty — update do klienta | #5 — Zamknięcie incydentu / follow-up | W ciągu 5 dni od zamknięcia | PM + CSO
+P2 — klient bez naruszenia danych, ale wiedza o zdarzeniu | #6 — Informacja o zdarzeniu bez naruszenia | W ciągu 48h | PM
+[/TABLE]
+
+
+[TABLE]
+SZABLON #1 — Klient (EN) | P1/P2 | Early notification | SLA: 24h od wykrycia | SZABLON #1 — Klient (EN) | P1/P2 | Early notification | SLA: 24h od wykrycia
+Subject: | [CONFIDENTIAL] Security Incident Notification — [SHORT DESCRIPTION] — The Software House
+Body: | Dear [CLIENT CONTACT NAME],  We are writing to notify you of a security incident that may affect your project with The Software House.  INCIDENT SUMMARY What happened: [One sentence description — e.g., "A developer's work device was reported lost on [DATE]."] When detected: [DATE TIME TIMEZONE] Current status: [Contained / Under investigation / Resolved] Potential impact on your project: [One sentence — e.g., "The device contained a local working copy of project source code. FileVault encryption was confirmed active at time of loss."]  ACTIONS TAKEN SO FAR — [Action 1, e.g., "Remote wipe of device initiated via IRU at HH:MM on DATE"] — [Action 2, e.g., "All developer access tokens for your repositories have been rotated"] — [Action 3, e.g., "Investigation underway — no evidence of data access at this time"]  CURRENT ASSESSMENT Based on current information, we assess the risk to your data as: [LOW / MEDIUM / HIGH — with one sentence explanation]. [If personal data potentially involved]: We are conducting an assessment of whether a personal data breach has occurred under GDPR Article 33. We will update you within 24 hours.  NEXT STEPS We will provide a full written update by [DATE TIME]. Our CSO (cso@tsh.io) is available for a call at your request.  We take this matter seriously and apologise for any concern this causes.  Regards, [PM NAME] & Przemysław Szulecki (CSO) The Software House | security@tsh.io | tsh.io
+[/TABLE]
+
+
+[TABLE]
+SZABLON #2 — UODO / Polish DPA | Naruszenie danych osobowych | SLA: 72h od wykrycia | SZABLON #2 — UODO / Polish DPA | Naruszenie danych osobowych | SLA: 72h od wykrycia
+Subject: | Zgłoszenie naruszenia ochrony danych osobowych — [NAZWA ORGANIZACJI] — [DATA]
+Body: | ADMINISTRATOREM jest: The Software House sp. z o.o., ul. Dolnych Wałów 8, 44-100 Gliwice. Dane kontaktowe IOD/CSO: Przemysław Szulecki, cso@tsh.io  CHARAKTER NARUSZENIA (zaznaczyć właściwe): ☐ Naruszenie poufności — nieuprawniony dostęp do danych ☐ Naruszenie integralności — nieuprawniona modyfikacja danych ☐ Naruszenie dostępności — utrata lub zniszczenie danych ☐ [Zaznacz właściwe lub kilka]  KATEGORIE OSÓB, KTÓRYCH DANE DOTYCZĄ: [np. pracownicy / klienci / użytkownicy końcowi klienta] Szacowana liczba osób: [LICZBA lub "nieznana, szacunkowo: [PRZEDZIAŁ]"]  KATEGORIE DANYCH OSOBOWYCH: [np. imię i nazwisko, adres email, PESEL, dane finansowe, dane zdrowotne]  OPIS NARUSZENIA: [Co się stało, kiedy zostało wykryte, jakie dane były objęte] Przykład: "W dniu [DATA] zgłoszono zaginięcie laptopa służbowego pracownika. Na urządzeniu znajdowała się lokalna kopia danych projektowych zawierająca dane osobowe [KATEGORIA] klientów spółki [KLIENT]. Urządzenie było szyfrowane (FileVault, AES-256). Zdalne usunięcie danych zostało wykonane w ciągu [X] godzin od wykrycia."  MOŻLIWE KONSEKWENCJE: [np. ryzyko nieuprawnionego dostępu jest niskie ze względu na szyfrowanie / ryzyko wysokie z uwagi na wrażliwość danych]  ŚRODKI ZASTOSOWANE LUB PLANOWANE: — [Działanie 1, np. zdalne wyczyszczenie urządzenia — wykonane DD.MM.RRRR] — [Działanie 2, np. zmiana haseł i tokenów dostępu] — [Działanie 3, np. powiadomienie klienta] — [Działanie 4, np. wdrożenie dodatkowego monitorowania]  CZY NARUSZENIE MOŻE POWODOWAĆ WYSOKIE RYZYKO dla osób fizycznych? ☐ TAK ☐ NIE Jeśli TAK — planowane powiadomienie osób: [OPIS lub "poinformowane dnia [DATA]"]  Data i godzina wykrycia naruszenia: [DATA, GODZINA, STREFA CZASOWA] Data zgłoszenia: [DATA — musi być ≤72h od wykrycia]  Podpisano: Przemysław Szulecki, CSO, The Software House sp. z o.o.
+[/TABLE]
+
+
+[TABLE]
+SZABLON #3 — SDAIA (Saudi Arabia) | Personal Data Breach | SLA: 72h | SZABLON #3 — SDAIA (Saudi Arabia) | Personal Data Breach | SLA: 72h
+Subject: | Personal Data Breach Notification — The Software House sp. z o.o. — [DATE]
+Body: | To: The Saudi Data and AI Authority (SDAIA) Submitted via: sdaia.gov.sa (notification portal) or breach@sdaia.gov.sa  DATA CONTROLLER DETAILS Organisation: The Software House sp. z o.o. Address: ul. Dolnych Wałów 8, 44-100 Gliwice, Poland Contact: Przemysław Szulecki (CSO), cso@tsh.io  BREACH DETAILS Date/time of breach (or estimated): [DATE TIME UTC+3] Date/time breach was discovered: [DATE TIME UTC+3] Date of this notification: [DATE — must be ≤72h after discovery]  NATURE OF BREACH: ☐ Confidentiality  ☐ Integrity  ☐ Availability  PERSONAL DATA OF SAUDI RESIDENTS AFFECTED Categories of data: [e.g., name, email, national ID, financial data] Approximate number of Saudi residents affected: [NUMBER or "under assessment"]  DESCRIPTION OF THE BREACH: [Concise description — what happened, how, when discovered]  LIKELY CONSEQUENCES: [Assessment of risk to affected individuals]  MEASURES TAKEN: — [Immediate containment actions] — [Notification to affected individuals if applicable] — [Remediation steps]  Is there high risk to data subjects? ☐ Yes (notification to individuals required) ☐ No  Signed: Przemysław Szulecki, Chief Security Officer The Software House sp. z o.o.
+[/TABLE]
+
+
+[TABLE]
+SZABLON #4 — Management Board | P1 Incident | SLA: 1h od klasyfikacji P1 | SZABLON #4 — Management Board | P1 Incident | SLA: 1h od klasyfikacji P1
+Subject: | [P1 SECURITY INCIDENT] [SHORT DESCRIPTION] — Action may be required
+Body: | [NAME OF CEO/MANAGEMENT BOARD],  I am notifying you of an active P1 security incident per our Incident Response Policy (POL-007).  WHAT: [One sentence — e.g., "Suspected ransomware on one developer endpoint."] WHEN DETECTED: [DATE TIME] CURRENT STATUS: [Containing / Investigating / Resolved]  WHAT WE ARE DOING RIGHT NOW: — [Action 1 — e.g., "Isolated affected device via IRU Remote Lock"] — [Action 2 — e.g., "Checking blast radius — no other devices appear affected"] — [Action 3 — e.g., "Client notification assessment underway"]  ACTION REQUIRED FROM YOU: [NONE at this stage / OR: Please approve [specific action]]  Client impact: [None confirmed / [CLIENT NAME] potentially affected — notification being prepared] Regulatory notification likely: ☐ Yes (GDPR/UODO)  ☐ No  ☐ Under assessment  I will provide a full update by [TIME, DATE].  Przemysław Szulecki, CSO cso@tsh.io | [MOBILE during incident]
+[/TABLE]
+
+
+[TABLE]
+SZABLON #5 — Klient (EN) | Incident Closure | Within 5 days of closure | SZABLON #5 — Klient (EN) | Incident Closure | Within 5 days of closure
+Subject: | Security Incident Update & Closure — [SHORT DESCRIPTION] — The Software House
+Body: | Dear [CLIENT CONTACT NAME],  Following our notification dated [DATE OF INITIAL EMAIL], we are writing to provide a final update on the security incident affecting your project.  INCIDENT SUMMARY Incident reference: [INC-XXX from REG-009] Date detected: [DATE] Date resolved: [DATE] Total duration: [X hours / X days]  ROOT CAUSE [One paragraph — what actually happened and why. Be factual and direct.] Example: "A developer's MacBook was left unattended in a public space and was stolen. The device was enrolled in IRU (Apple MDM) with FileVault encryption active. Remote wipe was executed within 3 hours of the incident being reported."  IMPACT ASSESSMENT Personal data affected: ☐ Yes — [categories, number of individuals]  ☐ No Your project data affected: ☐ Yes — [description]  ☐ No evidence of access Regulatory notifications made: ☐ UODO notified [DATE]  ☐ Not required  ACTIONS COMPLETED — [Containment action + date] — [Remediation action + date] — [Any improvements implemented]  IMPROVEMENTS IMPLEMENTED [What TSH has done to prevent recurrence — be specific.] Example: "We have updated our device loss reporting procedure to require immediate notification within 30 minutes. We have also reviewed all active devices to confirm FileVault compliance."  We regret any concern this incident caused. A post-incident review has been completed internally. Please let us know if you require any further information.  Regards, [PM NAME] & Przemysław Szulecki (CSO) The Software House | security@tsh.io | tsh.io
+[/TABLE]
+
+
+[TABLE]
+SZABLON #6 — Klient (EN) | Security Event — no data breach | 48h | SZABLON #6 — Klient (EN) | Security Event — no data breach | 48h
+Subject: | Security Event Notification (No Data Breach) — The Software House
+Body: | Dear [CLIENT CONTACT NAME],  In the interest of transparency, we want to inform you of a security event that occurred within our environment on [DATE].  WHAT HAPPENED [Brief description — e.g., "A developer account received a targeted phishing email. The developer did not click the link and reported it immediately. The email was quarantined."]  IMPACT ON YOUR PROJECT After investigation, we have confirmed: no client data was accessed, no systems you have access to were affected, and no personal data breach occurred.  ACTIONS TAKEN — [Action 1] — [Action 2]  No regulatory notification is required as no personal data breach occurred.  We are sharing this proactively as part of our commitment to transparent security communication. Please contact cso@tsh.io if you have any questions.  Regards, [PM NAME], The Software House
+[/TABLE]
+
+
+[TABLE]
+# | Check | OK?
+1 | [NAWIASY] uzupełnione — żaden [PLACEHOLDER] nie pozostał | [ ]
+2 | Data i godzina są w strefie czasowej odbiorcy (CET dla EU, AST/UTC+3 dla KSA) | [ ]
+3 | Fakty zweryfikowane z IT Lead przed wysłaniem | [ ]
+4 | CSO zatwierdził treść (lub CSO jest autorem) | [ ]
+5 | Kopia BCC do security@tsh.io (archiwum) | [ ]
+6 | Temat emaila zawiera [CONFIDENTIAL] przy danych osobowych | [ ]
+7 | Po wysłaniu — zanotuj datę/godzinę w REG-009 (Incident Register) | [ ]
+[/TABLE]

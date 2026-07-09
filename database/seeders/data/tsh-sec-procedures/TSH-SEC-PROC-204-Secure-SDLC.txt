@@ -1,0 +1,32 @@
+SECURE SDLC
+BY CSO / TECH LEAD
+Integrates security into every SDLC phase. Covers threat modelling, OWASP ASVS, SAST/SCA/secret scanning CI/CD gates, SBOM delivery, and secure code review requirements.
+TSH-SEC-PROC-204  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure integrates security into every phase of the Software Development Lifecycle at TSH. It applies to all software delivered to clients and to TSH internal tools.
+# 2. Security by Phase
+## Phase 1: Requirements & Design
+Security requirements gathered alongside functional requirements — use OWASP ASVS Level 2 as baseline checklist
+Threat modelling for new architectures or significant changes — STRIDE methodology; document threats and mitigations
+Complete CLT-405 (Client Environment Security Requirements) at project kick-off
+## Phase 2: Development
+OWASP Secure Coding Practices applied — developer training mandatory annually (PROC-207)
+GitHub Copilot Business permitted for code suggestions — review all suggestions; never accept without understanding
+No client code, credentials, or PII in AI tool inputs (POL-013)
+Credentials: stored only in 1Password or platform secret manager (GitHub Secrets, GCP Secret Manager) — never in code
+Dependabot enabled on all repos; Snyk integrated — critical CVEs block merge
+## Phase 3: Code Review & Testing
+Security code review mandatory for: authentication flows, authorisation checks, data handling, cryptographic code, file upload/download, SQL/NoSQL queries
+SAST (CodeQL + Semgrep): run in CI/CD; critical/high findings are mandatory blocking gates
+Secret scanning: GitHub push protection enabled — blocks pushes containing credentials
+DAST: run against staging environment before major releases (where applicable)
+## Phase 4: Deployment & Release
+Environment separation: development → staging → production — no direct production changes
+Infrastructure-as-Code: all infrastructure changes in Git; peer reviewed before deployment
+SBOM generated automatically in CI/CD (SPDX 2.3 or CycloneDX 1.4+) — attached to release
+Deployment approval: production deployments require PM + Tech Lead sign-off
+## Phase 5: Delivery & Handover
+SBOM delivered to client with production handover
+Security findings summary delivered (showing no outstanding critical/high without client acceptance)
+Client environment access revoked within 5 days per PROC-210
+Security is not a phase — it is a continuous thread from requirements to delivery. A security finding discovered in production costs 10× more to fix than one found in code review.

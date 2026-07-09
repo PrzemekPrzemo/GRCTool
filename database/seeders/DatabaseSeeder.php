@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             TshGrcKnowledgeBaseSeeder::class,
             // Pełna treść 17 polityk TSH-SEC-POL-001..017, zastępujących merytorycznie starsze POL-XX
             TshSecPoliciesSeeder::class,
+            // Procedury operacyjne TSH-SEC-PROC-201..218
+            TshSecProceduresSeeder::class,
             // Admin user last (depends on roles)
             AdminUserSeeder::class,
         ]);

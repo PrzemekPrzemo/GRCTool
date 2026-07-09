@@ -1,0 +1,59 @@
+SUPPLIER & CLIENT PROJECT OFFBOARDING CHECKLIST
+BY PM / IT LEAD
+Security checklist for closing every client project or supplier engagement. Covers access revocation, credential rotation, data deletion, and deliverable confirmation.
+TSH-SEC-PROC-210  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This checklist ensures secure closure of every client project or supplier engagement. Complete for every project regardless of size. See PROC-211 for employee/contractor personal offboarding.
+# 2. Who Completes This
+# 3. Section A: Access Revocation
+# 4. Section B: Credentials
+# 5. Section C: Data Handling
+# 6. Section D: Deliverables
+
+[TABLE]
+Section | Primary Owner | Sign-off
+Access Revocation | IT Admin | IT Lead
+Credential Rotation & Deletion | IT Admin + Lead Developer | CSO
+Data Handling & Deletion | PM + IT Admin | CSO
+Deliverable Confirmation | PM | Client
+Sub-contractor Offboarding | PM | IT Lead
+[/TABLE]
+
+
+[TABLE]
+# | Item | Done? | Date
+A1 | All TSH developer accounts removed from client GitHub/GitLab repos | [ ] | 
+A2 | All TSH accounts removed from client cloud platforms (AWS/GCP/Azure IAM) | [ ] | 
+A3 | All TSH accounts removed from client Jira, Confluence, Trello | [ ] | 
+A4 | All TSH accounts removed from client Slack, Teams channels | [ ] | 
+A5 | VPN/network access to client environment terminated | [ ] | 
+A6 | Sub-contractor access to client environments revoked | [ ] | 
+A7 | Client confirms all TSH personnel access removed | [ ] | 
+[/TABLE]
+
+
+[TABLE]
+# | Item | Done? | Date
+B1 | All shared credentials known to TSH team rotated by client (or by TSH with client approval) | [ ] | 
+B2 | TSH-held credentials for client services deleted from 1Password project vault | [ ] | 
+B3 | Any service accounts created by TSH removed or transferred to client | [ ] | 
+B4 | SSH keys added to client systems removed | [ ] | 
+[/TABLE]
+
+
+[TABLE]
+# | Item | Done? | Date
+C1 | Client source code on TSH systems: deleted from local drives; confirm GitHub access revoked | [ ] | 
+C2 | Client data in Google Drive: deleted or transferred per DPA terms | [ ] | 
+C3 | Client data in Slack/Teams: archived or deleted per agreed retention | [ ] | 
+C4 | TSH confirms to client in writing: all client data deleted within 30 days (GDPR Art. 28) | [ ] | 
+[/TABLE]
+
+
+[TABLE]
+# | Item | Done? | Date
+D1 | SBOM delivered to client with final release | [ ] | 
+D2 | All documentation handed over (architecture docs, runbooks, ADRs) | [ ] | 
+D3 | Security test results summary delivered to client | [ ] | 
+D4 | Outstanding security findings disclosed to client with remediation guidance | [ ] | 
+[/TABLE]

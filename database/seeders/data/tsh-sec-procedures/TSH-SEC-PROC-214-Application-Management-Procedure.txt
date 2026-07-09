@@ -1,0 +1,67 @@
+APPLICATION MANAGEMENT PROCEDURE
+BY IT LEAD / CSO
+Step-by-step procedure for requesting, evaluating, approving, and deploying applications on TSH-managed devices. Covers IRU (Apple) and Intune (Windows) deployment methods. Operationalises POL-015.
+TSH-SEC-PROC-214  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines the process for requesting, evaluating, approving, deploying, and removing applications from TSH-managed devices. It operationalises POL-015 (Approved Applications Policy).
+# 2. Application Request Process
+## Step 1: Submit Request
+Any TSH employee or contractor may request a new application via Jira:
+Project: IT-SECURITY, Type: App Approval Request
+Required fields: App name, vendor URL, intended use, data it accesses, number of users, cost/license
+For AI tools: additionally state what data will be submitted to the tool (see POL-013)
+## Step 2: Initial Triage (IT Lead — 2 business days)
+Check if app is already in catalog (pre-approved or previously evaluated)
+Check vendor security posture: SOC 2 / ISO 27001 report, privacy policy, data residency
+Check license compatibility with TSH use case
+Check if app can be managed via IRU (Apple) or Intune (Windows)
+## Step 3: Security Review (IT Lead + CSO — 3 business days)
+## Step 4: Decision & Communication
+Approved: IT Lead adds to IRU Blueprint or Intune App catalog. Requester notified. Jira ticket closed.
+Approved (provisional): 90-day trial. IT Lead monitors usage. CSO review at day 60.
+Rejected: IT Lead documents reason in Jira. Requester notified with reasoning. May re-apply after 6 months if concern addressed.
+Decision target: 5 business days from submission. Complex/high-risk apps may require 10 business days — IT Lead notifies requester if extended review needed.
+# 3. Deployment via IRU (Apple Devices)
+## 3.1 Adding App to IRU Catalog
+IRU Admin Console (tsh.iru.io) → Library → Apps → Add App
+macOS apps: upload .pkg or search Mac App Store
+iOS apps: search App Store, assign to device group
+Set: install scope (all devices / specific group / on-demand)
+Enable auto-update if vendor supports silent updates
+## 3.2 Deploying to Devices
+Blueprint-based: add app to relevant Blueprint → auto-pushed on next device check-in (typically <15 min)
+On-demand: IT Lead assigns app to individual device or user from IRU console
+Self-service: approved apps can be offered in IRU Self-Service portal — users install when needed
+# 4. Deployment via Microsoft Intune (Windows)
+Intune Admin Center (intune.microsoft.com) → Apps → Windows → Add
+Win32 app: use .intunewin wrapper; deploy via Intune Win32 app type
+Microsoft Store app: add via Intune Store integration
+Assignment: Required (mandatory) or Available (self-service via Company Portal)
+# 5. Application Removal Process
+## 5.1 Voluntary Removal (App No Longer Needed)
+IT Lead removes app from IRU Blueprint or Intune policy
+App removed from all assigned devices on next check-in
+Any data created by app reviewed for retention/deletion per POL-002
+## 5.2 Emergency Removal (Security Incident / Prohibition)
+CSO or IT Lead triggers immediate removal
+IRU: remove from all Blueprints + push immediate removal command to all affected devices
+Intune: set deployment intent to 'Uninstall' for all assignments
+Users notified with reason if appropriate
+Document in REG-011 (Operational Risk Register) if removal was incident-triggered
+# 6. Application Inventory
+IT Lead maintains the Application Inventory as part of REG-002 (Asset Inventory). Each approved application is listed with:
+Application name, vendor, version, license count
+Platform (macOS/iOS/Windows), deployment method (IRU/Intune/manual)
+Data classification of data accessed
+DPA status (if processing personal data)
+Last security review date
+Owner (who requested / is responsible for the tool)
+
+[TABLE]
+App Type | Reviewer | Additional Checks
+Standard productivity SaaS | IT Lead | Data access scope, SSO support, GDPR DPA available
+Developer tool (local install) | IT Lead | Code execution risk, network access, auto-update mechanism
+AI / LLM tool | IT Lead + CSO | Data training opt-out, client data prohibition possible, POL-013 compliance
+Security tool | CSO | Vendor background, tool scope, false positive rate
+Tool accessing client data | CSO + Legal | DPA required, data residency confirmed, client consent if needed
+[/TABLE]

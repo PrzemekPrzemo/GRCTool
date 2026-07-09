@@ -1,0 +1,30 @@
+ASSET DISPOSAL & MEDIA SANITISATION
+BY IT LEAD
+Secure disposal of hardware and data. macOS via IRU Wipe (removes FileVault key + all data), iOS via IRU Erase Device, Windows via Intune Full Wipe. Documented in REG-007.
+TSH-SEC-PROC-209  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines how TSH securely disposes of hardware and data storage media. Incorrect disposal is a significant data leakage risk.
+# 2. Sanitisation Standards
+# 3. macOS Disposal (IRU)
+Before returning/disposing MacBook: IT Lead triggers IRU Wipe (factory reset + MDM unenrollment)
+In IRU: Devices → [MacBook] → Wipe → confirm
+IRU Wipe removes: FileVault key rotation, user data, all profiles — device returns to factory state
+For Apple Silicon Macs: Wipe includes Activation Lock removal if ABM-managed
+Update REG-002 (Asset Inventory) and REG-007 (Disposal Register) with disposal date and method
+# 4. iOS Disposal (IRU)
+IRU: Devices → [iPhone/iPad] → Erase Device
+Verify Activation Lock removed (ABM-managed devices: automatic; non-ABM: CSO approves unlock)
+Document in REG-007
+# 5. Windows Disposal (Intune)
+Intune: Devices → [device] → Wipe → Full wipe
+Verify BitLocker key rotation completed before disposal (Intune shows)
+Document in REG-007
+IRU Wipe is the correct action for device disposal — not Retire. Retire only removes managed content; Wipe erases everything and removes MDM enrollment. Always use Wipe for disposal.
+
+[TABLE]
+Data Classification | Required Method | Verification
+RESTRICTED (client keys, credentials, PII) | Cryptographic erasure (preferred for SSDs/NVMe) OR DoD 5220.22-M 3-pass overwrite; physical destruction if erasure not possible | IT Lead verifies: FileVault key rotation + erase; or destruction certificate
+CONFIDENTIAL (client data, security policies) | Cryptographic erasure or secure overwrite | IT Lead spot-check
+INTERNAL | Secure overwrite or factory reset | Standard process
+PUBLIC | Factory reset | No special verification
+[/TABLE]

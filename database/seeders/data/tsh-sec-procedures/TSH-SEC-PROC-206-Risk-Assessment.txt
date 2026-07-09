@@ -1,0 +1,37 @@
+RISK ASSESSMENT PROCEDURE
+BY CSO
+ISO 27001 Cl. 6.1-aligned risk assessment methodology. 5×5 likelihood/impact matrix, treatment thresholds, and register update process. Annual plus triggered assessments.
+TSH-SEC-PROC-206  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+# 1. Purpose
+This procedure defines the methodology for conducting TSH Information Security Risk Assessments (ISO 27001 Cl. 6.1). Results feed into REG-001 (Risk Register). For operational risk see PROC-213.
+# 2. When to Assess
+Annual: scheduled Q4 — full ISMS risk assessment
+New major client engagement — project-specific risk assessment
+Significant technology change — new platform, major architecture change
+Post-incident: P1/P2 incident triggers risk reassessment of affected area
+Regulatory change: NIS2, DORA, GDPR update triggers compliance gap assessment
+# 3. Assessment Process
+## Step 1: Asset Identification
+Reference REG-002 (Asset Inventory). Categorise: Data assets, Systems, People, Processes. Ensure new assets added since last assessment are included.
+## Step 2: Threat & Vulnerability Identification
+For each asset: identify relevant threats (external attacker, insider, system failure, natural event) and vulnerabilities (missing control, configuration weakness, people gap).
+## Step 3: Risk Scoring (5×5 Matrix)
+Inherent Score = Likelihood × Impact. Record existing controls. Residual Score = Likelihood (with controls) × Impact (with controls).
+## Step 4: Treatment
+Score 1–5: Accept (with monitoring)
+Score 6–11: Mitigate — document treatment plan with owner and deadline
+Score 12–19: Mitigate or Transfer — escalate to Management Board
+Score 20–25: Critical — immediate Management Board decision required
+## Step 5: Register & Report
+Update REG-001 (Risk Register) with all risks, scores, treatments
+CSO presents summary to Management Board at annual management review
+Treatment plans tracked as Jira tickets with quarterly review
+
+[TABLE]
+Score | Likelihood | Impact
+1 | Rare — <once in 5 years | Negligible — no operational impact
+2 | Unlikely — once in 2–5 years | Minor — brief disruption, self-remediated
+3 | Possible — once per year | Moderate — client impact, SLA at risk
+4 | Likely — several times/year | Significant — SLA breach, data exposure risk
+5 | Almost Certain — monthly+ | Severe — data breach, regulatory action, contract loss
+[/TABLE]
