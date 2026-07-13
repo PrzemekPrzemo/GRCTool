@@ -221,17 +221,20 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('reports/{report}/revoke', [ReportController::class, 'revoke'])->name('reports.revoke');
 
     // AnswerLibrary
+    Route::get('answer-library/export', [AnswerLibraryController::class, 'export'])->name('answer-library.export');
     Route::resource('answer-library', AnswerLibraryController::class)->parameters(['answer-library' => 'answer'])->except(['destroy']);
     Route::post('answer-library/{answer}/review', [AnswerLibraryController::class, 'review'])->name('answer-library.review');
 
     // MCR
     Route::resource('mcr', McrController::class)->except(['destroy']);
 
-    // Inbound questionnaires (od klientów)
+    // Inbound questionnaires (od klientów) — RFP/RFQ
     Route::resource('questionnaires', InboundQuestionnaireController::class)->except(['destroy']);
     Route::post('questionnaires/{questionnaire}/auto-fill', [InboundQuestionnaireController::class, 'autoFill'])->name('questionnaires.auto_fill');
+    Route::post('questionnaires/{questionnaire}/questions', [InboundQuestionnaireController::class, 'addQuestion'])->name('questionnaires.question.store');
     Route::post('questionnaires/{questionnaire}/questions/{question}/answer', [InboundQuestionnaireController::class, 'updateQuestion'])->name('questionnaires.question.update');
     Route::post('questionnaires/{questionnaire}/questions/{question}/approve', [InboundQuestionnaireController::class, 'approveQuestion'])->name('questionnaires.question.approve');
+    Route::post('questionnaires/{questionnaire}/questions/{question}/flag', [InboundQuestionnaireController::class, 'flagForCso'])->name('questionnaires.question.flag');
     Route::post('questionnaires/{questionnaire}/export', [InboundQuestionnaireController::class, 'export'])->name('questionnaires.export');
 
     // Vendor assessments (outbound)

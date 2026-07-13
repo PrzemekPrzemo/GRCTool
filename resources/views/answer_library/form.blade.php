@@ -52,6 +52,17 @@
         </div>
     </div>
 
+    <div>
+        <label class="block text-sm font-medium mb-1">Polityki źródłowe</label>
+        <select name="policy_ids[]" multiple size="6" class="w-full px-3 py-2 border border-slate-300 rounded text-sm">
+            @php $selectedPolicyIds = old('policy_ids', $answer->policy_ids ?? []); @endphp
+            @foreach($policies as $p)
+                <option value="{{ $p->id }}" @selected(in_array($p->id, $selectedPolicyIds))>{{ $p->code }} — {{ $p->title }}</option>
+            @endforeach
+        </select>
+        <p class="text-xs text-slate-500 mt-1">Ctrl/Cmd + klik, aby zaznaczyć kilka. Polityki będące dowodowym źródłem tej odpowiedzi — pokażą się na stronie odpowiedzi i pomogą przy audytach.</p>
+    </div>
+
     @if($answer->exists)
     <div>
         <label class="block text-sm font-medium mb-1">Powód zmiany (audit log)</label>

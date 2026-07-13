@@ -16,6 +16,7 @@ class QuestionnaireQuestion extends Model
         'mapped_answer_id', 'confidence_score',
         'answer_text', 'evidence_ids',
         'status', 'reviewed_by', 'reviewed_at',
+        'flagged_by', 'flagged_at', 'flag_note',
         'order',
     ];
 
@@ -23,6 +24,7 @@ class QuestionnaireQuestion extends Model
         'evidence_ids' => 'array',
         'confidence_score' => 'decimal:3',
         'reviewed_at' => 'datetime',
+        'flagged_at' => 'datetime',
     ];
 
     public function questionnaire(): BelongsTo
@@ -38,5 +40,10 @@ class QuestionnaireQuestion extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function flaggedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'flagged_by');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AnswerLibrary;
+use App\Models\Policy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -62,6 +63,94 @@ class QuestionMatchingService
         usort($scored, fn ($a, $b) => $b['score'] <=> $a['score']);
 
         return array_slice($scored, 0, $limit);
+    }
+
+    /**
+     * Sugestie z treści polityk — używane, gdy AnswerLibrary nie ma jeszcze
+     * gotowej, wyselekcjonowanej odpowiedzi na dane pytanie. W przeciwieństwie
+     * do findMatches() nie jest to auto-fill: surowy fragment polityki nie
+     * jest gotową odpowiedzią dla klienta, tylko podpowiedzią do ręcznego
+     * wykorzystania przez osobę odpowiadającą.
+     *
+     * @return array<int,array{policy:Policy,relevance:float,snippet:string}>
+     */
+    public function findPolicySuggestions(string $questionText, int $limit = 3): array
+    {
+        $driver = DB::getDriverName();
+        $tokens = $this->tokenize($questionText);
+
+        if ($driver === 'mysql') {
+            $rows = DB::select(
+                'SELECT id, MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) AS rel
+                 FROM policies
+                 WHERE deleted_at IS NULL AND description IS NOT NULL
+                   AND MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) > 0
+                 ORDER BY rel DESC LIMIT '.(int) $limit,
+                [$questionText, $questionText],
+            );
+
+            $maxRel = max(array_map(fn ($r) => (float) $r->rel, $rows ?: [(object) ['rel' => 1]]));
+
+            return array_values(array_filter(array_map(function ($row) use ($maxRel, $tokens) {
+                $policy = Policy::find($row->id);
+                if (! $policy) {
+                    return null;
+                }
+
+                return [
+                    'policy' => $policy,
+                    'relevance' => $maxRel > 0 ? min(1.0, ((float) $row->rel) / $maxRel) : 0.0,
+                    'snippet' => $this->snippet((string) $policy->description, $tokens),
+                ];
+            }, $rows)));
+        }
+
+        // SQLite / fallback — token overlap heuristic na tytule + treści
+        if (empty($tokens)) {
+            return [];
+        }
+
+        return Policy::whereNotNull('description')
+            ->get(['id', 'code', 'title', 'description'])
+            ->map(function (Policy $p) use ($tokens) {
+                $candidateTokens = $this->tokenize($p->title.' '.$p->description);
+                $intersect = array_intersect($tokens, $candidateTokens);
+                $relevance = count($intersect) / max(count($tokens), 1);
+
+                return ['policy' => $p, 'relevance' => $relevance];
+            })
+            ->filter(fn ($x) => $x['relevance'] > 0.2)
+            ->sortByDesc('relevance')
+            ->take($limit)
+            ->map(fn ($x) => [
+                'policy' => $x['policy'],
+                'relevance' => min(0.8, $x['relevance']),
+                'snippet' => $this->snippet((string) $x['policy']->description, $tokens),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /** @param  string[]  $tokens */
+    private function snippet(string $text, array $tokens, int $context = 160): string
+    {
+        $normalized = mb_strtolower($text);
+        $position = null;
+        foreach ($tokens as $token) {
+            $pos = mb_strpos($normalized, mb_strtolower($token));
+            if ($pos !== false && ($position === null || $pos < $position)) {
+                $position = $pos;
+            }
+        }
+
+        if ($position === null) {
+            return Str::limit(trim($text), $context);
+        }
+
+        $start = max(0, $position - 40);
+        $excerpt = mb_substr($text, $start, $context);
+
+        return ($start > 0 ? '…' : '').trim($excerpt).'…';
     }
 
     /**

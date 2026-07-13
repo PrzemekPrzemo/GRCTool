@@ -20,6 +20,8 @@ class InboundQuestionnaireController extends Controller
 
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('rfp.view'), 403);
+
         $q = SecurityQuestionnaire::query()->where('direction', 'inbound')->with('client', 'template', 'owner');
 
         if ($status = $request->string('status')->toString()) {
@@ -37,6 +39,8 @@ class InboundQuestionnaireController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('rfp.create'), 403);
+
         return view('questionnaires.form', [
             'questionnaire' => new SecurityQuestionnaire(['direction' => 'inbound']),
             'clients' => Client::orderBy('name')->get(),
@@ -46,6 +50,8 @@ class InboundQuestionnaireController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.create'), 403);
+
         $data = $request->validate([
             'name' => ['required', 'string'],
             'client_id' => ['nullable', 'exists:clients,id'],
@@ -119,16 +125,33 @@ class InboundQuestionnaireController extends Controller
 
     public function show(SecurityQuestionnaire $questionnaire): View
     {
+        abort_unless(auth()->user()->can('rfp.view'), 403);
+
         if ($questionnaire->direction !== 'inbound') {
             abort(404);
         }
-        $questionnaire->load('client', 'template', 'owner', 'questions.mappedAnswer', 'questions.reviewer', 'finalExport');
+        $questionnaire->load('client', 'template', 'owner', 'questions.mappedAnswer', 'questions.reviewer', 'questions.flaggedBy', 'finalExport');
 
-        return view('questionnaires.show', compact('questionnaire'));
+        // Sugestie z treści polityk — tylko dla pytań bez jeszcze dopasowanej odpowiedzi,
+        // żeby nie liczyć tego niepotrzebnie dla już rozwiązanych pytań.
+        $policySuggestions = [];
+        foreach ($questionnaire->questions as $question) {
+            if ($question->mapped_answer_id || in_array($question->status, ['Approved', 'Auto-filled'], true)) {
+                continue;
+            }
+            $matches = $this->matcher->findPolicySuggestions($question->original_text, 2);
+            if ($matches !== []) {
+                $policySuggestions[$question->id] = $matches;
+            }
+        }
+
+        return view('questionnaires.show', compact('questionnaire', 'policySuggestions'));
     }
 
     public function autoFill(SecurityQuestionnaire $questionnaire): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         if ($questionnaire->direction !== 'inbound') {
             abort(404);
         }
@@ -162,8 +185,53 @@ class InboundQuestionnaireController extends Controller
         return back()->with('status', "Auto-fill: dopasowano {$autoFilled} odpowiedzi (threshold ".QuestionMatchingService::AUTO_FILL_THRESHOLD.').');
     }
 
+    public function addQuestion(Request $request, SecurityQuestionnaire $questionnaire): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('rfp.create'), 403);
+
+        $data = $request->validate([
+            'original_text' => ['required', 'string'],
+            'category' => ['nullable', 'string', 'max:64'],
+        ]);
+
+        $nextOrder = ($questionnaire->questions()->max('order') ?? -1) + 1;
+        QuestionnaireQuestion::create([
+            'questionnaire_id' => $questionnaire->id,
+            'original_text' => $data['original_text'],
+            'category' => $data['category'] ?? null,
+            'order' => $nextOrder,
+            'status' => 'Pending',
+        ]);
+        $questionnaire->refreshCounts();
+        AuditLogger::log('questionnaire_question_added', $questionnaire);
+
+        return back()->with('status', 'Pytanie dodane.');
+    }
+
+    public function flagForCso(Request $request, SecurityQuestionnaire $questionnaire, QuestionnaireQuestion $question): RedirectResponse
+    {
+        abort_unless(auth()->user()->can('rfp.create'), 403);
+
+        $data = $request->validate([
+            'flag_note' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $question->update([
+            'status' => 'Needs-Info',
+            'flagged_by' => auth()->id(),
+            'flagged_at' => now(),
+            'flag_note' => $data['flag_note'] ?? null,
+        ]);
+        $questionnaire->refreshCounts();
+        AuditLogger::log('questionnaire_question_flagged', $questionnaire, ['question_id' => $question->id]);
+
+        return back()->with('status', 'Zgłoszono do CSO — pytanie oznaczone jako "Needs-Info".');
+    }
+
     public function updateQuestion(Request $request, SecurityQuestionnaire $questionnaire, QuestionnaireQuestion $question): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $data = $request->validate([
             'answer_text' => ['required', 'string'],
             'mapped_answer_id' => ['nullable', 'exists:answer_library,id'],
@@ -175,12 +243,15 @@ class InboundQuestionnaireController extends Controller
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
+        $questionnaire->refreshCounts();
 
         return back()->with('status', 'Odpowiedź zaktualizowana.');
     }
 
     public function approveQuestion(SecurityQuestionnaire $questionnaire, QuestionnaireQuestion $question): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $question->update([
             'status' => 'Approved',
             'reviewed_by' => auth()->id(),
@@ -193,6 +264,8 @@ class InboundQuestionnaireController extends Controller
 
     public function export(SecurityQuestionnaire $questionnaire): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         if ($questionnaire->direction !== 'inbound') {
             abort(404);
         }
@@ -205,6 +278,8 @@ class InboundQuestionnaireController extends Controller
 
     public function edit(SecurityQuestionnaire $questionnaire): View
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         return view('questionnaires.form', [
             'questionnaire' => $questionnaire,
             'clients' => Client::orderBy('name')->get(),
@@ -214,6 +289,8 @@ class InboundQuestionnaireController extends Controller
 
     public function update(Request $request, SecurityQuestionnaire $questionnaire): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $data = $request->validate([
             'name' => ['required', 'string'],
             'client_id' => ['nullable', 'exists:clients,id'],
