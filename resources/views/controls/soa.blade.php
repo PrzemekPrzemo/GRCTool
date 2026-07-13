@@ -3,7 +3,7 @@
 <div class="flex justify-between items-start mb-4">
     <div>
         <h1 class="text-2xl font-semibold">Statement of Applicability</h1>
-        <p class="text-slate-500 text-sm">{{ $framework->name }} ({{ $version->version }})</p>
+        <p class="text-slate-500 text-sm">{{ $framework->name }} @if($version)({{ $version->version }})@else <span class="text-amber-600">— brak aktywnej wersji frameworka</span>@endif</p>
     </div>
     <form method="GET" class="flex gap-2">
         <select name="framework" class="px-3 py-1.5 border border-slate-300 rounded text-sm">

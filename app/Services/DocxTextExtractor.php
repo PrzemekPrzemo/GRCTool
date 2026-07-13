@@ -28,9 +28,12 @@ class DocxTextExtractor
             throw new RuntimeException('Plik nie zawiera word/document.xml — to nie jest prawidłowy dokument .docx.');
         }
 
-        // Koniec akapitu i twarde entery -> znak nowej linii, zanim usuniemy tagi.
+        // Koniec akapitu i twarde entery (w tym łamanie strony/kolumny, np.
+        // <w:br w:type="page"/>) -> znak nowej linii, zanim usuniemy tagi —
+        // inaczej tekst przed i po złamaniu sklei się w jedno słowo.
         $xml = str_replace('</w:p>', "</w:p>\n", $xml);
-        $xml = preg_replace('/<w:br\s*\/?>/', "\n", $xml);
+        $xml = preg_replace('/<w:br\b[^>]*\/?>/', "\n", $xml);
+        $xml = preg_replace('/<w:tab\b[^>]*\/?>/', "\t", $xml);
 
         $text = strip_tags($xml);
         $text = html_entity_decode($text, ENT_QUOTES | ENT_XML1, 'UTF-8');

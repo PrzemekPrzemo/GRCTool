@@ -171,9 +171,15 @@
                 </a>
                 @endcan
                 @can('certificate.view')
-                <a href="{{ route('certificates.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('certificates.*','crypto-keys.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                <a href="{{ route('certificates.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('certificates.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-                    <span>Certyfikaty & Klucze</span>
+                    <span>Certyfikaty</span>
+                </a>
+                @endcan
+                @can('crypto_key.view')
+                <a href="{{ route('crypto-keys.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('crypto-keys.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                    <span>Klucze kryptograficzne</span>
                 </a>
                 @endcan
                 @can('evidence.view')
@@ -432,6 +438,7 @@
         @endcanany
 
         {{-- Raporty --}}
+        @can('report.view')
         <div class="px-3 mb-1">
             <p class="px-2 py-1 text-xs font-semibold text-slate-500 uppercase tracking-widest">Raporty</p>
             <a href="{{ route('reports.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('reports.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
@@ -439,6 +446,7 @@
                 <span>Raporty</span>
             </a>
         </div>
+        @endcan
 
     </nav>
 

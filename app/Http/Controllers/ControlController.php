@@ -34,11 +34,15 @@ class ControlController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('control.create'), 403);
+
         return view('controls.form', $this->formData(new Control));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('control.create'), 403);
+
         $data = $this->validateControl($request);
         $mappings = $request->input('framework_controls', []);
         $control = Control::create($data);
@@ -56,11 +60,15 @@ class ControlController extends Controller
 
     public function edit(Control $control): View
     {
+        abort_unless(auth()->user()->can('control.update'), 403);
+
         return view('controls.form', $this->formData($control));
     }
 
     public function update(Request $request, Control $control): RedirectResponse
     {
+        abort_unless(auth()->user()->can('control.update'), 403);
+
         $data = $this->validateControl($request);
         $mappings = $request->input('framework_controls', []);
         $control->update($data);
@@ -71,6 +79,8 @@ class ControlController extends Controller
 
     public function recordTest(Request $request, Control $control): RedirectResponse
     {
+        abort_unless(auth()->user()->can('control.test'), 403);
+
         // SoD: tester != owner
         if ($control->owner_id === auth()->id()) {
             return back()->with('error', 'SoD: właściciel kontroli nie może jej testować. Wymagane przekazanie do innego testera.');
@@ -143,11 +153,15 @@ class ControlController extends Controller
             }
         }
 
-        // Coverage % per framework
+        // Coverage % per framework: udział WYMAGAŃ danego frameworka (nie naszych kontrol),
+        // do których przypisano choć jedną obowiązującą kontrolę.
         $coverage = [];
         foreach ($frameworks as $fw) {
-            $total   = $controls->count();
-            $mapped  = collect($matrix)->filter(fn ($row) => isset($row[$fw->id]))->count();
+            $latestVersionId = $fw->versions->first()?->id;
+            $total = FrameworkControl::where('framework_version_id', $latestVersionId)->count();
+            $mapped = FrameworkControl::where('framework_version_id', $latestVersionId)
+                ->whereHas('controls', fn ($q) => $q->where('is_applicable', true))
+                ->count();
             $coverage[$fw->id] = $total > 0 ? round($mapped / $total * 100) : 0;
         }
 
@@ -158,10 +172,12 @@ class ControlController extends Controller
     {
         $framework = Framework::where('code', $request->string('framework')->toString() ?: 'ISO27001')->firstOrFail();
         $version = $framework->currentVersion();
-        $controls = FrameworkControl::where('framework_version_id', $version->id)
-            ->with(['controls.owner'])
-            ->orderBy('order')
-            ->get();
+        $controls = $version
+            ? FrameworkControl::where('framework_version_id', $version->id)
+                ->with(['controls.owner'])
+                ->orderBy('order')
+                ->get()
+            : collect();
         $frameworks = Framework::where('category', 'standard')->get();
 
         return view('controls.soa', compact('framework', 'version', 'controls', 'frameworks'));

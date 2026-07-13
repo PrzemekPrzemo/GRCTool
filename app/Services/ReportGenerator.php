@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\AuditEngagement;
 use App\Models\Control;
 use App\Models\Finding;
+use App\Models\Framework;
+use App\Models\FrameworkControl;
 use App\Models\Indicator;
 use App\Models\Policy;
 use App\Models\ReportInstance;
@@ -111,7 +113,42 @@ class ReportGenerator
             $base['subprocessors'] = Subprocessor::where('public_listing', true)->get();
         }
 
+        if ($template->code === 'COMPLIANCE-COVERAGE') {
+            $base['control_framework_coverage'] = $this->controlFrameworkCoverage();
+        }
+
         return $base;
+    }
+
+    /**
+     * Dla każdego frameworka standardowego: jaki % jego wymagań (FrameworkControl)
+     * ma przypisaną choć jedną obowiązującą kontrolę wewnętrzną. Ta sama logika co
+     * ControlController::crossMapping(), tu jako samodzielne dane do raportu PDF.
+     *
+     * @return array<int, array{framework: Framework, total: int, mapped: int, percent: int}>
+     */
+    private function controlFrameworkCoverage(): array
+    {
+        return Framework::where('category', 'standard')
+            ->with(['versions' => fn ($q) => $q->orderByDesc('published_at')->limit(1)])
+            ->get()
+            ->filter(fn (Framework $fw) => $fw->versions->isNotEmpty())
+            ->map(function (Framework $fw) {
+                $latestVersionId = $fw->versions->first()?->id;
+                $total = FrameworkControl::where('framework_version_id', $latestVersionId)->count();
+                $mapped = FrameworkControl::where('framework_version_id', $latestVersionId)
+                    ->whereHas('controls', fn ($q) => $q->where('is_applicable', true))
+                    ->count();
+
+                return [
+                    'framework' => $fw,
+                    'total' => $total,
+                    'mapped' => $mapped,
+                    'percent' => $total > 0 ? (int) round($mapped / $total * 100) : 0,
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     private function overallTrainingCompletionRate(): float
