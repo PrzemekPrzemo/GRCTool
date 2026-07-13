@@ -101,6 +101,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('mfa/setup', [MfaController::class, 'confirm'])->name('mfa.confirm');
     Route::delete('mfa/setup', [MfaController::class, 'disable'])->name('mfa.disable');
     Route::get('mfa/recovery-codes', [MfaController::class, 'recoveryCodes'])->name('mfa.recovery_codes');
+    Route::delete('mfa/trusted-devices', [MfaController::class, 'forgetTrustedDevices'])->name('mfa.trusted_devices.forget');
 });
 
 // Authenticated + MFA enforced

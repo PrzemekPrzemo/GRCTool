@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\MfaService;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ use Illuminate\View\View;
 
 class LoginController extends Controller
 {
-    public function __construct(private MfaService $mfa) {}
+    public function __construct(private MfaService $mfa, private TrustedDeviceService $trustedDevices) {}
 
     public function showLogin(): View
     {
@@ -59,6 +60,13 @@ class LoginController extends Controller
         RateLimiter::clear($key);
 
         if ($user->hasMfaEnabled()) {
+            // Zaufane urządzenie z ostatnich 7 dni — pomiń wyzwanie MFA.
+            if ($this->trustedDevices->isTrusted($user, $request)) {
+                $this->completeLogin($user, $request, 'login_trusted_device');
+
+                return redirect()->intended(route('dashboard'));
+            }
+
             // Rotate session ID before storing any identity information
             $request->session()->regenerate();
             $request->session()->put('mfa.user_id', $user->id);
@@ -67,27 +75,27 @@ class LoginController extends Controller
             return redirect()->route('mfa.challenge');
         }
 
-        Auth::login($user, $request->boolean('remember'));
+        $this->completeLogin($user, $request, 'login', $request->boolean('remember'));
+
+        return redirect()->route('mfa.setup')
+            ->with('warning', 'MFA nie jest skonfigurowane. Włącz je dla bezpieczeństwa konta.');
+    }
+
+    private function completeLogin(User $user, Request $request, string $auditEvent, bool $remember = false): void
+    {
+        Auth::login($user, $remember);
         $user->update(['last_login_at' => now(), 'last_login_ip' => $request->ip()]);
         $request->session()->regenerate();
-        AuditLogger::log('login', $user);
+        AuditLogger::log($auditEvent, $user);
 
-        $sessionToken = $request->session()->getId();
         \App\Models\UserSession::create([
             'user_id'       => $user->id,
             'ip_address'    => $request->ip(),
             'user_agent'    => $request->userAgent(),
             'auth_provider' => 'local',
             'logged_in_at'  => now(),
-            'session_token' => $sessionToken,
+            'session_token' => $request->session()->getId(),
         ]);
-
-        if (! $user->hasMfaEnabled()) {
-            return redirect()->route('mfa.setup')
-                ->with('warning', 'MFA nie jest skonfigurowane. Włącz je dla bezpieczeństwa konta.');
-        }
-
-        return redirect()->intended(route('dashboard'));
     }
 
     public function showMfaChallenge(Request $request): View|RedirectResponse
@@ -125,20 +133,12 @@ class LoginController extends Controller
 
         RateLimiter::clear($mfaKey);
 
-        Auth::login($user, $remember);
-        $user->update(['last_login_at' => now(), 'last_login_ip' => $request->ip()]);
         $request->session()->forget(['mfa.user_id', 'mfa.remember']);
-        $request->session()->regenerate();
-        AuditLogger::log('mfa_verified', $user);
+        $this->completeLogin($user, $request, 'mfa_verified', $remember);
 
-        \App\Models\UserSession::create([
-            'user_id'       => $user->id,
-            'ip_address'    => $request->ip(),
-            'user_agent'    => $request->userAgent(),
-            'auth_provider' => 'local',
-            'logged_in_at'  => now(),
-            'session_token' => $request->session()->getId(),
-        ]);
+        if ($request->boolean('remember_device')) {
+            $this->trustedDevices->remember($user, $request);
+        }
 
         return redirect()->intended(route('dashboard'));
     }
