@@ -25,8 +25,14 @@
     <button class="w-full bg-slate-900 text-white py-2 rounded font-medium hover:bg-slate-800">Zaloguj</button>
 </form>
 
-<div class="relative my-4"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-slate-400">lub</span></div></div>
+@php($googleEnabled = config('services.google.client_id') && config('services.google.client_secret'))
+@php($azureEnabled = \App\Models\AppSetting::get('azure_enabled') === '1' || config('services.azure.client_id'))
 
+@if($googleEnabled || $azureEnabled)
+<div class="relative my-4"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-slate-400">lub</span></div></div>
+@endif
+
+@if($googleEnabled)
 <a href="{{ route('auth.google') }}"
    class="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 shadow-sm">
     {{-- Google SVG logo --}}
@@ -38,8 +44,8 @@
     </svg>
     <span>Zaloguj się przez Google Workspace</span>
 </a>
+@endif
 
-@php($azureEnabled = \App\Models\AppSetting::get('azure_enabled') === '1' || config('services.azure.client_id'))
 @if($azureEnabled)
 <a href="{{ route('auth.microsoft') }}"
    class="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 shadow-sm">
