@@ -192,12 +192,12 @@
         </div>
         @endif
 
-        {{-- Documents (Google Drive) --}}
+        {{-- Documents (uploaded files + Google Drive links) --}}
         <div class="bg-white rounded shadow p-5">
             <div class="flex items-center justify-between mb-3">
-                <h2 class="font-semibold text-slate-700">Dokumenty (Google Drive)</h2>
+                <h2 class="font-semibold text-slate-700">Dokumenty</h2>
                 @if(!$driveApiEnabled)
-                <span class="text-xs text-slate-400">Tryb linków — API wyłączone</span>
+                <span class="text-xs text-slate-400">Synchronizacja Drive: API wyłączone</span>
                 @endif
             </div>
 
@@ -205,9 +205,15 @@
             @php $doc = $link->evidence; @endphp
             @if($doc)
             <div class="flex items-center justify-between p-2 rounded hover:bg-slate-50 text-sm border-b border-slate-50 last:border-0">
+                @if($doc->source === 'upload')
+                <a href="{{ route('policies.documents.download', [$policy, $link]) }}" class="text-emerald-700 hover:underline truncate max-w-xs">
+                    📎 {{ $doc->title ?? $doc->original_filename }}
+                </a>
+                @else
                 <a href="{{ $doc->external_url }}" target="_blank" rel="noopener" class="text-emerald-700 hover:underline truncate max-w-xs">
                     {{ $doc->title ?? $doc->original_filename }}
                 </a>
+                @endif
                 <div class="flex items-center gap-2 text-xs text-slate-500">
                     @if($doc->external_synced_at)
                         <span title="Ostatnia synchronizacja">↻ {{ $doc->external_synced_at->format('Y-m-d H:i') }}</span>
@@ -233,18 +239,27 @@
             @endforelse
 
             @can('policy.update')
-            <form method="POST" action="{{ route('policies.documents.store', $policy) }}" class="mt-3 pt-3 border-t border-slate-100 space-y-2">
-                @csrf
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" name="title" placeholder="Nazwa dokumentu (opcjonalnie)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
-                    <input type="text" name="drive_file_id" placeholder="ID pliku Drive (opcjonalnie, do synchronizacji API)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
-                </div>
-                <div class="flex gap-2">
-                    <input type="url" name="drive_url" required placeholder="https://drive.google.com/…" class="flex-1 px-2 py-1.5 border border-slate-300 rounded text-xs">
-                    <button class="px-3 py-1.5 bg-slate-900 text-white rounded text-xs">Podepnij</button>
-                </div>
-                @error('drive_url')<p class="text-red-600 text-xs">{{ $message }}</p>@enderror
-            </form>
+            <div class="mt-3 pt-3 border-t border-slate-100 space-y-3">
+                <form method="POST" action="{{ route('policies.documents.store', $policy) }}" enctype="multipart/form-data" class="flex gap-2">
+                    @csrf
+                    <input type="file" name="file" required class="flex-1 text-xs">
+                    <button class="px-3 py-1.5 bg-slate-900 text-white rounded text-xs whitespace-nowrap">Wgraj plik</button>
+                </form>
+                @error('file')<p class="text-red-600 text-xs">{{ $message }}</p>@enderror
+
+                <form method="POST" action="{{ route('policies.documents.store', $policy) }}" class="space-y-2">
+                    @csrf
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" name="title" placeholder="Nazwa dokumentu (opcjonalnie)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
+                        <input type="text" name="drive_file_id" placeholder="ID pliku Drive (opcjonalnie, do synchronizacji API)" class="px-2 py-1.5 border border-slate-300 rounded text-xs">
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="url" name="drive_url" required placeholder="lub link: https://drive.google.com/…" class="flex-1 px-2 py-1.5 border border-slate-300 rounded text-xs">
+                        <button class="px-3 py-1.5 border border-slate-300 rounded text-xs whitespace-nowrap">Podepnij link</button>
+                    </div>
+                    @error('drive_url')<p class="text-red-600 text-xs">{{ $message }}</p>@enderror
+                </form>
+            </div>
             @endcan
         </div>
 

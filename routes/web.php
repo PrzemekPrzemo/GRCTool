@@ -282,11 +282,14 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
     Route::post('policies/{policy}/documents', [PolicyController::class, 'attachDocument'])->name('policies.documents.store');
     Route::delete('policies/{policy}/documents/{document}', [PolicyController::class, 'detachDocument'])->name('policies.documents.destroy');
+    Route::get('policies/{policy}/documents/{document}/download', [PolicyController::class, 'downloadDocument'])->name('policies.documents.download');
     Route::post('policies/{policy}/documents/{document}/sync', [PolicyController::class, 'syncDocument'])->name('policies.documents.sync');
 
     // Procedures
-    Route::get('procedures', [ProcedureController::class, 'index'])->name('procedures.index');
-    Route::get('procedures/{procedure}', [ProcedureController::class, 'show'])->name('procedures.show');
+    Route::resource('procedures', ProcedureController::class)->except(['destroy']);
+    Route::post('procedures/{procedure}/documents', [ProcedureController::class, 'attachDocument'])->name('procedures.documents.store');
+    Route::delete('procedures/{procedure}/documents/{document}', [ProcedureController::class, 'detachDocument'])->name('procedures.documents.destroy');
+    Route::get('procedures/{procedure}/documents/{document}/download', [ProcedureController::class, 'downloadDocument'])->name('procedures.documents.download');
 
     // Training & Awareness
     Route::resource('trainings', TrainingController::class)->except(['destroy']);

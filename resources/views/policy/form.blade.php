@@ -12,10 +12,20 @@
     <ul class="list-disc ml-4">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
 </div>
 @endif
+@if(session('warning'))
+<div class="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded mb-4 text-sm">{{ session('warning') }}</div>
+@endif
 
-<form method="POST" action="{{ $isEdit ? route('policies.update', $policy) : route('policies.store') }}" class="space-y-6">
+<form method="POST" action="{{ $isEdit ? route('policies.update', $policy) : route('policies.store') }}" enctype="multipart/form-data" class="space-y-6">
     @csrf
     @if($isEdit) @method('PUT') @endif
+
+    <div class="bg-white rounded shadow p-5 border-2 border-dashed border-emerald-200">
+        <h2 class="font-semibold text-slate-700 mb-1">Import z pliku Word</h2>
+        <p class="text-xs text-slate-500 mb-3">Wgraj plik .docx, aby automatycznie wypełnić pole „Opis” jego treścią. Oryginalny plik zostanie zapisany jako załącznik do pobrania (widoczny w sekcji dokumentów po zapisaniu). Wgranie nowego pliku nadpisze obecną treść opisu.</p>
+        <input type="file" name="source_document" accept=".docx" class="block text-sm">
+        @error('source_document')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
 
     <div class="bg-white rounded shadow p-5">
         <h2 class="font-semibold text-slate-700 mb-4">Informacje podstawowe</h2>

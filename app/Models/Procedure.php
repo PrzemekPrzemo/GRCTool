@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Procedure extends Model
@@ -23,5 +24,10 @@ class Procedure extends Model
     public function steps(): HasMany
     {
         return $this->hasMany(ProcedureStep::class)->orderBy('step_no');
+    }
+
+    public function documentLinks(): MorphMany
+    {
+        return $this->morphMany(EvidenceLink::class, 'linkable');
     }
 }
