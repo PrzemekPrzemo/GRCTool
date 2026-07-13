@@ -9,6 +9,7 @@ use App\Models\UserSession;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 class MicrosoftController extends Controller
@@ -21,7 +22,13 @@ class MicrosoftController extends Controller
 
         $this->applyDynamicConfig();
 
-        return Socialite::driver('azure')->redirect();
+        try {
+            return Socialite::driver('azure')->redirect();
+        } catch (\Throwable $e) {
+            Log::warning('Microsoft OAuth redirect failed.', ['error' => $e->getMessage()]);
+
+            return redirect()->route('login')->withErrors(['email' => 'Logowanie przez Microsoft nie powiodło się. Sprawdź konfigurację Entra ID.']);
+        }
     }
 
     public function callback(): RedirectResponse
@@ -35,6 +42,11 @@ class MicrosoftController extends Controller
         try {
             $msUser = Socialite::driver('azure')->user();
         } catch (\Throwable $e) {
+            // Prawdziwa przyczyna (np. AADSTS50011 redirect_uri mismatch, AADSTS650053
+            // brak admin consent, AADSTS700016 zła aplikacja) trafia tylko do logu —
+            // użytkownikowi pokazujemy generyczny komunikat, żeby nie ujawniać szczegółów OAuth.
+            Log::warning('Microsoft OAuth callback failed.', ['error' => $e->getMessage()]);
+
             return redirect()->route('login')->withErrors(['email' => 'Logowanie przez Microsoft nie powiodło się. Spróbuj ponownie.']);
         }
 

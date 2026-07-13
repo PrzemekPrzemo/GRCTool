@@ -27,7 +27,7 @@ Branch `claude/**`, `main`, `develop` and every PR triggers `.github/workflows/c
 - `Frontend build (Vite + Tailwind)` — `npm ci && npm run build`
 
 **Informational (continue-on-error):**
-- `Laravel tests (informational)` — runs Pest + Pint inside `php:8.3-cli` container.
+- `Laravel tests (informational)` — runs Pest + Pint inside `php:8.5-cli` container.
   This is currently informational because the CI environment used in this project
   does not consistently support PHP runtime installation (setup-php action and apt
   both fail intermittently). Until that's resolved, gate on local `vendor/bin/pest`

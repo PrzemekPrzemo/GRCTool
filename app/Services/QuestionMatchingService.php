@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AnswerLibrary;
 use App\Models\Policy;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -80,29 +81,38 @@ class QuestionMatchingService
         $tokens = $this->tokenize($questionText);
 
         if ($driver === 'mysql') {
-            $rows = DB::select(
-                'SELECT id, MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) AS rel
-                 FROM policies
-                 WHERE deleted_at IS NULL AND description IS NOT NULL
-                   AND MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) > 0
-                 ORDER BY rel DESC LIMIT '.(int) $limit,
-                [$questionText, $questionText],
-            );
+            try {
+                $rows = DB::select(
+                    'SELECT id, MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) AS rel
+                     FROM policies
+                     WHERE deleted_at IS NULL AND description IS NOT NULL
+                       AND MATCH(description) AGAINST (? IN NATURAL LANGUAGE MODE) > 0
+                     ORDER BY rel DESC LIMIT '.(int) $limit,
+                    [$questionText, $questionText],
+                );
 
-            $maxRel = max(array_map(fn ($r) => (float) $r->rel, $rows ?: [(object) ['rel' => 1]]));
+                $maxRel = max(array_map(fn ($r) => (float) $r->rel, $rows ?: [(object) ['rel' => 1]]));
 
-            return array_values(array_filter(array_map(function ($row) use ($maxRel, $tokens) {
-                $policy = Policy::find($row->id);
-                if (! $policy) {
-                    return null;
-                }
+                return array_values(array_filter(array_map(function ($row) use ($maxRel, $tokens) {
+                    $policy = Policy::find($row->id);
+                    if (! $policy) {
+                        return null;
+                    }
 
-                return [
-                    'policy' => $policy,
-                    'relevance' => $maxRel > 0 ? min(1.0, ((float) $row->rel) / $maxRel) : 0.0,
-                    'snippet' => $this->snippet((string) $policy->description, $tokens),
-                ];
-            }, $rows)));
+                    return [
+                        'policy' => $policy,
+                        'relevance' => $maxRel > 0 ? min(1.0, ((float) $row->rel) / $maxRel) : 0.0,
+                        'snippet' => $this->snippet((string) $policy->description, $tokens),
+                    ];
+                }, $rows)));
+            } catch (\Throwable $e) {
+                // Np. brak FULLTEXT indeksu na policies.description (migracja nie została
+                // jeszcze uruchomiona) — nie wywalaj strony ankiety, tylko poinformuj w logu
+                // i spadnij na fallback token-overlap poniżej.
+                Log::warning('QuestionMatchingService::findPolicySuggestions MySQL FULLTEXT query failed, falling back to token overlap.', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         // SQLite / fallback — token overlap heuristic na tytule + treści
@@ -161,22 +171,28 @@ class QuestionMatchingService
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql') {
-            $rows = DB::select(
-                'SELECT id, MATCH(canonical_question) AGAINST (? IN NATURAL LANGUAGE MODE) AS rel
-                 FROM answer_library
-                 WHERE deleted_at IS NULL AND is_active = 1
-                   AND MATCH(canonical_question) AGAINST (? IN NATURAL LANGUAGE MODE) > 0
-                 ORDER BY rel DESC LIMIT '.(int) $limit,
-                [$query, $query],
-            );
+            try {
+                $rows = DB::select(
+                    'SELECT id, MATCH(canonical_question) AGAINST (? IN NATURAL LANGUAGE MODE) AS rel
+                     FROM answer_library
+                     WHERE deleted_at IS NULL AND is_active = 1
+                       AND MATCH(canonical_question) AGAINST (? IN NATURAL LANGUAGE MODE) > 0
+                     ORDER BY rel DESC LIMIT '.(int) $limit,
+                    [$query, $query],
+                );
 
-            $maxRel = max(array_map(fn ($r) => (float) $r->rel, $rows ?: [(object) ['rel' => 1]]));
+                $maxRel = max(array_map(fn ($r) => (float) $r->rel, $rows ?: [(object) ['rel' => 1]]));
 
-            return array_map(function ($row) use ($maxRel) {
-                $answer = AnswerLibrary::find($row->id);
+                return array_map(function ($row) use ($maxRel) {
+                    $answer = AnswerLibrary::find($row->id);
 
-                return ['answer' => $answer, 'relevance' => $maxRel > 0 ? min(1.0, ((float) $row->rel) / $maxRel * 0.8) : 0];
-            }, $rows);
+                    return ['answer' => $answer, 'relevance' => $maxRel > 0 ? min(1.0, ((float) $row->rel) / $maxRel * 0.8) : 0];
+                }, $rows);
+            } catch (\Throwable $e) {
+                Log::warning('QuestionMatchingService::fulltextSearch MySQL FULLTEXT query failed, falling back to token overlap.', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         // SQLite / fallback — token overlap heuristic
