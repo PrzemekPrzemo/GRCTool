@@ -67,6 +67,11 @@ class User extends Authenticatable
         return $this->hasMany(UserSession::class);
     }
 
+    public function trustedDevices(): HasMany
+    {
+        return $this->hasMany(TrustedDevice::class);
+    }
+
     public function affectedIncidents(): HasMany
     {
         return $this->hasMany(Incident::class, 'affected_user_id');

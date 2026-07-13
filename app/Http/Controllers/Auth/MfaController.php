@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\AuditLogger;
 use App\Services\MfaService;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 
 class MfaController extends Controller
 {
-    public function __construct(private MfaService $mfa) {}
+    public function __construct(private MfaService $mfa, private TrustedDeviceService $trustedDevices) {}
 
     public function showSetup(Request $request): View
     {
@@ -30,7 +31,16 @@ class MfaController extends Controller
             'secret' => $secret,
             'qr' => $qr,
             'enabled' => $user->hasMfaEnabled(),
+            'trustedDevices' => $user->trustedDevices()->where('expires_at', '>', now())->orderByDesc('last_used_at')->get(),
         ]);
+    }
+
+    public function forgetTrustedDevices(Request $request): RedirectResponse
+    {
+        $this->trustedDevices->forgetAll($request->user());
+        AuditLogger::log('trusted_devices_revoked', $request->user());
+
+        return redirect()->route('mfa.setup')->with('status', 'Zaufane urządzenia zostały odwołane — przy kolejnym logowaniu ponownie poprosimy o kod MFA.');
     }
 
     public function confirm(Request $request): RedirectResponse
@@ -67,6 +77,7 @@ class MfaController extends Controller
         $user->two_factor_recovery_codes = null;
         $user->two_factor_confirmed_at = null;
         $user->save();
+        $this->trustedDevices->forgetAll($user);
         AuditLogger::log('mfa_disabled', $user);
 
         return redirect()->route('mfa.setup')->with('status', 'MFA zostało wyłączone.');
