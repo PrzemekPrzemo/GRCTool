@@ -12,6 +12,8 @@ class McrController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('third_party.view'), 403);
+
         $q = MinimumControlRequirement::query()->with('linkedControl');
 
         if ($cat = $request->string('category')->toString()) {
@@ -29,11 +31,15 @@ class McrController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('third_party.create'), 403);
+
         return view('mcr.form', $this->formData(new MinimumControlRequirement));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.create'), 403);
+
         $data = $this->validateMcr($request);
         $mcr = MinimumControlRequirement::create($data);
 
@@ -42,6 +48,8 @@ class McrController extends Controller
 
     public function show(MinimumControlRequirement $mcr): View
     {
+        abort_unless(auth()->user()->can('third_party.view'), 403);
+
         $mcr->load('linkedControl');
 
         return view('mcr.show', compact('mcr'));
@@ -49,11 +57,15 @@ class McrController extends Controller
 
     public function edit(MinimumControlRequirement $mcr): View
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         return view('mcr.form', $this->formData($mcr));
     }
 
     public function update(Request $request, MinimumControlRequirement $mcr): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         $mcr->update($this->validateMcr($request));
 
         return redirect()->route('mcr.show', $mcr)->with('status', 'Zaktualizowano.');

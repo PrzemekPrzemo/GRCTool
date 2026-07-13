@@ -8,6 +8,7 @@ use App\Models\Finding;
 use App\Models\Risk;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\SlackNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,6 +17,8 @@ class FindingController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('finding.view'), 403);
+
         $q = Finding::query()->with('engagement', 'control', 'risk', 'owner');
         if ($s = $request->string('status')->toString()) {
             $q->where('status', $s);
@@ -30,6 +33,8 @@ class FindingController extends Controller
 
     public function show(Finding $finding): View
     {
+        abort_unless(auth()->user()->can('finding.view'), 403);
+
         $finding->load('engagement', 'control', 'risk', 'owner', 'verifier');
 
         return view('findings.show', compact('finding'));
@@ -53,20 +58,20 @@ class FindingController extends Controller
         abort_unless(auth()->user()->can('finding.create'), 403);
 
         $data = $request->validate([
-            'title'               => 'required|max:255',
-            'description'         => 'nullable',
-            'source'              => 'required|in:External Audit,Internal Audit,Pentest,Customer Review,Self-assessment,Regulator,Bug Bounty',
-            'severity'            => 'required|in:Major,Minor,Observation,Recommendation',
-            'engagement_id'       => 'nullable|exists:audit_engagements,id',
-            'linked_control_id'   => 'nullable|exists:controls,id',
-            'linked_risk_id'      => 'nullable|exists:risks,id',
-            'owner_id'            => 'required|exists:users,id',
-            'discovered_at'       => 'required|date',
-            'due_date'            => 'nullable|date|after_or_equal:discovered_at',
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'source' => 'required|in:External Audit,Internal Audit,Pentest,Customer Review,Self-assessment,Regulator,Bug Bounty',
+            'severity' => 'required|in:Major,Minor,Observation,Recommendation',
+            'engagement_id' => 'nullable|exists:audit_engagements,id',
+            'linked_control_id' => 'nullable|exists:controls,id',
+            'linked_risk_id' => 'nullable|exists:risks,id',
+            'owner_id' => 'required|exists:users,id',
+            'discovered_at' => 'required|date',
+            'due_date' => 'nullable|date|after_or_equal:discovered_at',
             'framework_reference' => 'nullable|max:255',
         ]);
 
-        $quarter = 'Q' . ceil(now()->month / 3);
+        $quarter = 'Q'.ceil(now()->month / 3);
         $year = now()->year;
         $count = Finding::whereYear('created_at', $year)->count() + 1;
         $data['code'] = sprintf('F-%d-%s-%05d', $year, $quarter, $count);
@@ -75,7 +80,7 @@ class FindingController extends Controller
         $finding = Finding::create($data);
         AuditLogger::log('finding.created', $finding);
         if ($data['severity'] === 'Major') {
-            \App\Services\SlackNotifier::criticalFindingCreated($finding);
+            SlackNotifier::criticalFindingCreated($finding);
         }
 
         return redirect()->route('findings.show', $finding)->with('success', 'Finding dodany.');
@@ -100,18 +105,18 @@ class FindingController extends Controller
         abort_unless(auth()->user()->can('finding.update'), 403);
 
         $data = $request->validate([
-            'title'               => 'required|max:255',
-            'description'         => 'nullable',
-            'source'              => 'required|in:External Audit,Internal Audit,Pentest,Customer Review,Self-assessment,Regulator,Bug Bounty',
-            'severity'            => 'required|in:Major,Minor,Observation,Recommendation',
-            'engagement_id'       => 'nullable|exists:audit_engagements,id',
-            'linked_control_id'   => 'nullable|exists:controls,id',
-            'linked_risk_id'      => 'nullable|exists:risks,id',
-            'owner_id'            => 'required|exists:users,id',
-            'discovered_at'       => 'required|date',
-            'due_date'            => 'nullable|date|after_or_equal:discovered_at',
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'source' => 'required|in:External Audit,Internal Audit,Pentest,Customer Review,Self-assessment,Regulator,Bug Bounty',
+            'severity' => 'required|in:Major,Minor,Observation,Recommendation',
+            'engagement_id' => 'nullable|exists:audit_engagements,id',
+            'linked_control_id' => 'nullable|exists:controls,id',
+            'linked_risk_id' => 'nullable|exists:risks,id',
+            'owner_id' => 'required|exists:users,id',
+            'discovered_at' => 'required|date',
+            'due_date' => 'nullable|date|after_or_equal:discovered_at',
             'framework_reference' => 'nullable|max:255',
-            'status'              => 'required|in:Open,In Progress,Remediated,Verified,Closed,Risk Accepted,Disputed',
+            'status' => 'required|in:Open,In Progress,Remediated,Verified,Closed,Risk Accepted,Disputed',
         ]);
 
         $finding->update($data);
@@ -122,6 +127,8 @@ class FindingController extends Controller
 
     public function close(Request $request, Finding $finding): RedirectResponse
     {
+        abort_unless(auth()->user()->can('finding.update'), 403);
+
         $data = $request->validate([
             'evidence_of_closure' => ['required', 'string'],
         ]);

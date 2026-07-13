@@ -13,6 +13,8 @@ class IndicatorController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('indicator.view'), 403);
+
         $q = Indicator::query()->with('latestMeasurement');
         if ($type = $request->string('type')->toString()) {
             $q->where('type', $type);
@@ -24,6 +26,8 @@ class IndicatorController extends Controller
 
     public function show(Indicator $indicator): View
     {
+        abort_unless(auth()->user()->can('indicator.view'), 403);
+
         $indicator->load('owner');
         $measurements = $indicator->measurements()->orderBy('measured_at')->limit(180)->get();
 
@@ -32,11 +36,15 @@ class IndicatorController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('indicator.create'), 403);
+
         return view('indicators.form', $this->formData(new Indicator));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('indicator.create'), 403);
+
         $data = $this->validateIndicator($request);
         $i = Indicator::create($data);
 
@@ -45,11 +53,15 @@ class IndicatorController extends Controller
 
     public function edit(Indicator $indicator): View
     {
+        abort_unless(auth()->user()->can('indicator.update'), 403);
+
         return view('indicators.form', $this->formData($indicator));
     }
 
     public function update(Request $request, Indicator $indicator): RedirectResponse
     {
+        abort_unless(auth()->user()->can('indicator.update'), 403);
+
         $data = $this->validateIndicator($request);
         $indicator->update($data);
 
@@ -58,6 +70,8 @@ class IndicatorController extends Controller
 
     public function recordMeasurement(Request $request, Indicator $indicator): RedirectResponse
     {
+        abort_unless(auth()->user()->can('indicator.update'), 403);
+
         $data = $request->validate([
             'value' => ['required', 'numeric'],
             'measured_at' => ['nullable', 'date'],
@@ -79,6 +93,8 @@ class IndicatorController extends Controller
 
     public function importMeasurements(Request $request, Indicator $indicator): RedirectResponse
     {
+        abort_unless(auth()->user()->can('indicator.update'), 403);
+
         $request->validate(['file' => ['required', 'file', 'mimes:csv,txt']]);
         $h = fopen($request->file('file')->getRealPath(), 'r');
         $headers = array_map('strtolower', fgetcsv($h));

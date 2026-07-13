@@ -20,6 +20,8 @@ class RiskController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Risk::class);
+
         $query = Risk::query()->with('owner', 'businessUnit');
 
         if ($search = $request->string('q')->trim()->toString()) {
@@ -66,6 +68,8 @@ class RiskController extends Controller
 
     public function show(Risk $risk): View
     {
+        $this->authorize('view', $risk);
+
         $risk->load(['owner', 'businessUnit', 'scenarioTemplate', 'acceptances.proposer', 'acceptances.approver',
             'treatmentPlans.actions.owner', 'versions.author']);
 
@@ -251,9 +255,9 @@ class RiskController extends Controller
         abort_unless(auth()->user()->can('risk.update'), 403);
 
         $data = $request->validate([
-            'status'           => ['required', 'in:Open,In Progress,Completed,Cancelled,Overdue'],
+            'status' => ['required', 'in:Open,In Progress,Completed,Cancelled,Overdue'],
             'progress_percent' => ['required', 'integer', 'min:0', 'max:100'],
-            'completed_at'     => ['nullable', 'date'],
+            'completed_at' => ['nullable', 'date'],
         ]);
 
         if ($data['status'] === 'Completed' && empty($data['completed_at'])) {

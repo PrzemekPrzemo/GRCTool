@@ -17,7 +17,7 @@ if($stats['gdpr_breach_overdue'] > 0 && $can('gdpr_breach.view'))     $alerts[] 
 if($stats['dsar_overdue'] > 0 && $can('dsar.view'))            $alerts[] = ['Przeterminowane DSAR: '.$stats['dsar_overdue'], 'red', route('dsar.index')];
 if($stats['certs_expired'] > 0 && $can('certificate.view'))           $alerts[] = ['Wygasłe certyfikaty: '.$stats['certs_expired'], 'red', route('certificates.index')];
 if($stats['rtp_actions_overdue'] > 0 && $can('risk.view'))     $alerts[] = ['Akcje planu leczenia po terminie: '.$stats['rtp_actions_overdue'], 'red', route('risk-treatment-plans.index')];
-if($stats['evidence_expiring_30d'] > 0)   $alerts[] = ['Dowody wygasające ≤30 dni: '.$stats['evidence_expiring_30d'], 'amber', route('controls.index')];
+if($stats['evidence_expiring_30d'] > 0 && $can('control.view'))   $alerts[] = ['Dowody wygasające ≤30 dni: '.$stats['evidence_expiring_30d'], 'amber', route('controls.index')];
 if($stats['certs_expiring_30d'] > 0 && $can('certificate.view'))      $alerts[] = ['Certyfikaty wygasające ≤30 dni: '.$stats['certs_expiring_30d'], 'amber', route('certificates.index')];
 if($stats['exceptions_pending'] > 0 && $can('exception.view'))      $alerts[] = ['Wyjątki do zatwierdzenia: '.$stats['exceptions_pending'], 'amber', route('exceptions.index')];
 @endphp
@@ -40,11 +40,11 @@ if($stats['exceptions_pending'] > 0 && $can('exception.view'))      $alerts[] = 
 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
 @php
 $tiles = array_filter([
-    ['Aktywa', $stats['assets_total'], $stats['assets_critical'].' kryt.', 'emerald', route('assets.index'), null,
+    ['Aktywa', $stats['assets_total'], $stats['assets_critical'].' kryt.', 'emerald', route('assets.index'), 'asset.view',
      '<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>'],
-    ['Ryzyka otwarte', $stats['risks_open'], $stats['risks_over_appetite'].' ponad apetyt', 'amber', route('risks.index'), null,
+    ['Ryzyka otwarte', $stats['risks_open'], $stats['risks_over_appetite'].' ponad apetyt', 'amber', route('risks.index'), 'risk.view',
      '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>'],
-    ['Kontrole', $stats['controls_total'], $stats['controls_effective'].' skutecznych', 'blue', route('controls.index'), null,
+    ['Kontrole', $stats['controls_total'], $stats['controls_effective'].' skutecznych', 'blue', route('controls.index'), 'control.view',
      '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>'],
     ['Podatności', $stats['vulns_open'], $stats['vulns_overdue'].' po SLA', 'red', route('vulnerabilities.index'), 'vulnerability.view',
      '<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>'],
@@ -101,6 +101,7 @@ $tiles = array_filter([
 </div>
 
 {{-- Heat map + Top risks --}}
+@can('risk.view')
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
         <h2 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">
@@ -155,15 +156,17 @@ $tiles = array_filter([
         </div>
     </div>
 </div>
+@endcan
 
 {{-- Indicators RAG --}}
+@can('indicator.view')
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
     <div class="flex items-center justify-between mb-4">
         <h2 class="font-semibold text-slate-700 flex items-center gap-2">
             <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
             Wskaźniki KCI / KPI / KRI
         </h2>
-        @can('indicator.view')<a href="{{ route('org-metrics.index') }}" class="text-xs text-emerald-600 hover:underline">Widok pełny →</a>@endcan
+        <a href="{{ route('org-metrics.index') }}" class="text-xs text-emerald-600 hover:underline">Widok pełny →</a>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
         @foreach($indicators as $ind)
@@ -190,6 +193,7 @@ $tiles = array_filter([
         @endforeach
     </div>
 </div>
+@endcan
 
 {{-- Trend charts --}}
 <div class="mt-5">

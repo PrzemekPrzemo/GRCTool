@@ -16,14 +16,16 @@ it('sales sidebar only shows links the role actually has access to', function ()
 
     $html = $this->get('/dashboard')->assertOk()->getContent();
 
-    // Links sales SHOULD see (rfp.* + open modules)
-    foreach (['Ankiety klientów (RFP)', 'Baza odpowiedzi', 'Ryzyka', 'Kontrole', 'Klienci'] as $label) {
+    // Links sales SHOULD see (rfp.* + client.view)
+    foreach (['Ankiety klientów (RFP)', 'Baza odpowiedzi', 'Klienci'] as $label) {
         expect($html)->toContain($label);
     }
 
     // Links sales must NOT see: pointing anywhere sales lacks a permission for
     // (previously these rendered unconditionally and 403'd on click)
-    foreach (['Plany leczenia', 'Akceptacje ryzyk', 'Macierz pokrycia', 'Szkolenia', 'Wyjątki', 'Metryki org.'] as $label) {
+    foreach (['Ryzyka', 'Scenariusze', 'Kontrole', 'Wskaźniki KPI/KRI', 'Aktywa', 'Engagementy', 'Wnioski',
+        'Plany naprawcze', 'TPRM (dostawcy)', 'MCR', 'Rejestr utylizacji',
+        'Plany leczenia', 'Akceptacje ryzyk', 'Macierz pokrycia', 'Szkolenia', 'Wyjątki', 'Metryki org.'] as $label) {
         expect($html)->not->toContain($label);
     }
 });
