@@ -146,3 +146,59 @@ it('rejects invalid JSON when saving Google Drive credentials', function (): voi
         'google_drive_credentials' => 'not-json',
     ])->assertSessionHasErrors('google_drive_credentials');
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Import z pliku Word (.docx)
+// ─────────────────────────────────────────────────────────────────────────────
+
+it('creating a policy with an uploaded .docx pre-fills the description and attaches the file', function (): void {
+    $file = makeDocxFile(docxParagraphs(['Treść polityki z Worda.', 'Drugi akapit.']));
+
+    $this->post('/policies', [
+        'title' => 'Polityka z importu',
+        'current_version' => '1.0',
+        'status' => 'Draft',
+        'source_document' => $file,
+    ])->assertRedirect();
+
+    $policy = Policy::where('title', 'Polityka z importu')->firstOrFail();
+    expect($policy->description)->toBe("Treść polityki z Worda.\n\nDrugi akapit.");
+
+    expect($policy->documentLinks()->count())->toBe(1);
+    $evidence = $policy->documentLinks()->first()->evidence;
+    expect($evidence->source)->toBe('upload');
+    expect($evidence->original_filename)->toBe('test.docx');
+    expect($evidence->storage_path)->not->toBeNull();
+});
+
+it('uploading a new .docx on edit overwrites the description', function (): void {
+    $policy = makePolicy(['description' => 'Stara treść', 'current_version' => '1.0']);
+    $file = makeDocxFile(docxParagraphs(['Nowa treść po edycji.']));
+
+    // Formularz edycji wysyła multipart POST z podszywaniem metody (_method=PUT) —
+    // prawdziwe HTML nie umie wysłać PUT z plikiem; test odtwarza dokładnie ten przepływ.
+    $response = $this->post("/policies/{$policy->id}", [
+        '_method' => 'PUT',
+        'title' => $policy->title,
+        'current_version' => $policy->current_version,
+        'status' => $policy->status,
+        'source_document' => $file,
+    ]);
+
+    $response->assertRedirect(route('policies.show', $policy));
+
+    expect($policy->fresh()->description)->toBe('Nowa treść po edycji.');
+});
+
+it('attaches an uploaded file (not just a Drive link) to an existing policy and can download it', function (): void {
+    $policy = makePolicy();
+    $file = UploadedFile::fake()->create('procedura.pdf', 10, 'application/pdf');
+
+    $this->post("/policies/{$policy->id}/documents", ['file' => $file])->assertRedirect();
+
+    $link = $policy->documentLinks()->first();
+    expect($link->evidence->source)->toBe('upload');
+
+    $response = $this->get("/policies/{$policy->id}/documents/{$link->id}/download");
+    $response->assertOk();
+});

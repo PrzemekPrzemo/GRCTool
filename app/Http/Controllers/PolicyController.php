@@ -9,10 +9,14 @@ use App\Models\PolicyAttestation;
 use App\Models\PolicyVersion;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\DocxTextExtractor;
+use App\Services\EvidenceUploadService;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PolicyController extends Controller
 {
@@ -53,8 +57,10 @@ class PolicyController extends Controller
 
         $data = $this->validatePolicy($request);
         $data['code'] = $this->generateCode();
+        $this->applyDocxImport($request, $data);
 
         $policy = Policy::create($data);
+        $this->maybeAttachUploadedSource($request, $policy);
         $this->recordVersion($policy, 'Utworzenie polityki');
         AuditLogger::log('policy.created', $policy);
 
@@ -96,7 +102,9 @@ class PolicyController extends Controller
         abort_unless(auth()->user()->can('policy.update'), 403);
 
         $data = $this->validatePolicy($request);
+        $this->applyDocxImport($request, $data);
         $policy->update($data);
+        $this->maybeAttachUploadedSource($request, $policy);
         $this->recordVersion($policy, 'Edycja polityki');
         AuditLogger::log('policy.updated', $policy);
 
@@ -244,13 +252,28 @@ class PolicyController extends Controller
     {
         abort_unless(auth()->user()->can('policy.update'), 403);
 
-        $data = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'drive_url' => ['required', 'url', 'max:1024'],
-            'drive_file_id' => ['nullable', 'string', 'max:191'],
-        ]);
+        if ($request->hasFile('file')) {
+            $data = $request->validate([
+                'title' => ['nullable', 'string', 'max:255'],
+                'file' => ['required', 'file', 'max:20480'],
+            ]);
 
-        $evidence = $this->attachDriveLink($policy, $data['drive_url'], $data['title'] ?? null, $data['drive_file_id'] ?? null);
+            $evidence = app(EvidenceUploadService::class)->store($request->file('file'), 'policy-documents', $data['title'] ?? null);
+            EvidenceLink::create([
+                'evidence_id' => $evidence->id,
+                'linkable_type' => Policy::class,
+                'linkable_id' => $policy->id,
+                'relation_role' => 'policy_document',
+            ]);
+        } else {
+            $data = $request->validate([
+                'title' => ['nullable', 'string', 'max:255'],
+                'drive_url' => ['required', 'url', 'max:1024'],
+                'drive_file_id' => ['nullable', 'string', 'max:191'],
+            ]);
+
+            $evidence = $this->attachDriveLink($policy, $data['drive_url'], $data['title'] ?? null, $data['drive_file_id'] ?? null);
+        }
 
         AuditLogger::log('policy.document_attached', $policy, ['evidence_id' => $evidence->id]);
 
@@ -266,6 +289,17 @@ class PolicyController extends Controller
         AuditLogger::log('policy.document_detached', $policy);
 
         return back()->with('success', 'Dokument odpięty.');
+    }
+
+    public function downloadDocument(Policy $policy, EvidenceLink $document): StreamedResponse
+    {
+        abort_unless(auth()->user()->can('policy.view'), 403);
+        abort_unless($document->linkable_type === Policy::class && $document->linkable_id === $policy->id, 404);
+
+        $evidence = $document->evidence;
+        abort_unless($evidence && $evidence->source === 'upload' && $evidence->storage_path, 404);
+
+        return Storage::disk('local')->download($evidence->storage_path, $evidence->original_filename);
     }
 
     public function syncDocument(Policy $policy, EvidenceLink $document, GoogleDriveService $drive): RedirectResponse
@@ -328,7 +362,7 @@ class PolicyController extends Controller
 
     private function validatePolicy(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category' => 'nullable|string|max:64',
@@ -339,6 +373,46 @@ class PolicyController extends Controller
             'status' => 'required|in:Draft,Approved,Active,Review,Retired',
             'framework_mappings' => 'nullable|array',
             'attestation_required' => 'boolean',
+            'source_document' => 'nullable|file|mimes:docx|max:20480',
+        ]);
+
+        unset($data['source_document']);
+
+        return $data;
+    }
+
+    /**
+     * Jeśli formularz zawiera wgrany plik .docx, jego treść zastępuje pole
+     * description — to jest sedno "importu" polityki z Worda. Błąd
+     * ekstrakcji (uszkodzony plik) nie blokuje zapisu — plik i tak zostanie
+     * podpięty jako załącznik przez maybeAttachUploadedSource().
+     */
+    private function applyDocxImport(Request $request, array &$data): void
+    {
+        if (! $request->hasFile('source_document')) {
+            return;
+        }
+
+        try {
+            $data['description'] = app(DocxTextExtractor::class)->extract($request->file('source_document')->getRealPath());
+        } catch (\Throwable $e) {
+            session()->flash('warning', 'Nie udało się odczytać treści z pliku Word: '.$e->getMessage().' Plik zostanie mimo to podpięty jako załącznik.');
+        }
+    }
+
+    private function maybeAttachUploadedSource(Request $request, Policy $policy): void
+    {
+        if (! $request->hasFile('source_document')) {
+            return;
+        }
+
+        $evidence = app(EvidenceUploadService::class)->store($request->file('source_document'), 'policy-documents', $policy->title);
+
+        EvidenceLink::create([
+            'evidence_id' => $evidence->id,
+            'linkable_type' => Policy::class,
+            'linkable_id' => $policy->id,
+            'relation_role' => 'policy_document',
         ]);
     }
 

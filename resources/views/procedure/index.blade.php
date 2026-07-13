@@ -6,9 +6,16 @@
         <h1 class="text-2xl font-semibold">Procedury</h1>
         <p class="text-sm text-slate-500 mt-0.5">Operacyjne procedury i playbooki wdrażające polityki bezpieczeństwa</p>
     </div>
-    <a href="{{ route('policies.index') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
-        ← Polityki
-    </a>
+    <div class="flex gap-2">
+        <a href="{{ route('policies.index') }}" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors">
+            ← Polityki
+        </a>
+        @can('policy.create')
+        <a href="{{ route('procedures.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">
+            + Nowa procedura
+        </a>
+        @endcan
+    </div>
 </div>
 
 @if($procedures->isEmpty())
