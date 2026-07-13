@@ -4,6 +4,7 @@ use App\Models\AppSetting;
 use App\Models\Incident;
 use App\Models\User;
 use App\Models\Vulnerability;
+use App\Services\Security\AwsSecurityHubService;
 use App\Services\Security\AwsSigV4Signer;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
@@ -156,13 +157,14 @@ it('AWS Security Hub request sends Content-Type exactly once, matching the SigV4
 
     Http::fake(['https://securityhub.eu-west-1.amazonaws.com/*' => Http::response(['Findings' => []], 200)]);
 
-    app(App\Services\Security\AwsSecurityHubService::class)->fetchActiveFindings(1);
+    app(AwsSecurityHubService::class)->fetchActiveFindings(1);
 
     Http::assertSent(function ($request) {
         // Guzzle joins duplicate same-name headers with a comma — if withHeaders()
         // and withBody() both set Content-Type, AWS receives a value that no longer
         // matches what was included in the SigV4 signature and rejects the request.
-        return $request->header('Content-Type') === ['application/x-amz-json-1.1'];
+        return $request->header('Content-Type') === ['application/json']
+            && $request->url() === 'https://securityhub.eu-west-1.amazonaws.com/findings';
     });
 });
 
