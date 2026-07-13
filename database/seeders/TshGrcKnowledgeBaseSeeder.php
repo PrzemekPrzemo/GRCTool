@@ -8,6 +8,7 @@ use App\Models\FrameworkCoverage;
 use App\Models\Policy;
 use App\Models\PolicyControl;
 use App\Models\PolicyControlFrameworkMapping;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Symfony\Component\Yaml\Yaml;
 
@@ -50,9 +51,12 @@ class TshGrcKnowledgeBaseSeeder extends Seeder
         'NIST-SSDF' => ['name' => 'NIST SP 800-218 (Secure Software Development Framework)', 'short_name' => 'SSDF', 'issuer' => 'NIST', 'region' => 'USA'],
     ];
 
+    private ?int $cisoId = null;
+
     public function run(): void
     {
         $data = Yaml::parseFile(database_path('seeders/data/tsh_grc_policies.yaml'));
+        $this->cisoId = User::where('email', 'ciso@grc.local')->value('id');
 
         $this->seedFrameworks();
         $policies = $this->seedPolicies($data['policies']);
@@ -78,6 +82,27 @@ class TshGrcKnowledgeBaseSeeder extends Seeder
         }
     }
 
+    /**
+     * "owner" w YAML to często złożona etykieta roli (np. "DPO / Head of
+     * Cybersecurity", "Legal / HR / Head of Cybersecurity") — w tej
+     * ~5-osobowej funkcji security jedyną realnie istniejącą rolą
+     * pokrywającą się z tymi etykietami jest CISO (pełni też funkcję DPO
+     * do czasu formalnego powołania — patrz RSK-007). Rozpoznajemy więc
+     * "CISO"/"Head of Cybersecurity" gdziekolwiek w etykiecie; pozostałe
+     * współwłaściciele (Legal, HR, Tech Lead, QA...) nie mają tu realnych
+     * kont powiązanych z tym źródłem i celowo zostają nierozpoznani.
+     */
+    private function resolveOwner(?string $role): ?int
+    {
+        if ($role === null) {
+            return null;
+        }
+
+        return (str_contains($role, 'CISO') || str_contains($role, 'Head of Cybersecurity'))
+            ? $this->cisoId
+            : null;
+    }
+
     /** @return array<string, Policy> keyed by policy_id */
     private function seedPolicies(array $policiesYaml): array
     {
@@ -91,6 +116,7 @@ class TshGrcKnowledgeBaseSeeder extends Seeder
                     'document_ref' => $p['document_ref'] ?? null,
                     'audience' => $p['audience'] ?? null,
                     'owner_role' => $p['owner'] ?? null,
+                    'owner_id' => $this->resolveOwner($p['owner'] ?? null),
                     'classification' => $p['classification'] ?? null,
                     'current_version' => (string) ($p['version'] ?? '1.0'),
                     'status' => $this->mapPolicyStatus($p['status'] ?? 'draft'),

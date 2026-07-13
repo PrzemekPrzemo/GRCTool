@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Policy;
 use App\Models\PolicyControl;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 /**
@@ -270,6 +271,8 @@ class TshSecPoliciesSeeder extends Seeder
 
     public function run(): void
     {
+        $cisoId = User::where('email', 'ciso@grc.local')->value('id');
+
         foreach ($this->definitions() as $def) {
             $bodyPath = database_path('seeders/data/'.self::DATA_DIR.'/'.$def['code'].'-*.txt');
             $files = glob($bodyPath);
@@ -285,8 +288,10 @@ class TshSecPoliciesSeeder extends Seeder
                     'title' => $def['title'],
                     'description' => $body,
                     'owner_role' => 'CSO',
+                    'owner_id' => $cisoId,
                     'current_version' => $def['version'],
                     'status' => 'Approved',
+                    'approved_by' => $cisoId,
                     'effective_from' => '2025-01-01',
                     'framework_mappings' => $def['framework_mappings'],
                     'supersedes_policy_id' => $supersedesId,
