@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AwsSecurityHubSettingsController;
 use App\Http\Controllers\Admin\EntraIdSettingsController;
 use App\Http\Controllers\Admin\GoogleDriveSettingsController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SsoRoleMappingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AnswerLibraryController;
 use App\Http\Controllers\AssetController;
@@ -398,6 +399,8 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::get('admin/entra-settings', [EntraIdSettingsController::class, 'show'])->name('admin.entra.show');
     Route::put('admin/entra-settings', [EntraIdSettingsController::class, 'update'])->name('admin.entra.update');
     Route::post('admin/entra-settings/test-identity-protection', [EntraIdSettingsController::class, 'testIdentityProtection'])->name('admin.entra.test-identity-protection');
+    Route::post('admin/entra-settings/role-mappings', [SsoRoleMappingController::class, 'store'])->name('admin.entra.role-mappings.store');
+    Route::delete('admin/entra-settings/role-mappings/{mapping}', [SsoRoleMappingController::class, 'destroy'])->name('admin.entra.role-mappings.destroy');
 
     // Google Drive Settings (ciso + admin — handled in controller)
     Route::get('admin/google-drive-settings', [GoogleDriveSettingsController::class, 'show'])->name('admin.google-drive.show');

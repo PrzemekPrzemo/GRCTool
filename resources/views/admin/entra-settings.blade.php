@@ -155,6 +155,101 @@
         @endif
     </div>
 
+    {{-- Role mapping --}}
+    <div class="mt-6 bg-white rounded-xl border border-slate-200 p-6">
+        <h3 class="text-sm font-semibold text-slate-900 mb-1">Mapowanie ról Entra ID → role GRCTool</h3>
+        <p class="text-xs text-slate-500 mb-4">Przy każdym logowaniu przez Microsoft role użytkownika w GRCTool są nadawane na podstawie App Role lub grupy Entra ID przypisanej w tokenie logowania. Instrukcja konfiguracji po stronie Entra — patrz sekcja niżej.</p>
+
+        <form method="PUT" action="{{ route('admin.entra.update') }}" class="mb-5">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="azure_client_id" value="{{ $settings['azure_client_id'] }}">
+            <input type="hidden" name="azure_tenant_id" value="{{ $settings['azure_tenant_id'] }}">
+            <input type="hidden" name="azure_enabled" value="{{ $settings['azure_enabled'] }}">
+            <input type="hidden" name="azure_identity_protection_enabled" value="{{ $settings['azure_identity_protection_enabled'] }}">
+
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="azure_role_sync_enabled" value="1"
+                       {{ $settings['azure_role_sync_enabled'] === '1' ? 'checked' : '' }}
+                       class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400">
+                <div>
+                    <p class="text-sm font-medium text-slate-700">Włącz synchronizację ról z Entra ID</p>
+                    <p class="text-xs text-slate-400">Gdy wyłączone (domyślnie): role nadaje wyłącznie administrator ręcznie w Admin → Użytkownicy, jak dotychczas. Gdy włączone i token nie zawiera dopasowanej roli/grupy, role użytkownika pozostają bez zmian (nie są czyszczone).</p>
+                </div>
+            </label>
+
+            <button type="submit" class="mt-3 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Zapisz</button>
+        </form>
+
+        <div class="border-t border-slate-100 pt-4">
+            <h4 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Mapowania ({{ $roleMappings->count() }})</h4>
+
+            @if($roleMappings->isEmpty())
+                <p class="text-xs text-slate-400 mb-3">Brak skonfigurowanych mapowań.</p>
+            @else
+                <table class="w-full text-sm mb-4">
+                    <thead>
+                        <tr class="text-left text-xs text-slate-400 uppercase">
+                            <th class="pb-2">Typ</th>
+                            <th class="pb-2">Wartość Entra</th>
+                            <th class="pb-2">Etykieta</th>
+                            <th class="pb-2">Rola GRCTool</th>
+                            <th class="pb-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($roleMappings as $rm)
+                        <tr class="border-t border-slate-50">
+                            <td class="py-2 text-slate-600">{{ $rm->entra_type === 'app_role' ? 'App Role' : 'Grupa' }}</td>
+                            <td class="py-2 font-mono text-xs text-slate-700">{{ $rm->entra_value }}</td>
+                            <td class="py-2 text-slate-500">{{ $rm->label ?: '—' }}</td>
+                            <td class="py-2"><span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">{{ $rm->system_role }}</span></td>
+                            <td class="py-2 text-right">
+                                <form method="POST" action="{{ route('admin.entra.role-mappings.destroy', $rm) }}" onsubmit="return confirm('Usunąć to mapowanie?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs text-red-600 hover:underline">Usuń</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            <form method="POST" action="{{ route('admin.entra.role-mappings.store') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-2 items-end bg-slate-50 rounded-lg p-3">
+                @csrf
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Typ</label>
+                    <select name="entra_type" class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm">
+                        <option value="app_role">App Role</option>
+                        <option value="group">Grupa (Object ID)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Wartość Entra</label>
+                    <input type="text" name="entra_value" required placeholder="np. CISO lub GUID grupy"
+                           class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Etykieta (opcjonalnie)</label>
+                    <input type="text" name="label" placeholder="np. Zespół bezpieczeństwa"
+                           class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Rola GRCTool</label>
+                    <select name="system_role" required class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm">
+                        @foreach($availableRoles as $roleName)
+                            <option value="{{ $roleName }}">{{ $roleName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="px-3 py-1.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Dodaj</button>
+            </form>
+            @error('system_role')<p class="text-red-600 text-xs mt-2">{{ $message }}</p>@enderror
+        </div>
+    </div>
+
     {{-- Setup instructions --}}
     <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-5">
         <h3 class="text-sm font-semibold text-blue-900 mb-3">Instrukcja rejestracji aplikacji w Microsoft Entra</h3>
@@ -165,10 +260,34 @@
             <li>Redirect URI (Web): <code class="bg-blue-100 px-1 rounded">{{ url('/auth/microsoft/callback') }}</code></li>
             <li>Po rejestracji: skopiuj <strong>Application (client) ID</strong> i <strong>Directory (tenant) ID</strong></li>
             <li>Certificates & secrets → New client secret → skopiuj wartość (widoczna tylko raz)</li>
-            <li>API permissions → Add → Microsoft Graph → Delegated → <strong>User.Read</strong> → Grant admin consent</li>
+            <li>API permissions → Add → Microsoft Graph → Delegated → <strong>User.Read</strong>, <strong>openid</strong>, <strong>profile</strong>, <strong>email</strong> → Grant admin consent</li>
             <li>Dla synchronizacji Identity Protection: API permissions → Add → Microsoft Graph → <strong>Application</strong> → <strong>IdentityRiskEvent.Read.All</strong> → Grant admin consent</li>
             <li>Enterprise Applications → GRC Tool → Properties → <strong>Visible to users? = Yes</strong> → pojawi się w "Moje aplikacje"</li>
         </ol>
+    </div>
+
+    {{-- Role mapping setup instructions --}}
+    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-5">
+        <h3 class="text-sm font-semibold text-amber-900 mb-3">Instrukcja: powiązanie roli/grupy Entra ID z rolą GRCTool</h3>
+
+        <p class="text-xs font-semibold text-amber-900 mb-1.5">Wariant A — App Role (zalecany, działa dla pojedynczych userów i całych grup)</p>
+        <ol class="text-xs text-amber-800 space-y-1.5 list-decimal list-inside mb-4">
+            <li>portal.azure.com → Microsoft Entra ID → App registrations → <strong>GRC Tool</strong> → App roles → Create app role</li>
+            <li>Display name: np. <code class="bg-amber-100 px-1 rounded">CISO</code>; Allowed member types: <strong>Users/Groups</strong>; Value: np. <code class="bg-amber-100 px-1 rounded">CISO</code> (dokładnie ten string wpisujesz w polu "Wartość Entra" powyżej); zapisz</li>
+            <li>Powtórz dla każdej roli GRCTool, którą chcesz sterować z Entra (np. <code class="bg-amber-100 px-1 rounded">security_engineer</code>, <code class="bg-amber-100 px-1 rounded">sales</code>)</li>
+            <li>Entra ID → Enterprise applications → <strong>GRC Tool</strong> → Users and groups → Add user/group</li>
+            <li>Wybierz konkretnego użytkownika <u>lub całą grupę</u> → wybierz utworzoną rolę App Role → Assign</li>
+            <li>W GRCTool: dodaj mapowanie z Typ = <strong>App Role</strong>, Wartość Entra = dokładnie ta sama wartość "Value" co w kroku 2, Rola GRCTool = docelowa rola</li>
+        </ol>
+
+        <p class="text-xs font-semibold text-amber-900 mb-1.5">Wariant B — surowa grupa Entra ID (bez App Roles, po Object ID grupy)</p>
+        <ol class="text-xs text-amber-800 space-y-1.5 list-decimal list-inside">
+            <li>App registrations → <strong>GRC Tool</strong> → Token configuration → Add groups claim</li>
+            <li>Zaznacz <strong>Security groups</strong> (lub All groups) dla ID token; zapisz</li>
+            <li>Entra ID → Groups → skopiuj <strong>Object Id</strong> docelowej grupy</li>
+            <li>W GRCTool: dodaj mapowanie z Typ = <strong>Grupa</strong>, Wartość Entra = ten Object ID, Rola GRCTool = docelowa rola</li>
+        </ol>
+        <p class="text-xs text-amber-700 mt-3">Uwaga: dla dużych organizacji (użytkownik należy do wielu grup) Entra może zwrócić w tokenie wskaźnik przeciążenia zamiast pełnej listy grup — w takim wypadku Wariant A (App Roles) jest niezawodny niezależnie od liczby grup.</p>
     </div>
 
 </div>
