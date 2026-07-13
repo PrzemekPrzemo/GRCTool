@@ -148,6 +148,24 @@ it('sync-aws-security-hub-findings creates vulnerabilities from findings and ded
     expect(Vulnerability::where('source', 'AWS Security Hub')->count())->toBe(1);
 });
 
+it('AWS Security Hub request sends Content-Type exactly once, matching the SigV4-signed value', function (): void {
+    AppSetting::set('aws_region', 'eu-west-1');
+    AppSetting::set('aws_access_key_id', 'AKIAEXAMPLE');
+    AppSetting::set('aws_secret_access_key_encrypted', Crypt::encryptString('secret'));
+    AppSetting::set('aws_security_hub_enabled', '1');
+
+    Http::fake(['https://securityhub.eu-west-1.amazonaws.com/*' => Http::response(['Findings' => []], 200)]);
+
+    app(App\Services\Security\AwsSecurityHubService::class)->fetchActiveFindings(1);
+
+    Http::assertSent(function ($request) {
+        // Guzzle joins duplicate same-name headers with a comma — if withHeaders()
+        // and withBody() both set Content-Type, AWS receives a value that no longer
+        // matches what was included in the SigV4 signature and rejects the request.
+        return $request->header('Content-Type') === ['application/x-amz-json-1.1'];
+    });
+});
+
 it('AWS SigV4 signer produces an Authorization header with the expected structure', function (): void {
     $headers = AwsSigV4Signer::signJsonRequest(
         method: 'POST',
