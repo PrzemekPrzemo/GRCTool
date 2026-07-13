@@ -78,16 +78,19 @@ class AwsSecurityHubService
         }
         $payload = json_encode($body);
 
+        // Security Hub to REST-JSON (nie awsJson1.1 RPC) — operacja jest adresowana przez
+        // metodę + ścieżkę (POST /findings), nie przez nagłówek X-Amz-Target na "/".
+        // https://docs.aws.amazon.com/securityhub/1.0/APIReference/API_GetFindings.html
         $headers = AwsSigV4Signer::signJsonRequest(
             method: 'POST',
             host: $host,
-            path: '/',
+            path: '/findings',
             region: $region,
             service: 'securityhub',
             accessKeyId: $accessKeyId,
             secretAccessKey: $secretAccessKey,
             payload: $payload,
-            extraHeaders: ['x-amz-target' => 'SecurityHub.GetFindings'],
+            contentType: 'application/json',
         );
 
         // Content-Type musi trafić na drut dokładnie raz z dokładnie tą wartością, która
@@ -96,8 +99,8 @@ class AwsSecurityHubService
         // Guzzle wysłałby DWA wystąpienia nagłówka połączone przecinkiem, co łamie podpis
         // (AWS liczy canonical header z surowej wartości, która przestaje się zgadzać).
         $response = Http::withHeaders(Arr::except($headers, ['content-type']))
-            ->withBody($payload, 'application/x-amz-json-1.1')
-            ->post("https://{$host}/");
+            ->withBody($payload, 'application/json')
+            ->post("https://{$host}/findings");
 
         if ($response->failed()) {
             throw new RuntimeException('Błąd AWS Security Hub (GetFindings): '.$response->body());

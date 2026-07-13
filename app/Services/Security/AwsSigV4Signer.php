@@ -23,12 +23,13 @@ class AwsSigV4Signer
         string $secretAccessKey,
         string $payload,
         array $extraHeaders = [],
+        string $contentType = 'application/x-amz-json-1.1',
     ): array {
         $amzDate = gmdate('Ymd\THis\Z');
         $dateStamp = gmdate('Ymd');
 
         $headers = array_merge([
-            'content-type' => 'application/x-amz-json-1.1',
+            'content-type' => $contentType,
             'host' => $host,
             'x-amz-date' => $amzDate,
         ], array_change_key_case($extraHeaders, CASE_LOWER));
