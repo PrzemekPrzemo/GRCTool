@@ -62,7 +62,7 @@ class SendGrcAlerts extends Command
                             "Type: {$cert->cert_type} | Environment: {$cert->environment}",
                             'Please renew or replace the certificate before it expires.',
                         ],
-                        actionUrl: url("/certificate-inventory/{$cert->id}"),
+                        actionUrl: url("/certificates/{$cert->id}"),
                         actionLabel: 'View Certificate',
                     ));
 
@@ -141,7 +141,7 @@ class SendGrcAlerts extends Command
                         "Status: {$action->status} | Progress: {$action->progress_percent}%",
                         'Please complete or update this corrective action before the deadline.',
                     ],
-                    actionUrl: url("/cap/{$action->cap_id}/actions/{$action->id}"),
+                    actionUrl: url("/cap/{$action->cap_id}"),
                     actionLabel: 'View CAP Action',
                 ));
 
@@ -181,7 +181,7 @@ class SendGrcAlerts extends Command
                             'Under GDPR Art. 12, a response must be provided within 30 days of receipt.',
                             "Deadline: approximately {$daysLeft} day(s) remaining. Immediate action is required.",
                         ],
-                        actionUrl: url("/dsar-requests/{$dsar->id}"),
+                        actionUrl: url("/dsar/{$dsar->id}"),
                         actionLabel: 'View DSAR Request',
                     ));
 
