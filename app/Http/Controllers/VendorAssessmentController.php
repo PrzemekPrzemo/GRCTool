@@ -17,6 +17,8 @@ class VendorAssessmentController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('third_party.view'), 403);
+
         $q = VendorAssessment::query()->with('thirdParty', 'requester');
         if ($status = $request->string('status')->toString()) {
             $q->where('status', $status);
@@ -28,6 +30,8 @@ class VendorAssessmentController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('third_party.create'), 403);
+
         return view('vendor_assessments.form', [
             'assessment' => new VendorAssessment,
             'thirdParties' => ThirdParty::orderBy('name')->get(),
@@ -37,6 +41,8 @@ class VendorAssessmentController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.create'), 403);
+
         $data = $request->validate([
             'third_party_id' => ['required', 'exists:third_parties,id'],
             'assessment_type' => ['required', 'string'],
@@ -93,6 +99,8 @@ class VendorAssessmentController extends Controller
 
     public function show(VendorAssessment $assessment): View
     {
+        abort_unless(auth()->user()->can('third_party.view'), 403);
+
         $assessment->load('thirdParty', 'requester', 'reviewer', 'responses.mcr', 'responses.reviewer');
 
         return view('vendor_assessments.show', compact('assessment'));
@@ -100,6 +108,8 @@ class VendorAssessmentController extends Controller
 
     public function edit(VendorAssessment $assessment): View
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         return view('vendor_assessments.form', [
             'assessment' => $assessment,
             'thirdParties' => ThirdParty::orderBy('name')->get(),
@@ -109,6 +119,8 @@ class VendorAssessmentController extends Controller
 
     public function update(Request $request, VendorAssessment $assessment): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         $data = $request->validate([
             'due_date' => ['nullable', 'date'],
             'vendor_contact_name' => ['nullable', 'string'],
@@ -123,6 +135,8 @@ class VendorAssessmentController extends Controller
     /** Generuje token URL do vendor portal i (TODO) wysyła email. */
     public function send(VendorAssessment $assessment): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         $token = $assessment->generateAccessToken(45);
         $assessment->update(['status' => 'Sent']);
         AuditLogger::log('vendor_assessment_sent', $assessment, ['token_expires' => $assessment->token_expires_at?->toIso8601String()]);
@@ -134,6 +148,8 @@ class VendorAssessmentController extends Controller
 
     public function reviewResponse(Request $request, VendorAssessment $assessment, VendorAssessmentResponse $response): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         $data = $request->validate([
             'our_review_status' => ['required', 'in:Accepted,Rejected,Needs-clarification'],
             'our_review_notes' => ['nullable', 'string'],
@@ -157,6 +173,8 @@ class VendorAssessmentController extends Controller
 
     public function finalize(VendorAssessment $assessment): RedirectResponse
     {
+        abort_unless(auth()->user()->can('third_party.update'), 403);
+
         $assessment->recomputeScores();
         $assessment->update([
             'status' => 'Approved',

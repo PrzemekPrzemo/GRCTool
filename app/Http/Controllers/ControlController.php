@@ -6,7 +6,6 @@ use App\Models\Control;
 use App\Models\ControlTest;
 use App\Models\Framework;
 use App\Models\FrameworkControl;
-use App\Models\FrameworkVersion;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +15,8 @@ class ControlController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('control.view'), 403);
+
         $q = Control::query()->with(['owner', 'frameworkControls.frameworkVersion.framework']);
 
         if ($search = $request->string('q')->trim()->toString()) {
@@ -53,6 +54,8 @@ class ControlController extends Controller
 
     public function show(Control $control): View
     {
+        abort_unless(auth()->user()->can('control.view'), 403);
+
         $control->load(['owner', 'frameworkControls.frameworkVersion.framework', 'tests.tester']);
 
         return view('controls.show', compact('control'));
@@ -132,12 +135,12 @@ class ControlController extends Controller
 
         // Build matrix: [control_id][framework_id] => strongest mapping_type
         $priority = ['full' => 2, 'partial' => 1, 'compensating' => 0];
-        $matrix   = [];
+        $matrix = [];
 
         foreach ($controls as $control) {
             foreach ($frameworks as $fw) {
                 $latestVersionId = $fw->versions->first()?->id;
-                $best            = null;
+                $best = null;
 
                 foreach ($control->frameworkControls as $fc) {
                     if ($fc->framework_version_id !== $latestVersionId) {
@@ -170,6 +173,8 @@ class ControlController extends Controller
 
     public function soa(Request $request): View
     {
+        abort_unless(auth()->user()->can('control.view'), 403);
+
         $framework = Framework::where('code', $request->string('framework')->toString() ?: 'ISO27001')->firstOrFail();
         $version = $framework->currentVersion();
         $controls = $version

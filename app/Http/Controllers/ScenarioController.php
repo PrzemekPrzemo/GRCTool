@@ -12,6 +12,8 @@ class ScenarioController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('risk.view'), 403);
+
         $query = ScenarioTemplate::query()->where('is_active', true);
         if ($cat = $request->string('category')->toString()) {
             $query->where('category_l2', $cat);
@@ -21,14 +23,16 @@ class ScenarioController extends Controller
                 $q->where('name', 'like', "%$search%")->orWhere('description', 'like', "%$search%");
             });
         }
-        $scenarios   = $query->orderBy('category_l2')->orderBy('name')->get();
-        $byCategory  = $scenarios->groupBy('category_l2');
+        $scenarios = $query->orderBy('category_l2')->orderBy('name')->get();
+        $byCategory = $scenarios->groupBy('category_l2');
 
         return view('scenarios.index', compact('scenarios', 'byCategory'));
     }
 
     public function show(ScenarioTemplate $scenario): View
     {
+        abort_unless(auth()->user()->can('risk.view'), 403);
+
         return view('scenarios.show', compact('scenario'));
     }
 
@@ -71,13 +75,13 @@ class ScenarioController extends Controller
     private function validateScenario(Request $request): array
     {
         return $request->validate([
-            'code'        => 'required|max:32',
-            'name'        => 'required|max:255',
+            'code' => 'required|max:32',
+            'name' => 'required|max:255',
             'description' => 'nullable',
             'category_l1' => 'required|in:Cyber,Compliance,Operational',
             'category_l2' => 'required|max:64',
-            'is_active'   => 'boolean',
-            'default_threat_actors'    => 'nullable|array',
+            'is_active' => 'boolean',
+            'default_threat_actors' => 'nullable|array',
             'default_mitre_techniques' => 'nullable|array',
         ]);
     }

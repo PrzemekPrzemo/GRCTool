@@ -15,12 +15,14 @@ class CorrectiveActionPlanController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('cap.view'), 403);
+
         $query = CorrectiveActionPlan::with(['approver'])
             ->withCount([
                 'actions',
                 'actions as overdue_count' => function ($q): void {
                     $q->whereNotIn('status', ['Completed', 'Cancelled'])
-                      ->whereDate('due_date', '<', now());
+                        ->whereDate('due_date', '<', now());
                 },
             ]);
 
@@ -31,12 +33,12 @@ class CorrectiveActionPlanController extends Controller
         $caps = $query->orderByDesc('created_at')->paginate(25)->withQueryString();
 
         $stats = [
-            'total'      => CorrectiveActionPlan::count(),
-            'draft'      => CorrectiveActionPlan::where('status', 'Draft')->count(),
+            'total' => CorrectiveActionPlan::count(),
+            'draft' => CorrectiveActionPlan::where('status', 'Draft')->count(),
             'in_progress' => CorrectiveActionPlan::where('status', 'In Progress')->count(),
-            'overdue'    => CapAction::whereNotIn('status', ['Completed', 'Cancelled'])
-                                ->whereDate('due_date', '<', now())
-                                ->count(),
+            'overdue' => CapAction::whereNotIn('status', ['Completed', 'Cancelled'])
+                ->whereDate('due_date', '<', now())
+                ->count(),
         ];
 
         return view('cap.index', compact('caps', 'stats'));
@@ -60,18 +62,18 @@ class CorrectiveActionPlanController extends Controller
         abort_unless(auth()->user()->can('cap.create'), 403);
 
         $validated = $request->validate([
-            'title'                    => ['required', 'string', 'max:255'],
-            'description'              => ['nullable', 'string'],
-            'finding_ids'              => ['nullable', 'array'],
-            'finding_ids.*'            => ['exists:findings,id'],
-            'approver_id'              => ['nullable', 'exists:users,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'finding_ids' => ['nullable', 'array'],
+            'finding_ids.*' => ['exists:findings,id'],
+            'approver_id' => ['nullable', 'exists:users,id'],
             'effectiveness_review_date' => ['nullable', 'date'],
-            'status'                   => ['required', 'in:Draft,Approved,In Progress,Completed,Cancelled'],
+            'status' => ['required', 'in:Draft,Approved,In Progress,Completed,Cancelled'],
         ]);
 
-        $year  = now()->year;
+        $year = now()->year;
         $count = CorrectiveActionPlan::whereYear('created_at', $year)->count() + 1;
-        $code  = 'CAP-' . $year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+        $code = 'CAP-'.$year.'-'.str_pad($count, 5, '0', STR_PAD_LEFT);
 
         $cap = CorrectiveActionPlan::create(array_merge($validated, ['code' => $code]));
 
@@ -82,6 +84,8 @@ class CorrectiveActionPlanController extends Controller
 
     public function show(CorrectiveActionPlan $cap): View
     {
+        abort_unless(auth()->user()->can('cap.view'), 403);
+
         $cap->load(['actions.owner', 'approver']);
 
         $findings = Finding::whereIn('id', $cap->finding_ids ?? [])
@@ -110,13 +114,13 @@ class CorrectiveActionPlanController extends Controller
         abort_unless(auth()->user()->can('cap.update'), 403);
 
         $validated = $request->validate([
-            'title'                    => ['required', 'string', 'max:255'],
-            'description'              => ['nullable', 'string'],
-            'finding_ids'              => ['nullable', 'array'],
-            'finding_ids.*'            => ['exists:findings,id'],
-            'approver_id'              => ['nullable', 'exists:users,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'finding_ids' => ['nullable', 'array'],
+            'finding_ids.*' => ['exists:findings,id'],
+            'approver_id' => ['nullable', 'exists:users,id'],
             'effectiveness_review_date' => ['nullable', 'date'],
-            'status'                   => ['required', 'in:Draft,Approved,In Progress,Completed,Cancelled'],
+            'status' => ['required', 'in:Draft,Approved,In Progress,Completed,Cancelled'],
         ]);
 
         $cap->update($validated);
@@ -131,7 +135,7 @@ class CorrectiveActionPlanController extends Controller
         abort_unless(auth()->user()->can('cap.update'), 403);
 
         $cap->update([
-            'status'      => 'Approved',
+            'status' => 'Approved',
             'approved_at' => now(),
             'approver_id' => auth()->id(),
         ]);
@@ -146,12 +150,12 @@ class CorrectiveActionPlanController extends Controller
         abort_unless(auth()->user()->can('cap.update'), 403);
 
         $validated = $request->validate([
-            'title'            => ['required', 'string', 'max:255'],
-            'description'      => ['nullable', 'string'],
-            'owner_id'         => ['required', 'exists:users,id'],
-            'due_date'         => ['required', 'date'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'owner_id' => ['required', 'exists:users,id'],
+            'due_date' => ['required', 'date'],
             'progress_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'status'           => ['required', 'in:Open,In Progress,Completed,Overdue,Cancelled'],
+            'status' => ['required', 'in:Open,In Progress,Completed,Overdue,Cancelled'],
         ]);
 
         CapAction::create(array_merge($validated, ['cap_id' => $cap->id]));
@@ -166,13 +170,13 @@ class CorrectiveActionPlanController extends Controller
         abort_unless(auth()->user()->can('cap.update'), 403);
 
         $validated = $request->validate([
-            'status'           => ['required', 'in:Open,In Progress,Completed,Overdue,Cancelled'],
+            'status' => ['required', 'in:Open,In Progress,Completed,Overdue,Cancelled'],
             'progress_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'completed_at'     => ['nullable', 'date'],
+            'completed_at' => ['nullable', 'date'],
         ]);
 
         if ($validated['status'] === 'Completed' && empty($action->completed_at)) {
-            $validated['completed_at']     = now()->toDateString();
+            $validated['completed_at'] = now()->toDateString();
             $validated['progress_percent'] = 100;
         }
 

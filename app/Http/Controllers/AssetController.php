@@ -14,6 +14,8 @@ class AssetController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Asset::class);
+
         $query = Asset::query()->with(['owner', 'businessUnit', 'client']);
 
         if ($search = $request->string('q')->trim()->toString()) {
@@ -53,6 +55,8 @@ class AssetController extends Controller
 
     public function show(Asset $asset): View
     {
+        $this->authorize('view', $asset);
+
         $asset->load(['owner', 'custodian', 'businessUnit', 'client', 'project', 'dependencies', 'dependents', 'vulnerabilities']);
 
         return view('assets.show', compact('asset'));

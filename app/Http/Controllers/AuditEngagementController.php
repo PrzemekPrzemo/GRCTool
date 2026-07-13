@@ -15,6 +15,8 @@ class AuditEngagementController extends Controller
 {
     public function index(): View
     {
+        abort_unless(auth()->user()->can('audit_engagement.view'), 403);
+
         $engagements = AuditEngagement::with('lead', 'findings', 'evidenceRequests')->orderByDesc('id')->paginate(25);
 
         return view('engagements.index', compact('engagements'));
@@ -22,11 +24,15 @@ class AuditEngagementController extends Controller
 
     public function create(): View
     {
+        abort_unless(auth()->user()->can('audit_engagement.create'), 403);
+
         return view('engagements.form', $this->formData(new AuditEngagement));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('audit_engagement.create'), 403);
+
         $data = $this->validateEngagement($request);
         $e = AuditEngagement::create($data);
 
@@ -35,6 +41,8 @@ class AuditEngagementController extends Controller
 
     public function show(AuditEngagement $engagement): View
     {
+        abort_unless(auth()->user()->can('audit_engagement.view'), 403);
+
         $engagement->load(['lead', 'evidenceRequests.control', 'findings.owner']);
 
         return view('engagements.show', compact('engagement'));
@@ -42,11 +50,15 @@ class AuditEngagementController extends Controller
 
     public function edit(AuditEngagement $engagement): View
     {
+        abort_unless(auth()->user()->can('audit_engagement.update'), 403);
+
         return view('engagements.form', $this->formData($engagement));
     }
 
     public function update(Request $request, AuditEngagement $engagement): RedirectResponse
     {
+        abort_unless(auth()->user()->can('audit_engagement.update'), 403);
+
         $engagement->update($this->validateEngagement($request));
 
         return redirect()->route('engagements.show', $engagement)->with('status', 'Zaktualizowano.');
@@ -54,6 +66,8 @@ class AuditEngagementController extends Controller
 
     public function addEvidenceRequest(Request $request, AuditEngagement $engagement): RedirectResponse
     {
+        abort_unless(auth()->user()->can('evidence.request'), 403);
+
         $data = $request->validate([
             'description' => ['required', 'string'],
             'sample_criteria' => ['nullable', 'string'],
@@ -73,6 +87,8 @@ class AuditEngagementController extends Controller
 
     public function addFinding(Request $request, AuditEngagement $engagement): RedirectResponse
     {
+        abort_unless(auth()->user()->can('finding.create'), 403);
+
         $data = $request->validate([
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
