@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\AnswerLibrary;
 use App\Models\AnswerLibraryVersion;
+use App\Models\Policy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnswerLibraryController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('rfp.view'), 403);
+
         $q = AnswerLibrary::query()->with('reviewer');
 
         if ($search = $request->string('q')->trim()->toString()) {
@@ -35,11 +40,15 @@ class AnswerLibraryController extends Controller
 
     public function create(): View
     {
-        return view('answer_library.form', ['answer' => new AnswerLibrary]);
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
+        return view('answer_library.form', ['answer' => new AnswerLibrary, 'policies' => $this->policyOptions()]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $data = $this->validateAnswer($request);
         $answer = DB::transaction(function () use ($data) {
             $a = AnswerLibrary::create($data);
@@ -53,18 +62,24 @@ class AnswerLibraryController extends Controller
 
     public function show(AnswerLibrary $answer): View
     {
+        abort_unless(auth()->user()->can('rfp.view'), 403);
+
         $answer->load('reviewer', 'versions.author');
 
-        return view('answer_library.show', compact('answer'));
+        return view('answer_library.show', ['answer' => $answer, 'linkedPolicies' => $answer->linkedPolicies()]);
     }
 
     public function edit(AnswerLibrary $answer): View
     {
-        return view('answer_library.form', compact('answer'));
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
+        return view('answer_library.form', ['answer' => $answer, 'policies' => $this->policyOptions()]);
     }
 
     public function update(Request $request, AnswerLibrary $answer): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $data = $this->validateAnswer($request);
         DB::transaction(function () use ($answer, $data, $request): void {
             $answer->update([...$data, 'version' => $answer->version + 1]);
@@ -74,17 +89,17 @@ class AnswerLibraryController extends Controller
         return redirect()->route('answer-library.show', $answer)->with('status', 'Zaktualizowano.');
     }
 
-    public function export(Request $request): Response|\Symfony\Component\HttpFoundation\StreamedResponse
+    public function export(Request $request): Response|StreamedResponse
     {
-        abort_unless(auth()->user()->can('answer-library.view'), 403);
+        abort_unless(auth()->user()->can('rfp.view'), 403);
 
         $format = $request->string('format')->lower()->toString() ?: 'json';
         $minLevel = $request->string('level')->toString() ?: 'Internal';
 
         $allowedLevels = match ($minLevel) {
-            'Public'   => ['Public'],
+            'Public' => ['Public'],
             'Internal' => ['Public', 'Internal'],
-            default    => ['Public', 'Internal', 'NDA-only', 'Confidential'],
+            default => ['Public', 'Internal', 'NDA-only', 'Confidential'],
         };
 
         $entries = AnswerLibrary::where('is_active', true)
@@ -120,31 +135,33 @@ class AnswerLibraryController extends Controller
 
         // JSON — NotebookLM / vector DB ready format
         $payload = [
-            'exported_at'  => now()->toIso8601String(),
-            'total'        => $entries->count(),
-            'min_level'    => $minLevel,
-            'entries'      => $entries->map(fn ($e) => [
-                'id'                    => $e->code,
-                'question'              => $e->canonical_question,
-                'aliases'               => $e->aliases ?? [],
-                'answer_short'          => $e->canonical_answer_short,
-                'answer_full'           => $e->canonical_answer_long,
-                'tags'                  => $e->tags ?? [],
-                'frameworks'            => $e->frameworks ?? [],
+            'exported_at' => now()->toIso8601String(),
+            'total' => $entries->count(),
+            'min_level' => $minLevel,
+            'entries' => $entries->map(fn ($e) => [
+                'id' => $e->code,
+                'question' => $e->canonical_question,
+                'aliases' => $e->aliases ?? [],
+                'answer_short' => $e->canonical_answer_short,
+                'answer_full' => $e->canonical_answer_long,
+                'tags' => $e->tags ?? [],
+                'frameworks' => $e->frameworks ?? [],
                 'confidentiality_level' => $e->confidentiality_level,
-                'version'               => $e->version,
-                'last_reviewed_at'      => $e->last_reviewed_at?->format('Y-m-d'),
+                'version' => $e->version,
+                'last_reviewed_at' => $e->last_reviewed_at?->format('Y-m-d'),
             ])->values(),
         ];
 
         return response(json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), 200, [
-            'Content-Type'        => 'application/json; charset=UTF-8',
+            'Content-Type' => 'application/json; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"answer_library_{$timestamp}.json\"",
         ]);
     }
 
     public function review(AnswerLibrary $answer): RedirectResponse
     {
+        abort_unless(auth()->user()->can('rfp.update'), 403);
+
         $answer->update([
             'last_reviewed_at' => now(),
             'reviewed_by' => auth()->id(),
@@ -166,14 +183,23 @@ class AnswerLibraryController extends Controller
             'frameworks_text' => ['nullable', 'string'],
             'confidentiality_level' => ['required', 'in:Public,NDA-only,Internal,Confidential'],
             'is_active' => ['nullable', 'boolean'],
+            'policy_ids' => ['nullable', 'array'],
+            'policy_ids.*' => ['integer', 'exists:policies,id'],
         ]);
 
         $data['aliases'] = $this->splitLines($data['aliases_text'] ?? '');
         $data['tags'] = $this->splitLines($data['tags_text'] ?? '');
         $data['frameworks'] = $this->splitLines($data['frameworks_text'] ?? '');
+        $data['policy_ids'] = array_map('intval', $data['policy_ids'] ?? []);
         unset($data['aliases_text'], $data['tags_text'], $data['frameworks_text']);
 
         return $data;
+    }
+
+    /** @return Collection<int,Policy> */
+    private function policyOptions(): Collection
+    {
+        return Policy::orderBy('title')->get(['id', 'code', 'title']);
     }
 
     /** @return string[] */

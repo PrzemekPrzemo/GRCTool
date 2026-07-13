@@ -5,12 +5,14 @@
         <div class="text-xs font-mono text-slate-500">{{ $answer->code }} · v{{ $answer->version }}</div>
         <h1 class="text-2xl font-semibold">{{ $answer->canonical_question }}</h1>
     </div>
+    @can('rfp.update')
     <div class="flex gap-2">
         <form method="POST" action="{{ route('answer-library.review', $answer) }}">@csrf
             <button class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm">Zarejestruj review</button>
         </form>
         <a href="{{ route('answer-library.edit', $answer) }}" class="px-3 py-1.5 border border-slate-300 bg-white rounded text-sm">Edytuj</a>
     </div>
+    @endcan
 </div>
 
 <div class="grid lg:grid-cols-3 gap-6">
@@ -30,6 +32,17 @@
             <h3 class="font-medium text-sm mb-1">Aliasy</h3>
             <ul class="text-xs text-slate-600 space-y-0.5">
                 @foreach($answer->aliases as $alias)<li>· {{ $alias }}</li>@endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if($linkedPolicies->isNotEmpty())
+        <div class="mt-4 pt-4 border-t border-slate-100">
+            <h3 class="font-medium text-sm mb-1">Polityki źródłowe</h3>
+            <ul class="text-xs space-y-0.5">
+                @foreach($linkedPolicies as $p)
+                <li>· <a href="{{ route('policies.show', $p) }}" class="text-emerald-700 hover:underline">{{ $p->code }} — {{ $p->title }}</a></li>
+                @endforeach
             </ul>
         </div>
         @endif

@@ -21,7 +21,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'business_unit', 'project', 'user', 'role', 'audit_log', 'framework',
             'rcp', 'gdpr_breach', 'dpia', 'dsar',
             'training', 'exception', 'certificate', 'crypto_key', 'bcp',
-            'sdlc', 'access_review', 'compliance',
+            'sdlc', 'access_review', 'compliance', 'rfp',
         ];
 
         $actions = ['view', 'create', 'update', 'delete'];
@@ -62,7 +62,7 @@ class RolesAndPermissionsSeeder extends Seeder
                         'subprocessor.*', 'questionnaire.*', 'asset.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                         'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
-                        'sdlc.*', 'access_review.*', 'compliance.*',
+                        'sdlc.*', 'access_review.*', 'compliance.*', 'rfp.*',
                     ],
                 ],
                 'security_engineer' => [
@@ -141,13 +141,13 @@ class RolesAndPermissionsSeeder extends Seeder
                         'incident.view', 'nis2.*',
                         'rcp.*', 'gdpr_breach.*', 'dpia.*', 'dsar.*',
                         'training.*', 'exception.*', 'certificate.*', 'crypto_key.*', 'bcp.*',
-                        'access_review.*', 'sdlc.view', 'compliance.*',
+                        'access_review.*', 'sdlc.view', 'compliance.*', 'rfp.*',
                     ],
                 ],
                 'sales' => [
-                    'description' => 'Customer Success / Sales. Read-only do AnswerLibrary, inicjacja questionnaire.',
+                    'description' => 'Customer Success / Sales. Przegląda bazę pytań/odpowiedzi RFP, dodaje pytania klienta i zgłasza potrzebę odpowiedzi CSO — nie edytuje kanonicznej bazy odpowiedzi (SoD).',
                     'permissions' => [
-                        'questionnaire.*', 'client.view',
+                        'questionnaire.*', 'client.view', 'rfp.view', 'rfp.create',
                     ],
                 ],
                 'client_contact' => [

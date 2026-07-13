@@ -5,7 +5,9 @@
         <h1 class="text-2xl font-semibold">Ankiety od klientów (inbound)</h1>
         <p class="text-slate-500 text-sm">Otrzymane ankiety bezpieczeństwa do wypełnienia</p>
     </div>
+    @can('rfp.create')
     <a href="{{ route('questionnaires.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowa ankieta</a>
+    @endcan
 </div>
 
 <form method="GET" class="bg-white rounded shadow p-3 mb-4 flex gap-2">
@@ -50,7 +52,12 @@
             <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded bg-slate-100">{{ $q->status }}</span></td>
         </tr>
         @empty
-        <tr><td colspan="9" class="px-3 py-6 text-center text-slate-500">Brak ankiet. <a href="{{ route('questionnaires.create') }}" class="text-emerald-600 hover:underline">Utwórz pierwszą</a>.</td></tr>
+        <tr><td colspan="9" class="px-3 py-6 text-center text-slate-500">
+            Brak ankiet.
+            @can('rfp.create')
+                <a href="{{ route('questionnaires.create') }}" class="text-emerald-600 hover:underline">Utwórz pierwszą</a>.
+            @endcan
+        </td></tr>
         @endforelse
         </tbody>
     </table>
