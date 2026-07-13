@@ -207,6 +207,7 @@
             <h2 class="font-semibold text-base mb-2">Raporty i eksporty</h2>
             <ul class="list-disc list-inside space-y-1">
                 <li><strong>Raporty</strong> — generowanie raportów zbiorczych (np. dla zarządu) z opcją dystrybucji i odwołania.</li>
+                <li><strong>Pokrycie zgodności z normami</strong> — raport "Pokrycie zgodności z normami i standardami" generuje jednym kliknięciem PDF z dwoma zestawieniami: % zgodności wg ostatniej przeprowadzonej oceny per framework oraz % wymagań danego standardu pokrytych przypisaną kontrolą wewnętrzną.</li>
                 <li><strong>Eksporty CSV</strong> — dostępne z poziomu list (ryzyka, kontrole, podatności, ustalenia, incydenty) — przycisk "Eksportuj" na danej liście.</li>
             </ul>
         </section>

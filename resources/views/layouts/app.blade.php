@@ -432,6 +432,7 @@
         @endcanany
 
         {{-- Raporty --}}
+        @can('report.view')
         <div class="px-3 mb-1">
             <p class="px-2 py-1 text-xs font-semibold text-slate-500 uppercase tracking-widest">Raporty</p>
             <a href="{{ route('reports.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors {{ request()->routeIs('reports.*') ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
@@ -439,6 +440,7 @@
                 <span>Raporty</span>
             </a>
         </div>
+        @endcan
 
     </nav>
 

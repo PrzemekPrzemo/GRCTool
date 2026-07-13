@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ComplianceAssessment;
 use App\Models\ComplianceDomain;
 use App\Models\ComplianceFramework;
 use App\Models\ComplianceRequirement;
 use App\Models\ComplianceResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ComplianceFrameworkAdminController extends Controller
@@ -102,12 +104,27 @@ class ComplianceFrameworkAdminController extends Controller
                 ->with('error', 'Nie można usunąć wbudowanego frameworku.');
         }
 
-        // Delete all domains, requirements, then framework
-        foreach ($framework->domains as $domain) {
-            $domain->requirements()->delete();
+        if (ComplianceAssessment::where('framework_id', $framework->id)->exists()) {
+            return redirect()->route('compliance.admin.frameworks')
+                ->with('error', 'Nie można usunąć frameworku — istnieją oceny zgodności przeprowadzone względem niego. Usuń najpierw te oceny.');
         }
-        $framework->domains()->delete();
-        $framework->delete();
+
+        $hasResponses = ComplianceResponse::whereHas('requirement.domain', function ($q) use ($framework): void {
+            $q->where('framework_id', $framework->id);
+        })->exists();
+
+        if ($hasResponses) {
+            return redirect()->route('compliance.admin.frameworks')
+                ->with('error', 'Nie można usunąć frameworku — istnieją powiązane odpowiedzi ocen w jego domenach/wymaganiach.');
+        }
+
+        DB::transaction(function () use ($framework): void {
+            foreach ($framework->domains as $domain) {
+                $domain->requirements()->delete();
+            }
+            $framework->domains()->delete();
+            $framework->delete();
+        });
 
         return redirect()->route('compliance.admin.frameworks')
             ->with('status', "Framework został usunięty.");

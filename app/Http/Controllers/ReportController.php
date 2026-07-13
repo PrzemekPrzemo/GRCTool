@@ -18,6 +18,8 @@ class ReportController extends Controller
 
     public function index(): View
     {
+        abort_unless(auth()->user()->can('report.view'), 403);
+
         $templates = ReportTemplate::where('is_active', true)->get();
         $instances = ReportInstance::with('template', 'generator')->orderByDesc('generated_at')->paginate(25);
 
@@ -26,6 +28,8 @@ class ReportController extends Controller
 
     public function generate(Request $request, ReportTemplate $template): RedirectResponse
     {
+        abort_unless(auth()->user()->can('report.generate'), 403);
+
         $params = $request->validate([
             'period_start' => ['nullable', 'date'],
             'period_end' => ['nullable', 'date'],
@@ -39,6 +43,8 @@ class ReportController extends Controller
 
     public function show(ReportInstance $report): View
     {
+        abort_unless(auth()->user()->can('report.view'), 403);
+
         $report->load('template', 'generator');
 
         return view('reports.show', compact('report'));
@@ -46,6 +52,8 @@ class ReportController extends Controller
 
     public function download(ReportInstance $report): StreamedResponse
     {
+        abort_unless(auth()->user()->can('report.view'), 403);
+
         $first = collect($report->output_files)->first();
         if (! $first || ! Storage::disk('local')->exists($first['path'])) {
             abort(404);
@@ -66,6 +74,8 @@ class ReportController extends Controller
 
     public function revoke(Request $request, ReportInstance $report): RedirectResponse
     {
+        abort_unless(auth()->user()->can('report.revoke'), 403);
+
         $data = $request->validate(['reason' => ['required', 'string']]);
         $report->update([
             'revoked' => true,

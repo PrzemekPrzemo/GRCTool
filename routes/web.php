@@ -256,11 +256,11 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('gdpr-breaches/{gdprBreach}/notify-uodo', [GdprBreachController::class, 'notifyUodo'])->name('gdpr-breaches.notify-uodo');
 
     // RODO — DPIA (Art. 35 GDPR)
-    Route::resource('dpias', DpiaController::class);
+    Route::resource('dpias', DpiaController::class)->except(['destroy']);
     Route::post('dpias/{dpia}/approve', [DpiaController::class, 'approve'])->name('dpias.approve');
 
     // RODO — DSAR (Art. 15-22 GDPR)
-    Route::resource('dsar', DsarRequestController::class);
+    Route::resource('dsar', DsarRequestController::class)->except(['destroy']);
     Route::post('dsar/{dsar}/complete', [DsarRequestController::class, 'complete'])->name('dsar.complete');
     Route::post('dsar/{dsar}/extend', [DsarRequestController::class, 'extend'])->name('dsar.extend');
 
@@ -285,7 +285,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
     Route::post('policies/import', [PolicyController::class, 'import'])->name('policies.import');
     Route::get('policies/bulk-edit', [PolicyController::class, 'bulkEdit'])->name('policies.bulk-edit');
     Route::post('policies/bulk-update', [PolicyController::class, 'bulkUpdate'])->name('policies.bulk-update');
-    Route::resource('policies', PolicyController::class);
+    Route::resource('policies', PolicyController::class)->except(['destroy']);
     Route::post('policies/{policy}/approve', [PolicyController::class, 'approve'])->name('policies.approve');
     Route::post('policies/{policy}/attest', [PolicyController::class, 'attest'])->name('policies.attest');
     Route::post('policies/{policy}/documents', [PolicyController::class, 'attachDocument'])->name('policies.documents.store');
@@ -387,7 +387,7 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Admin
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function (): void {
-        Route::resource('users', AdminUserController::class);
+        Route::resource('users', AdminUserController::class)->except(['destroy']);
         Route::post('users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
         Route::post('users/{user}/reset', [AdminUserController::class, 'resetPassword'])->name('users.reset');
         Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log');

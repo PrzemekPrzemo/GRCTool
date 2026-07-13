@@ -161,6 +161,30 @@ it('generates the board report with compliance posture and vendor risk data avai
     $response->assertSessionHas('status');
 });
 
+it('generates the compliance coverage report with posture and control-mapping data', function (): void {
+    $template = ReportTemplate::where('code', 'COMPLIANCE-COVERAGE')->firstOrFail();
+
+    $response = $this->post("/reports/generate/{$template->id}");
+
+    $response->assertRedirect();
+    $response->assertSessionHas('status');
+
+    $instance = \App\Models\ReportInstance::where('template_id', $template->id)->latest('generated_at')->firstOrFail();
+    $this->get("/reports/{$instance->id}/download")->assertOk();
+});
+
+it('a role without report.view cannot generate, view or download reports', function (): void {
+    auth()->logout();
+    $user = User::factory()->create(['two_factor_confirmed_at' => now()]);
+    $user->assignRole('security_engineer'); // no report.* permission
+    $this->actingAs($user);
+
+    $template = ReportTemplate::where('code', 'BOARD-QUARTERLY')->firstOrFail();
+
+    $this->get('/reports')->assertForbidden();
+    $this->post("/reports/generate/{$template->id}")->assertForbidden();
+});
+
 // ─── AWS compliance evidence automation ─────────────────────────────────────
 
 it('sync-aws-compliance-evidence creates evidence from passed compliance findings and dedups on re-run', function (): void {
