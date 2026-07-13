@@ -8,9 +8,10 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 /**
- * Import pełnej treści 17 polityk TSH-SEC-POL-001..017 (dostarczonych przez CSO
- * jako paczka "POLITYKI POL-001 do POL-014", realne dokumenty v1.0-v2.3,
- * obowiązujące od 2025-01-01 — nie szkice). Te polityki merytorycznie zastępują
+ * Import pełnej treści 18 polityk TSH-SEC-POL-001..018 (dostarczonych przez CSO,
+ * ostatnio skonsolidowanych w TSH-SEC-POL-MANUAL v3.0 z 2026-07-13; realne
+ * dokumenty v1.0-v2.4, obowiązujące od 2025-01-01, POL-018 nowa od 2026-07-13
+ * — nie szkice). Te polityki merytorycznie zastępują
  * starsze, szkieletowe POL-XX zaimportowane wcześniej z tsh_grc_policies.yaml,
  * ale obie wersje są zachowywane jako osobne rekordy: supersedes_policy_id
  * na nowej polityce wskazuje na starą, którą zastępuje.
@@ -36,7 +37,7 @@ class TshSecPoliciesSeeder extends Seeder
                 'code' => 'TSH-SEC-POL-001',
                 'title' => 'Information Security Policy',
                 'supersedes' => 'ISP',
-                'version' => 'v2.3',
+                'version' => 'v2.4',
                 'framework_mappings' => ['ISO27001', 'NIST_CSF', 'GDPR', 'NIS2', 'DORA'],
                 'controls' => [
                     ['title' => 'MFA: FIDO2 dla adminów, phishing-resistant push dla standardowych użytkowników; PIM JIT max 4h', 'control_type' => 'preventive', 'implementation_type' => 'technical'],
@@ -50,7 +51,7 @@ class TshSecPoliciesSeeder extends Seeder
                 'code' => 'TSH-SEC-POL-002',
                 'title' => 'Data Classification Policy',
                 'supersedes' => 'POL-01',
-                'version' => 'v2.0',
+                'version' => 'v2.2',
                 'framework_mappings' => ['ISO27002', 'GDPR'],
                 'controls' => [
                     ['title' => 'Czterostopniowa klasyfikacja RESTRICTED/CONFIDENTIAL/INTERNAL/PUBLIC, domyślnie CONFIDENTIAL', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
@@ -106,7 +107,7 @@ class TshSecPoliciesSeeder extends Seeder
                 'code' => 'TSH-SEC-POL-006',
                 'title' => 'Third-Party Vendor Risk Policy',
                 'supersedes' => 'POL-09',
-                'version' => 'v2.0',
+                'version' => 'v2.2',
                 'framework_mappings' => ['ISO27002', 'NIST_CSF', 'DORA'],
                 'controls' => [
                     ['title' => 'Czterostopniowa klasyfikacja dostawców: Critical/Important/Standard/Low', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
@@ -134,7 +135,7 @@ class TshSecPoliciesSeeder extends Seeder
                 'code' => 'TSH-SEC-POL-008',
                 'title' => 'Business Continuity & DR Policy',
                 'supersedes' => 'POL-10',
-                'version' => 'v2.0',
+                'version' => 'v2.2',
                 'framework_mappings' => ['ISO27002', 'NIST_CSF', 'DORA'],
                 'controls' => [
                     ['title' => 'Cele RTO/RPO per system: Entra ID 2h/near-zero, GitHub 2h/1h, Google Workspace 4h/24h, Atlassian 4h/24h', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
@@ -264,6 +265,20 @@ class TshSecPoliciesSeeder extends Seeder
                     ['title' => 'Obszary bez możliwości wyjątku: wymóg MFA, szyfrowanie danych RESTRICTED, zasady obsługi danych klienta, terminy powiadamiania o naruszeniu GDPR', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
                     ['title' => 'Wniosek przez Jira (IT-SECURITY → Security Exception Request); CSO rozpatruje w 3 dni robocze', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
                     ['title' => 'Rejestrowane w REG-012; IT Lead wysyła przypomnienie 14 dni przed wygaśnięciem; comiesięczny przegląd CSO, kwartalne podsumowanie dla Zarządu', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
+                ],
+            ],
+            [
+                'code' => 'TSH-SEC-POL-018',
+                'title' => 'Anti-Bribery & Business Ethics Policy',
+                'supersedes' => null,
+                'version' => 'v1.0',
+                'framework_mappings' => ['ISO27002'],
+                'controls' => [
+                    ['title' => 'Zero tolerancji dla przekupstwa i korupcji w każdej formie; brak wyjątków dla płatności ułatwiających czy prezentów zwyczajowych', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
+                    ['title' => 'Progi prezentów: do PLN 200/SAR 200 bez zobowiązania; ujawnienie przełożonemu >PLN 100, CSO >PLN 200; gościnność >PLN 300 za wydarzenie', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
+                    ['title' => 'Podróże/zakwaterowanie i prezenty dla urzędników wyłącznie za uprzednią zgodą CEO + CSO/CFO', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
+                    ['title' => 'Strony trzecie: klauzula antykorupcyjna w umowach + deklaracja ABAC w REF-019, zgodnie z due diligence POL-006', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
+                    ['title' => 'Chronione kanały zgłoszeń (CSO, CEO, anonimowo, Nazaha dla KSA); coroczne szkolenie ABAC (TRN-001)', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
                 ],
             ],
         ];

@@ -26,10 +26,14 @@ class DatabaseSeeder extends Seeder
             MiddleEastFrameworkSeeder::class,
             // TSH policy & control knowledge base (Policy, PolicyControl, FrameworkCoverage, ComplianceGap)
             TshGrcKnowledgeBaseSeeder::class,
-            // Pełna treść 17 polityk TSH-SEC-POL-001..017, zastępujących merytorycznie starsze POL-XX
+            // Pełna treść 18 polityk TSH-SEC-POL-001..018, zastępujących merytorycznie starsze POL-XX
             TshSecPoliciesSeeder::class,
             // Procedury operacyjne TSH-SEC-PROC-201..218
             TshSecProceduresSeeder::class,
+            // Bank pytań/odpowiedzi klientów TSH-SEC-CLT-402 v3.0 (74 pary, 21 kategorii due-diligence)
+            TshSecClientQaSeeder::class,
+            // Katalog kontroli (Control) z Macierzy Mapowania Kontroli TSH-SEC-REF-MAPPING v3.0 (58 kontroli, 11 domen)
+            TshSecControlMappingSeeder::class,
             // Realne konta dla ról RACI/rejestrów (IT Lead, Tech Lead, HR Lead, PM, CEO)
             TshTeamUsersSeeder::class,
             // Rejestry (REG-001,002,005,009,010,011,012) -> istniejące modele (Risk, Asset, Certificate/Key, Incident, ThirdParty, Exception)

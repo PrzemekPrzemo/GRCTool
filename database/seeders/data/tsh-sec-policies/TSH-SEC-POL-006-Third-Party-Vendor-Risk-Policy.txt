@@ -1,9 +1,9 @@
 THIRD-PARTY VENDOR RISK POLICY
 BY PRZEMYSŁAW SZULECKI, CSO
-Defines how TSH classifies, onboards, and manages security risks from vendors and sub-contractors. Four-tier classification; contractual requirements including DPA and DORA provisions.
-TSH-SEC-POL-006  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+Defines how TSH classifies, onboards, and manages security risks from vendors and sub-contractors, aligned with ISO/IEC 27036-1:2021. Four-tier classification; contractual requirements including DPA and DORA provisions.
+TSH-SEC-POL-006  |  v2.2  |  2026-07-13  |  CSO — Przemysław Szulecki
 # 1. Purpose & Scope
-This policy defines how TSH manages security risks from third-party vendors, suppliers, and sub-contractors. Applies to any external party with access to TSH systems, data, or that TSH relies upon to deliver services to clients.
+This policy defines how TSH manages security risks from third-party vendors, suppliers, and sub-contractors. It is aligned with ISO/IEC 27036-1:2021 and applies to any external party with access to TSH systems, data, or client environments, or that TSH relies upon to deliver services to clients.
 # 2. Vendor Classification
 # 3. Vendor Onboarding
 ## 3.1 Due Diligence (Tier 1 & 2)
@@ -14,10 +14,12 @@ Confirm sub-processor list and any fourth-party risk
 Review vendor's incident notification commitment
 ## 3.2 Contractual Requirements
 # 4. Sub-contractor Management
+Important. TSH is responsible for the security practices of all sub-contractors on client projects. "I didn't know" is not a defence under GDPR, DORA or client regulations — equivalent controls are mandatory.
 Sub-contractors require PM + CSO approval before engagement
 Client consent required before any sub-contractor accesses client environment or data
-Sub-contractors must sign TSH NDA and security requirements schedule
-Access limited to what is required; revoked within 5 days of engagement end (PROC-210)
+Sub-contractors must sign TSH NDA and security requirements schedule before access; completed REF-019 (including ABAC declaration)
+Only managed, MDM-enrolled devices (no BYOD) when accessing client environments / RESTRICTED data
+Access limited to what is required, equivalent to TSH minimums (MFA, device encryption, no client data on personal systems); revoked within 5 days of engagement end (PROC-210)
 Sub-contractors listed in DPA Annex 3 for relevant client projects
 # 5. Open Source Software (OSS)
 SCA (Snyk + Dependabot) mandatory in all CI/CD pipelines — blocks critical CVEs
