@@ -213,16 +213,19 @@ class TshSecRegistersSeeder extends Seeder
             'common_name' => 'tsh.io (wildcard)', 'issuer' => "Let's Encrypt", 'cert_type' => 'TLS',
             'environment' => 'production', 'issued_at' => '2025-01-01', 'expires_at' => '2025-04-01',
             'auto_renew' => true, 'status' => 'active', 'notes' => 'Auto-renew via certbot (ACME)',
+            'owner_id' => $this->cisoId,
         ]);
         CertificateInventory::updateOrCreate(['code' => 'CERT-002'], [
             'common_name' => 'api.tsh.io', 'issuer' => "Let's Encrypt", 'cert_type' => 'TLS',
             'environment' => 'production', 'issued_at' => '2025-01-01', 'expires_at' => '2025-04-01',
             'auto_renew' => true, 'status' => 'active', 'notes' => 'Auto-renew via certbot (ACME)',
+            'owner_id' => $this->cisoId,
         ]);
         CertificateInventory::updateOrCreate(['code' => 'CERT-003'], [
             'common_name' => 'GitHub Actions pipeline signing', 'issuer' => 'Internal / GitHub', 'cert_type' => 'Code_Signing',
             'environment' => 'production', 'issued_at' => '2025-01-01', 'expires_at' => '2026-01-01',
             'auto_renew' => false, 'status' => 'active', 'notes' => 'Ed25519 256-bit, review Jan 2026',
+            'owner_id' => $this->cisoId,
         ]);
 
         CryptoKey::updateOrCreate(['code' => 'CERT-004'], [
