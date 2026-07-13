@@ -1,19 +1,20 @@
 INFORMATION SECURITY POLICY
 BY PRZEMYSŁAW SZULECKI, CSO
-Top-level ISMS policy. Complete document map: 17 POL, 18 PROC, 15 REG, 8 CFG, 10 CLT, 1 REF, 1 RFP pack. v2.3 adds PROC-217/218/REF-001 references.
-TSH-SEC-POL-001  |  v2.3  |  2025-01-01  |  CSO — Przemysław Szulecki
-# 1. Purpose & Scope
-This Information Security Policy establishes the management framework and direction for information security at The Software House (TSH). It applies to all TSH employees, contractors, and third parties with access to TSH systems, data, or premises — regardless of location.
+Top-level ISMS policy. Complete document map: 18 POL, 18 PROC, 17 REG, 8 CFG, 10+ CLT, 1 REF, 1 RFP pack. v2.4 consolidates into the ISMS Policy Manual (TSH-SEC-POL-MANUAL v3.0) and adds POL-018 (Anti-Bribery & Business Ethics).
+TSH-SEC-POL-001  |  v2.4  |  2026-07-13  |  CSO — Przemysław Szulecki
+# 1. Purpose and Scope
+This policy establishes the management framework and direction for information security at TSH. It applies to all employees, contractors and third parties with access to TSH systems, data or facilities — regardless of location.
 # 2. ISMS Framework
 ## 2.1 Management System
-TSH maintains an Information Security Management System (ISMS) aligned to ISO/IEC 27001:2022. The ISMS consists of:
-17 policies (POL-001–017)
+TSH maintains an Information Security Management System (ISMS) aligned to ISO/IEC 27001:2022, governed by the CSO based on the role matrix below. The ISMS consists of:
+18 policies (POL-001–018)
 18 procedures (PROC-201–218)
-15 registers (REG-001–015)
+17 registers (REG-001–017)
 8 technical configuration guides (CFG-301–308)
-10 client-facing documents (CLT-401–410)
+client-facing documents (CLT-401–410, CLT-NCA-001, CLT-MDM-001)
 1 quick reference guide (REF-001)
 1 RFP response pack (RFP-001) with 2 supporting registers
+client annexes ([ID]-ANX-[letter]) for requirements beyond the universal baseline
 ## 2.2 Governance
 # 3. Policy Statements
 ## 3.1 Risk Management
@@ -25,9 +26,9 @@ Security integrated throughout SDLC (PROC-204). SAST + SCA + secret scanning as 
 ## 3.4 Monitoring, DLP & Email Security
 No dedicated SIEM — coverage via Entra ID Identity Protection + MDE + Google Workspace Security Center + GitHub Advanced Security (documented decision, REG-001). Three-layer DLP: Google Admin content scanning + MDE endpoint DLP + IRU MAM for BYOD (CFG-308, POL-014). Email authentication: SPF + DKIM + DMARC enforced for tsh.io (CFG-301).
 ## 3.5 Incident Response
-Incidents classified P1–P4 (POL-007). Immediate reporting to CSO. Detailed response steps in PROC-202. Communication templates for client/UODO/SDAIA/Management Board in PROC-217. Specific attack playbooks (ransomware, GitHub credential leak, phishing) in PROC-218. Incidents logged in REG-009 for 3 years.
+Incidents classified P1–P4 (POL-007). Immediate reporting to CSO. Detailed response steps in PROC-202. Communication templates for client/UODO/SDAIA/Management Board in PROC-217. Specific attack playbooks (ransomware, GitHub credential leak, phishing) in PROC-218. Incidents logged in REG-009 for 3 years. 2-hour client BC/DR notification is the TSH standard (POL-008).
 ## 3.6 Compliance & Regulatory
-Compliance obligations tracked in REG-014 (42 obligations across GDPR, NIS2, DORA, KSA PDPL, Polish law, ISO 27001). Compliance calendar in REG-015. Regulatory changes managed via PROC-215. CSO quarterly report to Management Board: CLT-410.
+Compliance obligations tracked in REG-014 (obligations across GDPR, NIS2, DORA, KSA PDPL, Polish law, ISO 27001). Compliance calendar in REG-015. Regulatory changes managed via PROC-215. CSO quarterly report to Management Board: CLT-410. Anti-bribery and business ethics: POL-018.
 ## 3.7 Approved Applications & Offboarding
 Only approved applications on managed devices (POL-015, PROC-214). Browser policy via CFG-306 and CFG-307. Employee/contractor offboarding: full security checklist in PROC-211. Project/client offboarding: PROC-210.
 # 4. Complete ISMS Document Map
@@ -62,6 +63,7 @@ POL-014 | Security Logging & Monitoring Policy | Operations
 POL-015 | Approved Applications Policy | Operations
 POL-016 | Operational Risk Policy | Risk
 POL-017 | Security Exception Policy | Governance
+POL-018 | Anti-Bribery & Business Ethics Policy | Governance
 PROC-201 | User Lifecycle Management | People
 PROC-202 | Incident Response Procedure | IR
 PROC-203 | Vulnerability Management | Technical

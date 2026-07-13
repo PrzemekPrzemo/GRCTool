@@ -1,10 +1,13 @@
 BUSINESS CONTINUITY & DR POLICY
 BY PRZEMYSŁAW SZULECKI, CSO
-Defines TSH's approach to business continuity and disaster recovery. RTO/RPO targets per system, key risk scenarios, backup requirements, and annual testing obligations.
-TSH-SEC-POL-008  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+Aligned with ISO 22301:2019. Defines TSH's approach to business continuity and disaster recovery. RTO/RPO targets per system, the 2-hour client BC/DR notification standard, key risk scenarios, backup requirements, and annual testing obligations.
+TSH-SEC-POL-008  |  v2.2  |  2026-07-13  |  CSO — Przemysław Szulecki
 # 1. Purpose & Scope
-This policy defines TSH's approach to maintaining business continuity and recovering from disruptive events. TSH's 90% remote model and cloud-native architecture provide inherent resilience that this policy builds upon.
+This policy defines TSH's approach to maintaining business continuity and recovering from disruptive events, aligned with ISO 22301:2019. TSH's 90% remote model and cloud-native architecture provide inherent resilience that this policy builds upon.
 # 2. Recovery Objectives
+Client engagements may define their own RTO/RPO in the Work Order or POL-008-ANX; the stricter value applies.
+## 2.1 BC/DR Notification — the TSH Standard
+Differentiator. The 2-hour notification SLA is TSH's standard commitment to every client, observed 24/7 — most vendors commit to 24 hours or "without undue delay". Any BC/DR event affecting service delivery: notification within 2 h (PM + CSO), by phone first, then email (PROC-217 #1). Personal data breach: 24 h to the client, 72 h to the regulator (UODO/SDAIA). Client channels (e.g. a SOC hotline) are defined in POL-007-ANX/POL-008-ANX.
 # 3. Key Risks & Continuity Plans
 ## 3.1 Cloud Provider Outage
 Primary cloud (Google/Microsoft): switch to backup communication channels (Teams if Google down; Google Meet if Teams down)
@@ -28,7 +31,7 @@ TSH's 90% remote model is itself a BCP control — no single office failure can 
 
 [TABLE]
 System / Service | RTO | RPO | Notes
-Microsoft Entra ID (identity) | 2 hours | Near-zero | Cloud-native; break-glass accounts for emergency access
+Microsoft Entra ID (identity) | 30 minutes | Near-zero | Cloud-native; break-glass accounts for emergency access
 GitHub Enterprise (code repos) | 2 hours | 1 hour | All repos cloned locally; GitLab mirror maintained
 Google Workspace (email/docs) | 4 hours | 24 hours | Switch to Microsoft Teams/Exchange backup
 Atlassian (Jira/Confluence) | 4 hours | 24 hours | Regular exports to Google Drive
