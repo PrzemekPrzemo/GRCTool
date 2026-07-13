@@ -8,7 +8,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="h-full bg-slate-100 text-slate-900 antialiased" x-data="{ sidebarOpen: false }">
+<body class="h-full bg-slate-100 text-slate-900 antialiased"
+      x-data="{
+          sidebarOpen: false,
+          deskOpen: localStorage.getItem('grc-sidebar-open') !== '0',
+          toggleDesk() {
+              this.deskOpen = !this.deskOpen;
+              localStorage.setItem('grc-sidebar-open', this.deskOpen ? '1' : '0');
+          },
+      }">
 
 {{-- Mobile overlay --}}
 <div x-show="sidebarOpen" @click="sidebarOpen = false"
@@ -19,9 +27,11 @@
      x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
 
 {{-- SIDEBAR --}}
-<aside class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-100 flex flex-col transition-transform duration-200
-              -translate-x-full lg:translate-x-0"
-       :class="{ 'translate-x-0': sidebarOpen }">
+<aside class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-100 flex flex-col transition-transform duration-200"
+       :class="[
+           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+           deskOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full',
+       ]">
 
     {{-- Logo --}}
     <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-700/60">
@@ -459,12 +469,17 @@
 </aside>
 
 {{-- MAIN AREA --}}
-<div class="lg:pl-64 flex flex-col min-h-screen">
+<div class="flex flex-col min-h-screen transition-[padding] duration-200" :class="deskOpen ? 'lg:pl-64' : 'lg:pl-0'">
 
     {{-- Top bar --}}
     <header class="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-slate-200 px-4 lg:px-6 py-3 flex items-center gap-4">
         {{-- Mobile hamburger --}}
         <button @click="sidebarOpen = true" class="lg:hidden p-1.5 rounded hover:bg-slate-100">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        {{-- Desktop sidebar collapse/expand --}}
+        <button @click="toggleDesk()" class="hidden lg:flex p-1.5 rounded hover:bg-slate-100" title="Zwiń/rozwiń menu">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
 
