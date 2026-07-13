@@ -35,6 +35,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FindingController;
 use App\Http\Controllers\FrameworkCoverageController;
 use App\Http\Controllers\GdprBreachController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\InboundQuestionnaireController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\IndicatorController;
@@ -167,6 +168,9 @@ Route::middleware(['auth', 'mfa'])->group(function (): void {
 
     // Global Search
     Route::get('search', [SearchController::class, 'index'])->name('search');
+
+    // Help / instrukcja użytkowania
+    Route::get('help', [HelpController::class, 'index'])->name('help.index');
 
     // Comments (polymorphic)
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');

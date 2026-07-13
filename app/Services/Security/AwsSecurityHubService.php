@@ -3,6 +3,7 @@
 namespace App\Services\Security;
 
 use App\Models\AppSetting;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -89,7 +90,13 @@ class AwsSecurityHubService
             extraHeaders: ['x-amz-target' => 'SecurityHub.GetFindings'],
         );
 
-        $response = Http::withHeaders($headers)->withBody($payload, 'application/x-amz-json-1.1')
+        // Content-Type musi trafić na drut dokładnie raz z dokładnie tą wartością, która
+        // weszła do podpisu SigV4 (signed header "content-type"). withBody() poniżej ustawia
+        // je pod kluczem "Content-Type" — gdyby zostało też w $headers (klucz "content-type"),
+        // Guzzle wysłałby DWA wystąpienia nagłówka połączone przecinkiem, co łamie podpis
+        // (AWS liczy canonical header z surowej wartości, która przestaje się zgadzać).
+        $response = Http::withHeaders(Arr::except($headers, ['content-type']))
+            ->withBody($payload, 'application/x-amz-json-1.1')
             ->post("https://{$host}/");
 
         if ($response->failed()) {
