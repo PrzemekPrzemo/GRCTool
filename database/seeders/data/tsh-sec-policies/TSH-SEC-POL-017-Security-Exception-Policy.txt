@@ -1,11 +1,11 @@
-SECURITY EXCEPTION POLICY
+EXCEPTION MANAGEMENT POLICY
 BY PRZEMYSŁAW SZULECKI, CSO
-Defines the process for requesting, approving, and tracking exceptions to TSH security policies. All exceptions require CSO approval, have a maximum 6-month duration, and are logged in REG-012.
-TSH-SEC-POL-017  |  v1.0  |  2025-01-01  |  CSO — Przemysław Szulecki
+Defines the process for requesting, approving, and tracking exceptions to TSH ISMS requirements. All exceptions require CSO approval, have a maximum 12-month duration with no auto-renewal, and are logged in REG-012.
+TSH-SEC-POL-017  |  v1.0  |  2026-07-14  |  CSO — Przemysław Szulecki
 # 1. Purpose & Scope
-This policy defines the process for requesting, approving, documenting, and reviewing exceptions to TSH security policies. Security exceptions are necessary when a strict policy requirement cannot be met without unacceptable business impact. This policy applies to all TSH personnel and all 16 TSH security policies.
+This policy defines the process for requesting, approving, documenting, and reviewing exceptions to TSH ISMS requirements. An exception is a documented and approved deviation from a policy or control requirement. Exceptions are not a normal state — every exception must be time-boxed, justified, backed by compensating controls, and approved by CSO. This policy applies to all TSH personnel and all TSH security policies.
 # 2. Exception Principles
-No exception is permanent — all exceptions have a defined end date (maximum 6 months)
+No exception is permanent — all exceptions have a defined expiry date (maximum 12 months, no auto-renewal)
 All exceptions require CSO approval — verbal approvals are not valid
 Exceptions are compensating controls, not policy bypasses — the risk must still be managed
 Exceptions are auditable — documented in REG-012 (Exception Register)

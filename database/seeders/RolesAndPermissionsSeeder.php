@@ -47,10 +47,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
             $roleDefinitions = [
                 'admin' => [
-                    'description' => 'System administrator. RBAC, integracje, konfiguracja. SoD: nie edytuje danych merytorycznych.',
+                    'description' => 'System administrator. RBAC, integracje, konfiguracja. SoD: nie edytuje danych merytorycznych (poza podglądem bazy odpowiedzi RFP).',
                     'permissions' => [
                         'user.*', 'role.*', 'business_unit.*', 'project.*', 'client.*',
-                        'system.admin', 'audit_log.view', 'framework.*',
+                        'system.admin', 'audit_log.view', 'framework.*', 'rfp.view',
                     ],
                 ],
                 'ciso' => [
