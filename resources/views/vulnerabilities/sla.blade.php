@@ -80,6 +80,7 @@
     <div class="px-5 py-3 border-b border-slate-100">
         <h2 class="font-semibold text-slate-800">Top właściciele wg naruszeń SLA</h2>
     </div>
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr><th class="px-3 py-2">Właściciel</th><th class="px-3 py-2">Otwarte</th><th class="px-3 py-2">Naruszone SLA</th></tr>
@@ -96,5 +97,6 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

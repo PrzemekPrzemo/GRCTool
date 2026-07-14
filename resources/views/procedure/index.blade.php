@@ -24,6 +24,7 @@
 </div>
 @else
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
             <tr>
@@ -56,6 +57,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 @endif
 @endsection

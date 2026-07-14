@@ -11,6 +11,7 @@
 @foreach($tasks as $frequency => $items)
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4">
     <div class="bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 uppercase">{{ $frequency }}</div>
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <tbody class="divide-y divide-slate-100">
             @foreach($items as $task)
@@ -24,6 +25,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 @endforeach
 @endsection

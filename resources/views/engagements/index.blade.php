@@ -5,6 +5,7 @@
     <a href="{{ route('engagements.create') }}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-sm">+ Nowy audyt</a>
 </div>
 <div class="bg-white rounded shadow overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr><th class="px-3 py-2">Kod</th><th class="px-3 py-2">Nazwa</th><th class="px-3 py-2">Framework</th><th class="px-3 py-2">Typ</th><th class="px-3 py-2">Auditor</th><th class="px-3 py-2">Okres</th><th class="px-3 py-2">Status</th><th class="px-3 py-2 text-right">Findings</th><th class="px-3 py-2 text-right">Evidence req.</th></tr>
@@ -27,6 +28,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-3">{{ $engagements->links() }}</div>
 @endsection

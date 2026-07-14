@@ -58,6 +58,7 @@
         <h2 class="font-semibold text-slate-700">Akcje planu ({{ $plan->actions->count() }})</h2>
         <span class="text-xs text-slate-400">Status: {{ $plan->status }}</span>
     </div>
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -143,6 +144,7 @@
         </tfoot>
         @endif
     </table>
+    </div>
 </div>
 
 @endsection

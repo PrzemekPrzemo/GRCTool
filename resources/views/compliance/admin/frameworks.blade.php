@@ -35,6 +35,7 @@ $regionColors = [
         <p class="text-slate-400">Brak frameworków w bazie</p>
     </div>
     @else
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200 text-left text-xs text-slate-500 uppercase tracking-wide">
             <tr>
@@ -101,6 +102,7 @@ $regionColors = [
             @endforeach
         </tbody>
     </table>
+    </div>
     @endif
 </div>
 

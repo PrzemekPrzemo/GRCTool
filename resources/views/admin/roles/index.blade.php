@@ -35,6 +35,7 @@ $builtinRoles = \App\Http\Controllers\Admin\RoleController::BUILTIN_ROLES;
 @endif
 
 <div class="bg-white rounded shadow overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -90,5 +91,6 @@ $builtinRoles = \App\Http\Controllers\Admin\RoleController::BUILTIN_ROLES;
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 @endsection

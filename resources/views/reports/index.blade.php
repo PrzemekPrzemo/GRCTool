@@ -27,6 +27,7 @@
 <section>
     <h2 class="font-semibold mb-3">Historia raportów</h2>
     <div class="bg-white rounded shadow overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
                 <tr><th class="px-3 py-2">Kod</th><th class="px-3 py-2">Szablon</th><th class="px-3 py-2">Okres</th><th class="px-3 py-2">Wygenerowany przez</th><th class="px-3 py-2">Klasyfikacja</th><th class="px-3 py-2">Status</th></tr>
@@ -46,6 +47,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
     <div class="mt-3">{{ $instances->links() }}</div>
 </section>

@@ -98,6 +98,7 @@
     @if($findings->isEmpty())
     <div class="px-5 py-6 text-sm text-slate-500 text-center">Brak powiązanych findings.</div>
     @else
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -131,6 +132,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
     @endif
 </div>
 
@@ -149,6 +151,7 @@
         </div>
     </div>
 
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -247,6 +250,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 
     {{-- Formularz dodania nowej akcji --}}
     @can('cap.update')

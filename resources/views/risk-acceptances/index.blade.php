@@ -48,6 +48,7 @@
 
 {{-- Tabela --}}
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200">
             <tr class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -120,6 +121,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 
 @if($acceptances->hasPages())

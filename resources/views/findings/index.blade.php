@@ -19,6 +19,7 @@
     <button class="px-3 py-1.5 bg-slate-900 text-white rounded text-sm">Filtruj</button>
 </form>
 <div class="bg-white rounded shadow overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr><th class="px-3 py-2">Kod</th><th class="px-3 py-2">Tytuł</th><th class="px-3 py-2">Severity</th><th class="px-3 py-2">Source</th><th class="px-3 py-2">Engagement</th><th class="px-3 py-2">Discovered</th><th class="px-3 py-2">Due</th><th class="px-3 py-2">Status</th></tr>
@@ -40,6 +41,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-3">{{ $findings->links() }}</div>
 @endsection
