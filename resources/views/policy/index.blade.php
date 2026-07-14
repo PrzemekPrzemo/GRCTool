@@ -36,6 +36,7 @@
 <form method="GET" action="{{ route('policies.bulk-edit') }}" id="bulk-form">
 @endcan
 <div class="bg-white rounded shadow overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -98,6 +99,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @can('policy.update')
     @if($policies->isNotEmpty())

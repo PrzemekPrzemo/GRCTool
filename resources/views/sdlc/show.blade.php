@@ -210,6 +210,7 @@
                 <h2 class="font-semibold text-sm text-slate-700">Modele zagrożeń</h2>
                 <span class="text-xs text-slate-400">{{ $sdlc->threatModels->count() }}</span>
             </div>
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 text-left">
                     <tr>
@@ -251,6 +252,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         {{-- Add Threat Model form (collapsible) --}}

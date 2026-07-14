@@ -39,6 +39,7 @@
             <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                 <h2 class="font-semibold text-sm">Macierz ukończeń</h2>
             </div>
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 text-left">
                     <tr>
@@ -67,6 +68,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 

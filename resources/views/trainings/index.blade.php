@@ -10,6 +10,7 @@
 </div>
 
 <div class="bg-white rounded shadow overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
             <tr>
@@ -67,6 +68,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-3">{{ $trainings->links() }}</div>
 @endsection

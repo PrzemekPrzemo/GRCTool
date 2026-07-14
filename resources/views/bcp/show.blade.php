@@ -68,6 +68,7 @@
         {{-- Test history --}}
         <div class="bg-white rounded shadow overflow-hidden">
             <div class="px-4 py-2 border-b border-slate-100 font-semibold text-sm">Historia testów</div>
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="bg-slate-50 text-xs uppercase text-slate-500 text-left">
                     <tr>
@@ -99,6 +100,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         {{-- Add test form --}}

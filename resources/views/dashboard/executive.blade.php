@@ -41,6 +41,7 @@
     @if($attentionIndicators->isEmpty())
         <div class="px-4 py-6 text-sm text-slate-400 text-center">Brak wskaźników w statusie Amber/Red.</div>
     @else
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <tbody class="divide-y divide-slate-100">
                 @foreach($attentionIndicators as $indicator)
@@ -55,6 +56,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     @endif
 </div>
 
@@ -68,6 +70,7 @@
         @if($criticalGaps->isEmpty())
             <div class="px-4 py-6 text-sm text-slate-400 text-center">Brak otwartych luk krytycznych/wysokich.</div>
         @else
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <tbody class="divide-y divide-slate-100">
                     @foreach($criticalGaps as $gap)
@@ -85,6 +88,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         @endif
     </div>
 
@@ -97,6 +101,7 @@
         @if($expiringExceptions->isEmpty())
             <div class="px-4 py-6 text-sm text-slate-400 text-center">Brak wyjątków wygasających w ciągu 14 dni.</div>
         @else
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <tbody class="divide-y divide-slate-100">
                     @foreach($expiringExceptions as $exception)
@@ -107,6 +112,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         @endif
     </div>
 </div>
@@ -121,6 +127,7 @@
         @if($calendarTasksThisCycle->isEmpty())
             <div class="px-4 py-6 text-sm text-slate-400 text-center">Brak zadań przypadających na bieżący miesiąc/kwartał.</div>
         @else
+            <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <tbody class="divide-y divide-slate-100">
                     @foreach($calendarTasksThisCycle as $task)
@@ -132,6 +139,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         @endif
     </div>
 
@@ -141,6 +149,7 @@
             <span class="text-sm font-semibold text-slate-700">Najwyższe ryzyka rezydualne</span>
             <a href="{{ route('risks.index') }}" class="text-xs text-emerald-700 hover:underline">Zobacz wszystkie →</a>
         </div>
+        <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <tbody class="divide-y divide-slate-100">
                 @foreach($topRisks as $risk)
@@ -155,6 +164,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @endsection

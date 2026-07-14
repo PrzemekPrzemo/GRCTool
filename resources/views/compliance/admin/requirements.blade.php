@@ -62,6 +62,7 @@ $controlTypeLabels = [
         @endcan
     </div>
     @else
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 border-b border-slate-200 text-left text-xs text-slate-500 uppercase tracking-wide">
             <tr>
@@ -125,6 +126,7 @@ $controlTypeLabels = [
             @endforeach
         </tbody>
     </table>
+    </div>
     @endif
 </div>
 

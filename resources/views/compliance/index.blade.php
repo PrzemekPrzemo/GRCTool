@@ -45,6 +45,7 @@
 </form>
 
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500 border-b border-slate-200">
             <tr>
@@ -124,6 +125,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <div class="mt-3">{{ $assessments->links() }}</div>
 
