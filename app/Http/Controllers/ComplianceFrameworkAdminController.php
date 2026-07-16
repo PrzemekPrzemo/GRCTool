@@ -47,13 +47,13 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         $data = $request->validate([
-            'name'        => ['required', 'string', 'max:256'],
-            'short_name'  => ['required', 'string', 'max:32'],
-            'version'     => ['nullable', 'string', 'max:32'],
-            'issuer'      => ['nullable', 'string', 'max:128'],
-            'region'      => ['required', 'in:EU,US,Global,KSA,ME,Other'],
+            'name' => ['required', 'string', 'max:256'],
+            'short_name' => ['required', 'string', 'max:32'],
+            'version' => ['nullable', 'string', 'max:32'],
+            'issuer' => ['nullable', 'string', 'max:128'],
+            'region' => ['required', 'in:EU,US,Global,KSA,ME,Other'],
             'description' => ['nullable', 'string'],
-            'is_active'   => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $data['is_custom'] = true;
@@ -78,13 +78,13 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $data = $request->validate([
-            'name'        => ['required', 'string', 'max:256'],
-            'short_name'  => ['required', 'string', 'max:32'],
-            'version'     => ['nullable', 'string', 'max:32'],
-            'issuer'      => ['nullable', 'string', 'max:128'],
-            'region'      => ['required', 'in:EU,US,Global,KSA,ME,Other'],
+            'name' => ['required', 'string', 'max:256'],
+            'short_name' => ['required', 'string', 'max:32'],
+            'version' => ['nullable', 'string', 'max:32'],
+            'issuer' => ['nullable', 'string', 'max:128'],
+            'region' => ['required', 'in:EU,US,Global,KSA,ME,Other'],
             'description' => ['nullable', 'string'],
-            'is_active'   => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active');
@@ -127,7 +127,7 @@ class ComplianceFrameworkAdminController extends Controller
         });
 
         return redirect()->route('compliance.admin.frameworks')
-            ->with('status', "Framework został usunięty.");
+            ->with('status', 'Framework został usunięty.');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -155,14 +155,14 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         $data = $request->validate([
-            'code'        => ['required', 'string', 'max:32'],
-            'name'        => ['required', 'string', 'max:256'],
+            'code' => ['required', 'string', 'max:32'],
+            'name' => ['required', 'string', 'max:256'],
             'description' => ['nullable', 'string'],
-            'sort_order'  => ['nullable', 'integer', 'min:0'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $data['framework_id'] = $framework->id;
-        $data['sort_order']   = $data['sort_order'] ?? ($framework->domains()->max('sort_order') + 1);
+        $data['sort_order'] = $data['sort_order'] ?? ($framework->domains()->max('sort_order') + 1);
 
         $domain = ComplianceDomain::create($data);
 
@@ -182,10 +182,10 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $data = $request->validate([
-            'code'        => ['required', 'string', 'max:32'],
-            'name'        => ['required', 'string', 'max:256'],
+            'code' => ['required', 'string', 'max:32'],
+            'name' => ['required', 'string', 'max:256'],
             'description' => ['nullable', 'string'],
-            'sort_order'  => ['nullable', 'integer', 'min:0'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $domain->update($data);
@@ -204,7 +204,7 @@ class ComplianceFrameworkAdminController extends Controller
 
         if ($hasResponses) {
             return redirect()->route('compliance.admin.frameworks.domains', $framework)
-                ->with('error', "Nie można usunąć domeny — istnieją powiązane odpowiedzi ocen.");
+                ->with('error', 'Nie można usunąć domeny — istnieją powiązane odpowiedzi ocen.');
         }
 
         $domain->requirements()->delete();
@@ -232,8 +232,8 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         return view('compliance.admin.requirement-form', [
-            'framework'   => $framework,
-            'domain'      => $domain,
+            'framework' => $framework,
+            'domain' => $domain,
             'requirement' => null,
         ]);
     }
@@ -243,19 +243,19 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         $data = $request->validate([
-            'code'         => ['required', 'string', 'max:64'],
-            'name'         => ['required', 'string'],
-            'description'  => ['nullable', 'string'],
-            'guidance'     => ['nullable', 'string'],
+            'code' => ['required', 'string', 'max:64'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'guidance' => ['nullable', 'string'],
             'control_type' => ['required', 'in:technical,organisational,physical,procedural,legal'],
             'is_mandatory' => ['nullable', 'boolean'],
-            'sort_order'   => ['nullable', 'integer', 'min:0'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $data['domain_id']   = $domain->id;
+        $data['domain_id'] = $domain->id;
         $data['is_mandatory'] = $request->boolean('is_mandatory');
-        $data['is_custom']   = ! $framework->is_custom; // custom req if added to built-in framework
-        $data['sort_order']  = $data['sort_order'] ?? ($domain->requirements()->max('sort_order') + 1);
+        $data['is_custom'] = ! $framework->is_custom; // custom req if added to built-in framework
+        $data['sort_order'] = $data['sort_order'] ?? ($domain->requirements()->max('sort_order') + 1);
 
         $requirement = ComplianceRequirement::create($data);
 
@@ -275,13 +275,13 @@ class ComplianceFrameworkAdminController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $data = $request->validate([
-            'code'         => ['required', 'string', 'max:64'],
-            'name'         => ['required', 'string'],
-            'description'  => ['nullable', 'string'],
-            'guidance'     => ['nullable', 'string'],
+            'code' => ['required', 'string', 'max:64'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'guidance' => ['nullable', 'string'],
             'control_type' => ['required', 'in:technical,organisational,physical,procedural,legal'],
             'is_mandatory' => ['nullable', 'boolean'],
-            'sort_order'   => ['nullable', 'integer', 'min:0'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $data['is_mandatory'] = $request->boolean('is_mandatory');
@@ -300,7 +300,7 @@ class ComplianceFrameworkAdminController extends Controller
 
         if ($hasResponses) {
             return redirect()->route('compliance.admin.requirements.index', [$framework, $domain])
-                ->with('error', "Nie można usunąć wymagania — istnieją powiązane odpowiedzi ocen.");
+                ->with('error', 'Nie można usunąć wymagania — istnieją powiązane odpowiedzi ocen.');
         }
 
         $requirement->delete();

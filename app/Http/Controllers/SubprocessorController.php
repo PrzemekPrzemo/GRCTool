@@ -30,10 +30,10 @@ class SubprocessorController extends Controller
 
         $subprocessors = $query->paginate(25)->withQueryString();
 
-        $total    = Subprocessor::count();
+        $total = Subprocessor::count();
         $critical = Subprocessor::where('tier', 'Critical')->count();
-        $high     = Subprocessor::where('tier', 'High')->count();
-        $public   = Subprocessor::where('public_listing', true)->count();
+        $high = Subprocessor::where('tier', 'High')->count();
+        $public = Subprocessor::where('public_listing', true)->count();
 
         return view('subprocessors.index', compact('subprocessors', 'total', 'critical', 'high', 'public'));
     }
@@ -43,12 +43,12 @@ class SubprocessorController extends Controller
         abort_unless(auth()->user()->can('subprocessor.create'), 403);
 
         $thirdParties = ThirdParty::orderBy('name')->get(['id', 'name', 'code']);
-        $clients      = Client::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $clients = Client::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
         return view('subprocessors.form', [
             'subprocessor' => null,
             'thirdParties' => $thirdParties,
-            'clients'      => $clients,
+            'clients' => $clients,
         ]);
     }
 
@@ -82,12 +82,12 @@ class SubprocessorController extends Controller
         abort_unless(auth()->user()->can('subprocessor.update'), 403);
 
         $thirdParties = ThirdParty::orderBy('name')->get(['id', 'name', 'code']);
-        $clients      = Client::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $clients = Client::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
         return view('subprocessors.form', [
             'subprocessor' => $subprocessor,
             'thirdParties' => $thirdParties,
-            'clients'      => $clients,
+            'clients' => $clients,
         ]);
     }
 
@@ -113,13 +113,13 @@ class SubprocessorController extends Controller
 
         $history = $subprocessor->notification_history ?? [];
         $history[] = [
-            'date'         => now()->toISOString(),
-            'notified_by'  => auth()->id(),
-            'note'         => $request->note,
+            'date' => now()->toISOString(),
+            'notified_by' => auth()->id(),
+            'note' => $request->note,
         ];
 
-        $subprocessor->notification_history  = $history;
-        $subprocessor->last_assessment_date  = now()->toDateString();
+        $subprocessor->notification_history = $history;
+        $subprocessor->last_assessment_date = now()->toDateString();
         $subprocessor->save();
 
         AuditLogger::log('subprocessor.notified', $subprocessor);
@@ -131,20 +131,20 @@ class SubprocessorController extends Controller
     private function validateSubprocessor(Request $request): array
     {
         return $request->validate([
-            'name'                  => 'required|string|max:255',
-            'service_provided'      => 'required|string|max:500',
-            'third_party_id'        => 'required|exists:third_parties,id',
-            'data_categories'       => 'nullable|array',
+            'name' => 'required|string|max:255',
+            'service_provided' => 'required|string|max:500',
+            'third_party_id' => 'required|exists:third_parties,id',
+            'data_categories' => 'nullable|array',
             'country_of_processing' => 'nullable|string|max:100',
-            'legal_basis'           => 'nullable|string|max:255',
-            'transfer_mechanism'    => 'nullable|in:SCC,adequacy,BCR',
-            'dpa_url'               => 'nullable|url|max:500',
-            'certifications'        => 'nullable|array',
-            'client_scopes'         => 'nullable|array',
-            'client_scopes.*'       => 'exists:clients,id',
-            'tier'                  => 'required|in:Critical,High,Medium,Low',
-            'last_assessment_date'  => 'nullable|date',
-            'public_listing'        => 'boolean',
+            'legal_basis' => 'nullable|string|max:255',
+            'transfer_mechanism' => 'nullable|in:SCC,adequacy,BCR',
+            'dpa_url' => 'nullable|url|max:500',
+            'certifications' => 'nullable|array',
+            'client_scopes' => 'nullable|array',
+            'client_scopes.*' => 'exists:clients,id',
+            'tier' => 'required|in:Critical,High,Medium,Low',
+            'last_assessment_date' => 'nullable|date',
+            'public_listing' => 'boolean',
         ]);
     }
 }

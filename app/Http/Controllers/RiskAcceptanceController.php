@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EvidenceObject;
-use App\Models\Risk;
 use App\Models\RiskAcceptance;
-use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,13 +23,13 @@ class RiskAcceptanceController extends Controller
         $acceptances = $query->orderByDesc('proposed_at')->paginate(25)->withQueryString();
 
         $stats = [
-            'pending'       => RiskAcceptance::where('status', 'Pending')->count(),
-            'approved'      => RiskAcceptance::where('status', 'Approved')->count(),
+            'pending' => RiskAcceptance::where('status', 'Pending')->count(),
+            'approved' => RiskAcceptance::where('status', 'Approved')->count(),
             'expiring_soon' => RiskAcceptance::where('status', 'Approved')
                 ->whereNotNull('expiry_date')
                 ->whereBetween('expiry_date', [now()->toDateString(), now()->addDays(30)->toDateString()])
                 ->count(),
-            'expired'       => RiskAcceptance::where('status', 'Expired')->count(),
+            'expired' => RiskAcceptance::where('status', 'Expired')->count(),
         ];
 
         return view('risk-acceptances.index', compact('acceptances', 'stats'));
@@ -60,12 +57,12 @@ class RiskAcceptanceController extends Controller
         abort_unless(auth()->user()->can('risk.update'), 403);
 
         $data = $request->validate([
-            'expiry_date'       => ['required', 'date', 'after:today'],
+            'expiry_date' => ['required', 'date', 'after:today'],
             'rationale_comment' => ['nullable', 'string', 'max:500'],
         ]);
 
         $acceptance->update([
-            'status'      => 'Approved',
+            'status' => 'Approved',
             'accepted_by' => auth()->id(),
             'accepted_at' => now(),
             'expiry_date' => $data['expiry_date'],
@@ -106,9 +103,9 @@ class RiskAcceptanceController extends Controller
         ]);
 
         $acceptance->update([
-            'status'       => 'Revoked',
-            'revoked_at'   => now(),
-            'revoked_by'   => auth()->id(),
+            'status' => 'Revoked',
+            'revoked_at' => now(),
+            'revoked_by' => auth()->id(),
             'revoke_reason' => $data['revoke_reason'],
         ]);
 

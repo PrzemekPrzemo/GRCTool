@@ -35,46 +35,46 @@ class ProcessingActivity extends Model
     ];
 
     const LEGAL_BASES = [
-        'consent'               => 'Zgoda (Art. 6 ust. 1 lit. a)',
-        'contract'              => 'Umowa (Art. 6 ust. 1 lit. b)',
-        'legal_obligation'      => 'Obowiązek prawny (Art. 6 ust. 1 lit. c)',
-        'vital_interests'       => 'Żywotne interesy (Art. 6 ust. 1 lit. d)',
-        'public_task'           => 'Zadanie publiczne (Art. 6 ust. 1 lit. e)',
-        'legitimate_interests'  => 'Uzasadniony interes (Art. 6 ust. 1 lit. f)',
+        'consent' => 'Zgoda (Art. 6 ust. 1 lit. a)',
+        'contract' => 'Umowa (Art. 6 ust. 1 lit. b)',
+        'legal_obligation' => 'Obowiązek prawny (Art. 6 ust. 1 lit. c)',
+        'vital_interests' => 'Żywotne interesy (Art. 6 ust. 1 lit. d)',
+        'public_task' => 'Zadanie publiczne (Art. 6 ust. 1 lit. e)',
+        'legitimate_interests' => 'Uzasadniony interes (Art. 6 ust. 1 lit. f)',
     ];
 
     const DATA_CATEGORIES = [
-        'identification'  => 'Dane identyfikacyjne',
-        'contact'         => 'Dane kontaktowe',
-        'financial'       => 'Dane finansowe',
-        'employment'      => 'Dane pracownicze',
-        'location'        => 'Dane lokalizacyjne',
-        'behavioral'      => 'Dane behawioralne',
-        'technical'       => 'Dane techniczne (IP, cookies)',
-        'communications'  => 'Treść komunikacji',
+        'identification' => 'Dane identyfikacyjne',
+        'contact' => 'Dane kontaktowe',
+        'financial' => 'Dane finansowe',
+        'employment' => 'Dane pracownicze',
+        'location' => 'Dane lokalizacyjne',
+        'behavioral' => 'Dane behawioralne',
+        'technical' => 'Dane techniczne (IP, cookies)',
+        'communications' => 'Treść komunikacji',
     ];
 
     const SPECIAL_CATEGORIES = [
-        'racial_ethnic'       => 'Pochodzenie rasowe / etniczne',
-        'political_opinions'  => 'Poglądy polityczne',
-        'religious_beliefs'   => 'Przekonania religijne',
-        'trade_union'         => 'Przynależność do związków zawodowych',
-        'genetic'             => 'Dane genetyczne',
-        'biometric'           => 'Dane biometryczne',
-        'health'              => 'Dane dotyczące zdrowia',
-        'sex_life'            => 'Życie seksualne / orientacja seksualna',
-        'criminal'            => 'Dane karne (Art. 10)',
+        'racial_ethnic' => 'Pochodzenie rasowe / etniczne',
+        'political_opinions' => 'Poglądy polityczne',
+        'religious_beliefs' => 'Przekonania religijne',
+        'trade_union' => 'Przynależność do związków zawodowych',
+        'genetic' => 'Dane genetyczne',
+        'biometric' => 'Dane biometryczne',
+        'health' => 'Dane dotyczące zdrowia',
+        'sex_life' => 'Życie seksualne / orientacja seksualna',
+        'criminal' => 'Dane karne (Art. 10)',
     ];
 
     const DATA_SUBJECTS = [
-        'employees'     => 'Pracownicy',
-        'customers'     => 'Klienci',
-        'prospects'     => 'Potencjalni klienci',
-        'suppliers'     => 'Dostawcy',
-        'minors'        => 'Osoby niepełnoletnie',
-        'patients'      => 'Pacjenci',
-        'users'         => 'Użytkownicy systemów',
-        'public'        => 'Ogół społeczeństwa',
+        'employees' => 'Pracownicy',
+        'customers' => 'Klienci',
+        'prospects' => 'Potencjalni klienci',
+        'suppliers' => 'Dostawcy',
+        'minors' => 'Osoby niepełnoletnie',
+        'patients' => 'Pacjenci',
+        'users' => 'Użytkownicy systemów',
+        'public' => 'Ogół społeczeństwa',
     ];
 
     public function controller(): BelongsTo
@@ -106,6 +106,6 @@ class ProcessingActivity extends Model
 
     public function hasSpecialCategories(): bool
     {
-        return !empty($this->special_categories);
+        return ! empty($this->special_categories);
     }
 }

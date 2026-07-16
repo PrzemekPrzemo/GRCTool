@@ -23,31 +23,31 @@ class SdlcProject extends Model
     ];
 
     public const TYPE_LABELS = [
-        'webapp'        => 'Web App',
-        'api'           => 'API',
-        'mobile'        => 'Mobile',
-        'infra'         => 'Infrastruktura',
+        'webapp' => 'Web App',
+        'api' => 'API',
+        'mobile' => 'Mobile',
+        'infra' => 'Infrastruktura',
         'internal_tool' => 'Narzędzie wewnętrzne',
     ];
 
     public const RISK_COLORS = [
-        'low'      => 'emerald',
-        'medium'   => 'amber',
-        'high'     => 'orange',
+        'low' => 'emerald',
+        'medium' => 'amber',
+        'high' => 'orange',
         'critical' => 'red',
     ];
 
     public const RISK_LABELS = [
-        'low'      => 'Niskie',
-        'medium'   => 'Średnie',
-        'high'     => 'Wysokie',
+        'low' => 'Niskie',
+        'medium' => 'Średnie',
+        'high' => 'Wysokie',
         'critical' => 'Krytyczne',
     ];
 
     public const STATUS_LABELS = [
-        'active'    => 'Aktywny',
+        'active' => 'Aktywny',
         'completed' => 'Zakończony',
-        'archived'  => 'Zarchiwizowany',
+        'archived' => 'Zarchiwizowany',
     ];
 
     public function owner(): BelongsTo

@@ -28,7 +28,7 @@ class ComplianceAssessmentController extends Controller
             ->get()
             ->map(function (ComplianceFramework $fw): ComplianceFramework {
                 $fw->requirements_count_cached = $fw->requirementsCount();
-                $fw->active_assessments        = $fw->assessments()
+                $fw->active_assessments = $fw->assessments()
                     ->whereIn('status', ['draft', 'in_progress'])
                     ->count();
 
@@ -57,7 +57,7 @@ class ComplianceAssessmentController extends Controller
         }
 
         $assessments = $query->paginate(25)->withQueryString();
-        $frameworks  = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
+        $frameworks = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
 
         return view('compliance.index', compact('assessments', 'frameworks'));
     }
@@ -67,8 +67,8 @@ class ComplianceAssessmentController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         $frameworks = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
-        $users      = User::orderBy('name')->get();
-        $selected   = $request->integer('framework') ?: null;
+        $users = User::orderBy('name')->get();
+        $selected = $request->integer('framework') ?: null;
 
         return view('compliance.create', compact('frameworks', 'users', 'selected'));
     }
@@ -78,15 +78,15 @@ class ComplianceAssessmentController extends Controller
         abort_unless(auth()->user()->can('compliance.create'), 403);
 
         $data = $request->validate([
-            'framework_id'    => ['required', 'exists:compliance_frameworks,id'],
-            'title'           => ['required', 'string', 'max:256'],
-            'scope'           => ['nullable', 'string'],
-            'conducted_by'    => ['nullable', 'exists:users,id'],
+            'framework_id' => ['required', 'exists:compliance_frameworks,id'],
+            'title' => ['required', 'string', 'max:256'],
+            'scope' => ['nullable', 'string'],
+            'conducted_by' => ['nullable', 'exists:users,id'],
             'assessment_date' => ['nullable', 'date'],
-            'notes'           => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
         ]);
 
-        $data['code']   = ComplianceAssessment::nextCode();
+        $data['code'] = ComplianceAssessment::nextCode();
         $data['status'] = 'draft';
 
         $assessment = ComplianceAssessment::create($data);
@@ -117,13 +117,13 @@ class ComplianceAssessmentController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $frameworks = ComplianceFramework::where('is_active', true)->orderBy('sort_order')->get();
-        $users      = User::orderBy('name')->get();
+        $users = User::orderBy('name')->get();
 
         return view('compliance.create', [
             'assessment' => $compliance,
             'frameworks' => $frameworks,
-            'users'      => $users,
-            'selected'   => $compliance->framework_id,
+            'users' => $users,
+            'selected' => $compliance->framework_id,
         ]);
     }
 
@@ -132,12 +132,12 @@ class ComplianceAssessmentController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $data = $request->validate([
-            'framework_id'    => ['required', 'exists:compliance_frameworks,id'],
-            'title'           => ['required', 'string', 'max:256'],
-            'scope'           => ['nullable', 'string'],
-            'conducted_by'    => ['nullable', 'exists:users,id'],
+            'framework_id' => ['required', 'exists:compliance_frameworks,id'],
+            'title' => ['required', 'string', 'max:256'],
+            'scope' => ['nullable', 'string'],
+            'conducted_by' => ['nullable', 'exists:users,id'],
             'assessment_date' => ['nullable', 'date'],
-            'notes'           => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
         ]);
 
         $compliance->update($data);
@@ -169,30 +169,30 @@ class ComplianceAssessmentController extends Controller
         abort_unless(auth()->user()->can('compliance.update'), 403);
 
         $data = $request->validate([
-            'responses'                          => ['required', 'array'],
-            'responses.*.status'                 => ['required', 'string', 'in:compliant,partial,non_compliant,not_applicable,not_assessed'],
-            'responses.*.evidence'               => ['nullable', 'string'],
-            'responses.*.gap_description'        => ['nullable', 'string'],
-            'responses.*.remediation_plan'       => ['nullable', 'string'],
-            'responses.*.priority'               => ['nullable', 'in:high,medium,low'],
-            'responses.*.target_date'            => ['nullable', 'date'],
+            'responses' => ['required', 'array'],
+            'responses.*.status' => ['required', 'string', 'in:compliant,partial,non_compliant,not_applicable,not_assessed'],
+            'responses.*.evidence' => ['nullable', 'string'],
+            'responses.*.gap_description' => ['nullable', 'string'],
+            'responses.*.remediation_plan' => ['nullable', 'string'],
+            'responses.*.priority' => ['nullable', 'in:high,medium,low'],
+            'responses.*.target_date' => ['nullable', 'date'],
         ]);
 
         $userId = auth()->id();
-        $now    = now();
+        $now = now();
 
         foreach ($data['responses'] as $reqId => $row) {
             ComplianceResponse::updateOrCreate(
                 ['assessment_id' => $assessment->id, 'requirement_id' => (int) $reqId],
                 [
-                    'status'           => $row['status'],
-                    'evidence'         => $row['evidence'] ?? null,
-                    'gap_description'  => $row['gap_description'] ?? null,
+                    'status' => $row['status'],
+                    'evidence' => $row['evidence'] ?? null,
+                    'gap_description' => $row['gap_description'] ?? null,
                     'remediation_plan' => $row['remediation_plan'] ?? null,
-                    'priority'         => $row['priority'] ?? null,
-                    'target_date'      => $row['target_date'] ?? null,
-                    'responded_by'     => $userId,
-                    'responded_at'     => $now,
+                    'priority' => $row['priority'] ?? null,
+                    'target_date' => $row['target_date'] ?? null,
+                    'responded_by' => $userId,
+                    'responded_at' => $now,
                 ]
             );
         }
@@ -219,7 +219,7 @@ class ComplianceAssessmentController extends Controller
 
         $assessment->recalculateScore();
         $assessment->update([
-            'status'      => 'completed',
+            'status' => 'completed',
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
@@ -255,16 +255,16 @@ class ComplianceAssessmentController extends Controller
         $responses = $assessment->responses()->get()->keyBy('requirement_id');
 
         $statusLabels = [
-            'compliant'      => 'Zgodne',
-            'partial'        => 'Częściowe',
-            'non_compliant'  => 'Niezgodne',
+            'compliant' => 'Zgodne',
+            'partial' => 'Częściowe',
+            'non_compliant' => 'Niezgodne',
             'not_applicable' => 'Nie dotyczy',
-            'not_assessed'   => 'Nie oceniono',
+            'not_assessed' => 'Nie oceniono',
         ];
         $priorityLabels = [
-            'high'   => 'Wysoki',
+            'high' => 'Wysoki',
             'medium' => 'Średni',
-            'low'    => 'Niski',
+            'low' => 'Niski',
         ];
 
         $rows = [];
@@ -272,8 +272,8 @@ class ComplianceAssessmentController extends Controller
 
         foreach ($assessment->framework->domains as $domain) {
             foreach ($domain->requirements as $req) {
-                $resp      = $responses->get($req->id);
-                $rows[]    = [
+                $resp = $responses->get($req->id);
+                $rows[] = [
                     $req->code,
                     $domain->name,
                     $req->name,
@@ -287,25 +287,25 @@ class ComplianceAssessmentController extends Controller
             }
         }
 
-        $csv    = "\xEF\xBB\xBF"; // UTF-8 BOM for Excel
+        $csv = "\xEF\xBB\xBF"; // UTF-8 BOM for Excel
         foreach ($rows as $row) {
             $csv .= implode(',', array_map(function (string $cell): string {
                 // Neutralise spreadsheet formula injection (CSV injection)
                 if (preg_match('/^[=+\-@\t\r]/', $cell)) {
-                    $cell = "'" . $cell;
+                    $cell = "'".$cell;
                 }
                 $cell = str_replace('"', '""', $cell);
 
-                return '"' . $cell . '"';
-            }, $row)) . "\r\n";
+                return '"'.$cell.'"';
+            }, $row))."\r\n";
         }
 
         // Strip non-printable / newline chars from filename to prevent CRLF header injection
         $safeCode = preg_replace('/[^A-Za-z0-9_\-]/', '_', $assessment->code);
-        $filename = "compliance_{$safeCode}_" . now()->format('Ymd') . '.csv';
+        $filename = "compliance_{$safeCode}_".now()->format('Ymd').'.csv';
 
         return response($csv, 200, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
     }
@@ -322,9 +322,9 @@ class ComplianceAssessmentController extends Controller
 
         $responses = $assessment->responses()->get()->keyBy('requirement_id');
 
-        $total         = $assessment->compliant_count + $assessment->partial_count
+        $total = $assessment->compliant_count + $assessment->partial_count
                        + $assessment->non_compliant_count + $assessment->not_assessed_count;
-        $totalWithNa   = $total + $assessment->na_count;
+        $totalWithNa = $total + $assessment->na_count;
 
         return view('compliance.exports.soa', compact('assessment', 'responses', 'totalWithNa'));
     }
@@ -350,9 +350,9 @@ class ComplianceAssessmentController extends Controller
                     continue;
                 }
                 $gaps->push([
-                    'domain'          => $domain,
-                    'requirement'     => $req,
-                    'response'        => $resp,
+                    'domain' => $domain,
+                    'requirement' => $req,
+                    'response' => $resp,
                 ]);
             }
         }
@@ -373,7 +373,7 @@ class ComplianceAssessmentController extends Controller
         })->values();
 
         $nonCompliantCount = $gaps->filter(fn ($g) => $g['response']->status === 'non_compliant')->count();
-        $partialCount      = $gaps->filter(fn ($g) => $g['response']->status === 'partial')->count();
+        $partialCount = $gaps->filter(fn ($g) => $g['response']->status === 'partial')->count();
 
         return view('compliance.exports.gap', compact(
             'assessment', 'gaps', 'nonCompliantCount', 'partialCount'

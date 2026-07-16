@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RiskTreatmentPlan;
+use App\Models\RtpAction;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -15,7 +16,7 @@ class RiskTreatmentPlanController extends Controller
         $query = RiskTreatmentPlan::with(['risk', 'actions.owner', 'approver'])
             ->withCount(['actions', 'actions as overdue_count' => function ($q): void {
                 $q->whereNotIn('status', ['Completed', 'Cancelled'])
-                  ->whereDate('due_date', '<', now());
+                    ->whereDate('due_date', '<', now());
             }]);
 
         if ($status = $request->string('status')->toString()) {
@@ -24,13 +25,13 @@ class RiskTreatmentPlanController extends Controller
         if ($request->boolean('overdue_only')) {
             $query->whereHas('actions', function ($q): void {
                 $q->whereNotIn('status', ['Completed', 'Cancelled'])
-                  ->whereDate('due_date', '<', now());
+                    ->whereDate('due_date', '<', now());
             });
         }
 
         $plans = $query->orderByDesc('overdue_count')->orderByDesc('created_at')->paginate(25)->withQueryString();
 
-        $overdueActions = \App\Models\RtpAction::with(['plan.risk', 'owner'])
+        $overdueActions = RtpAction::with(['plan.risk', 'owner'])
             ->whereNotIn('status', ['Completed', 'Cancelled'])
             ->whereDate('due_date', '<', now())
             ->orderBy('due_date')
@@ -38,10 +39,10 @@ class RiskTreatmentPlanController extends Controller
             ->get();
 
         $totalStats = [
-            'plans_active'   => RiskTreatmentPlan::whereNotIn('status', ['Completed', 'Cancelled', 'Rejected'])->count(),
-            'actions_overdue' => \App\Models\RtpAction::whereNotIn('status', ['Completed', 'Cancelled'])->whereDate('due_date', '<', now())->count(),
-            'actions_in_progress' => \App\Models\RtpAction::where('status', 'In Progress')->count(),
-            'actions_completed' => \App\Models\RtpAction::where('status', 'Completed')->count(),
+            'plans_active' => RiskTreatmentPlan::whereNotIn('status', ['Completed', 'Cancelled', 'Rejected'])->count(),
+            'actions_overdue' => RtpAction::whereNotIn('status', ['Completed', 'Cancelled'])->whereDate('due_date', '<', now())->count(),
+            'actions_in_progress' => RtpAction::where('status', 'In Progress')->count(),
+            'actions_completed' => RtpAction::where('status', 'Completed')->count(),
         ];
 
         return view('risk-treatment-plans.index', compact('plans', 'overdueActions', 'totalStats'));

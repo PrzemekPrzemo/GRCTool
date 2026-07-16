@@ -29,15 +29,15 @@ class ProcessingActivityController extends Controller
         if ($request->filled('q')) {
             $query->where(function ($q) use ($request): void {
                 $q->where('name', 'like', "%{$request->q}%")
-                  ->orWhere('code', 'like', "%{$request->q}%");
+                    ->orWhere('code', 'like', "%{$request->q}%");
             });
         }
 
         $activities = $query->paginate(25)->withQueryString();
 
         return view('rcp.index', [
-            'activities'  => $activities,
-            'legalBases'  => ProcessingActivity::LEGAL_BASES,
+            'activities' => $activities,
+            'legalBases' => ProcessingActivity::LEGAL_BASES,
         ]);
     }
 
@@ -46,10 +46,10 @@ class ProcessingActivityController extends Controller
         abort_unless(auth()->user()->can('rcp.create'), 403);
 
         return view('rcp.form', [
-            'activity'    => null,
-            'users'       => User::orderBy('name')->get(),
+            'activity' => null,
+            'users' => User::orderBy('name')->get(),
             'thirdParties' => ThirdParty::where('is_active', true)->orderBy('name')->get(),
-            'legalBases'  => ProcessingActivity::LEGAL_BASES,
+            'legalBases' => ProcessingActivity::LEGAL_BASES,
             'dataCategories' => ProcessingActivity::DATA_CATEGORIES,
             'specialCategories' => ProcessingActivity::SPECIAL_CATEGORIES,
             'dataSubjects' => ProcessingActivity::DATA_SUBJECTS,
@@ -85,10 +85,10 @@ class ProcessingActivityController extends Controller
         abort_unless(auth()->user()->can('rcp.update'), 403);
 
         return view('rcp.form', [
-            'activity'    => $rcp->load('thirdParties'),
-            'users'       => User::orderBy('name')->get(),
+            'activity' => $rcp->load('thirdParties'),
+            'users' => User::orderBy('name')->get(),
             'thirdParties' => ThirdParty::where('is_active', true)->orderBy('name')->get(),
-            'legalBases'  => ProcessingActivity::LEGAL_BASES,
+            'legalBases' => ProcessingActivity::LEGAL_BASES,
             'dataCategories' => ProcessingActivity::DATA_CATEGORIES,
             'specialCategories' => ProcessingActivity::SPECIAL_CATEGORIES,
             'dataSubjects' => ProcessingActivity::DATA_SUBJECTS,
@@ -121,26 +121,26 @@ class ProcessingActivityController extends Controller
     private function validateActivity(Request $request): array
     {
         return $request->validate([
-            'name'                  => 'required|string|max:255',
-            'description'           => 'nullable|string',
-            'purpose'               => 'nullable|string|max:500',
-            'legal_basis'           => 'nullable|string|max:64',
-            'legal_basis_detail'    => 'nullable|string',
-            'data_categories'       => 'nullable|array',
-            'special_categories'    => 'nullable|array',
-            'data_subjects'         => 'nullable|array',
-            'retention_period'      => 'nullable|string|max:128',
-            'retention_basis'       => 'nullable|string',
-            'controller_id'         => 'nullable|exists:users,id',
-            'processor_id'          => 'nullable|exists:users,id',
-            'system_name'           => 'nullable|string|max:255',
-            'security_measures'     => 'nullable|array',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'purpose' => 'nullable|string|max:500',
+            'legal_basis' => 'nullable|string|max:64',
+            'legal_basis_detail' => 'nullable|string',
+            'data_categories' => 'nullable|array',
+            'special_categories' => 'nullable|array',
+            'data_subjects' => 'nullable|array',
+            'retention_period' => 'nullable|string|max:128',
+            'retention_basis' => 'nullable|string',
+            'controller_id' => 'nullable|exists:users,id',
+            'processor_id' => 'nullable|exists:users,id',
+            'system_name' => 'nullable|string|max:255',
+            'security_measures' => 'nullable|array',
             'cross_border_transfer' => 'boolean',
-            'transfer_countries'    => 'nullable|array',
-            'transfer_mechanism'    => 'nullable|string|max:64',
-            'dpia_required'         => 'boolean',
-            'status'                => 'required|in:active,under_review,archived',
-            'notes'                 => 'nullable|string',
+            'transfer_countries' => 'nullable|array',
+            'transfer_mechanism' => 'nullable|string|max:64',
+            'dpia_required' => 'boolean',
+            'status' => 'required|in:active,under_review,archived',
+            'notes' => 'nullable|string',
         ]);
     }
 

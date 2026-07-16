@@ -1,7 +1,7 @@
 PRIVACY & DATA PROTECTION POLICY
 BY PRZEMYSŁAW SZULECKI, CSO
-TSH's commitment to GDPR and PDPL compliance. Covers processor obligations for client project data, controller obligations for HR data, breach notification timelines, and regional KSA/USA requirements.
-TSH-SEC-POL-009  |  v2.1  |  2026-07-14  |  CSO — Przemysław Szulecki
+TSH's commitment to GDPR and PDPL compliance. Covers processor obligations for client project data, controller obligations for HR data, and breach notification timelines.
+TSH-SEC-POL-009  |  v2.0  |  2025-01-01  |  CSO — Przemysław Szulecki
 # 1. Purpose & Scope
 This policy defines TSH's commitment to protecting the personal data of employees, clients, and individuals whose data TSH processes. TSH operates under GDPR (EU) as both a Controller (own HR/marketing data) and a Processor (client project data). KSA PDPL applies to data of Saudi residents.
 # 2. Data Protection Principles (GDPR Art. 5)
@@ -28,18 +28,6 @@ Data subject notification: without undue delay if high risk
 SDAIA (KSA): within 72 hours for Saudi residents' data
 # 7. Data Subject Rights
 TSH respects and facilitates all data subject rights: access, rectification, erasure, restriction, portability, objection. Requests responded to within 30 days. Contact: privacy@tsh.io.
-# 8. Regional Requirements — KSA & USA [added v2.1]
-Saudi Arabia (KSA):
-PDPL and SDAIA Implementing Regulations: TSH applies Art. 19-21 of the SDAIA regulations for breach notification (72h to SDAIA). Data subject rights (access, rectification, erasure) fulfilled within 30 days per PDPL Chapter 5.
-NDMO Data Classification Policy: KSA client data mapped to the NDMO scheme (PUBLIC / Restricted / Confidential / Top Secret) in dedicated annex POL-002-ANX.
-NCA CCC-1:2020 (Cloud Cybersecurity Controls): for projects requiring KSA hosting, cloud processing runs on platforms meeting NCA CCC-1:2020 or on client-owned infrastructure. Details in CLT-409 Data Location Statement.
-Transfers outside KSA: not permitted without SDAIA approval or an applicable regulatory exception; data processed within KSA borders when in doubt.
-United States (USA):
-CCPA/CPRA and comparable state laws: for US-person data, TSH fulfils data subject rights required by California law (CCPA/CPRA) and comparable state laws (Virginia VCDPA, Colorado CPA, Connecticut CTDPA, and others) — access, deletion, correction, portability, and opt-out of profiling.
-Breach notification: TSH's internal 24h client SLA meets or exceeds typical state breach-notification laws (e.g. CA Civ. Code §1798.82 — 72h for consumer notification). Client remains responsible for consumer notification.
-HIPAA (medical data): for US healthcare-sector projects where TSH processes Protected Health Information (PHI), a Business Associate Agreement (BAA) is required under CLT-403. TSH qualifies as a Business Associate under the HIPAA Security Rule.
-GLBA (financial sector): for US financial clients, TSH meets GLBA Safeguards Rule and FFIEC IT Examination Handbook vendor-management expectations. Details in CLT-404.
-Requirements beyond this baseline (e.g. single-state data residency, a specific regulator reporting format) are documented in a client annex ([ID]-ANX-[letter]). Full KSA/USA regulatory mapping is maintained in the Control Mapping Matrix (Regional & Jurisdictional Compliance domain).
 
 [TABLE]
 Principle | TSH Implementation

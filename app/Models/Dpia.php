@@ -24,20 +24,20 @@ class Dpia extends Model
     ];
 
     protected $casts = [
-        'assessment_date'       => 'date',
-        'dpo_consulted_at'      => 'date',
+        'assessment_date' => 'date',
+        'dpo_consulted_at' => 'date',
         'authority_consulted_at' => 'date',
-        'reviewed_at'           => 'datetime',
-        'identified_risks'      => 'array',
-        'mitigation_measures'   => 'array',
-        'dpo_consulted'         => 'boolean',
+        'reviewed_at' => 'datetime',
+        'identified_risks' => 'array',
+        'mitigation_measures' => 'array',
+        'dpo_consulted' => 'boolean',
         'authority_consultation_required' => 'boolean',
     ];
 
     const RISK_LEVELS = [
-        'low'       => 'Niskie',
-        'medium'    => 'Średnie',
-        'high'      => 'Wysokie',
+        'low' => 'Niskie',
+        'medium' => 'Średnie',
+        'high' => 'Wysokie',
         'very_high' => 'Bardzo wysokie',
     ];
 

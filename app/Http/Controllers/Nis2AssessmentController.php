@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Incident;
 use App\Models\Nis2Assessment;
 use App\Models\User;
 use App\Services\AuditLogger;
@@ -62,7 +63,7 @@ class Nis2AssessmentController extends Controller
         $nis2->load(['conductedBy', 'reviewer']);
 
         // Count significant incidents for cross-reference
-        $significantBreaches = \App\Models\Incident::where('is_breach', true)
+        $significantBreaches = Incident::where('is_breach', true)
             ->where('enisa_is_significant', true)
             ->count();
 
@@ -124,7 +125,7 @@ class Nis2AssessmentController extends Controller
         }
 
         $nis2->update([
-            'status'      => 'final',
+            'status' => 'final',
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
@@ -136,35 +137,35 @@ class Nis2AssessmentController extends Controller
     private function formData(Nis2Assessment $nis2): array
     {
         return [
-            'nis2'         => $nis2,
-            'users'        => User::orderBy('name')->get(['id', 'name']),
-            'annexISectors'=> Nis2Assessment::ANNEX_I_SECTORS,
-            'annexIISectors'=> Nis2Assessment::ANNEX_II_SECTORS,
+            'nis2' => $nis2,
+            'users' => User::orderBy('name')->get(['id', 'name']),
+            'annexISectors' => Nis2Assessment::ANNEX_I_SECTORS,
+            'annexIISectors' => Nis2Assessment::ANNEX_II_SECTORS,
         ];
     }
 
     private function validateAssessment(Request $request): array
     {
         return $request->validate([
-            'organization_name'          => ['required', 'string', 'max:255'],
-            'assessment_date'            => ['required', 'date'],
-            'employee_count'             => ['nullable', 'integer', 'min:0'],
-            'annual_turnover_eur'        => ['nullable', 'numeric', 'min:0'],
-            'balance_sheet_eur'          => ['nullable', 'numeric', 'min:0'],
-            'sector'                     => ['nullable', 'string', 'max:32'],
-            'subsector'                  => ['nullable', 'string', 'max:128'],
-            'is_public_administration'   => ['boolean'],
+            'organization_name' => ['required', 'string', 'max:255'],
+            'assessment_date' => ['required', 'date'],
+            'employee_count' => ['nullable', 'integer', 'min:0'],
+            'annual_turnover_eur' => ['nullable', 'numeric', 'min:0'],
+            'balance_sheet_eur' => ['nullable', 'numeric', 'min:0'],
+            'sector' => ['nullable', 'string', 'max:32'],
+            'subsector' => ['nullable', 'string', 'max:128'],
+            'is_public_administration' => ['boolean'],
             'is_critical_infrastructure' => ['boolean'],
-            'provides_dns'               => ['boolean'],
-            'provides_tld'               => ['boolean'],
-            'provides_ixp'               => ['boolean'],
-            'provides_cloud'             => ['boolean'],
-            'provides_datacentre'        => ['boolean'],
-            'provides_cdn'               => ['boolean'],
-            'provides_trust_services'    => ['boolean'],
-            'provides_msp_mssp'          => ['boolean'],
-            'provides_ecomms'            => ['boolean'],
-            'notes'                      => ['nullable', 'string'],
+            'provides_dns' => ['boolean'],
+            'provides_tld' => ['boolean'],
+            'provides_ixp' => ['boolean'],
+            'provides_cloud' => ['boolean'],
+            'provides_datacentre' => ['boolean'],
+            'provides_cdn' => ['boolean'],
+            'provides_trust_services' => ['boolean'],
+            'provides_msp_mssp' => ['boolean'],
+            'provides_ecomms' => ['boolean'],
+            'notes' => ['nullable', 'string'],
         ]);
     }
 }

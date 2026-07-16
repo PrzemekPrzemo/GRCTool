@@ -29,8 +29,8 @@ class ClientController extends Controller
         if ($request->filled('q')) {
             $query->where(function ($q) use ($request): void {
                 $q->where('name', 'like', "%{$request->q}%")
-                  ->orWhere('code', 'like', "%{$request->q}%")
-                  ->orWhere('industry', 'like', "%{$request->q}%");
+                    ->orWhere('code', 'like', "%{$request->q}%")
+                    ->orWhere('industry', 'like', "%{$request->q}%");
             });
         }
 
@@ -86,19 +86,19 @@ class ClientController extends Controller
 
     private function validateClient(Request $request, ?int $ignoreId = null): array
     {
-        $uniqueRule = 'unique:clients,code' . ($ignoreId ? ",{$ignoreId}" : '');
+        $uniqueRule = 'unique:clients,code'.($ignoreId ? ",{$ignoreId}" : '');
 
         $data = $request->validate([
-            'code'                               => ['required', 'string', 'max:32', $uniqueRule],
-            'name'                               => ['required', 'string', 'max:255'],
-            'industry'                           => ['nullable', 'string', 'max:100'],
-            'tier'                               => ['required', 'in:Enterprise,Mid-market,SMB'],
-            'applicable_frameworks'              => ['nullable', 'array'],
-            'contractual_security_requirements'  => ['nullable', 'string'],
+            'code' => ['required', 'string', 'max:32', $uniqueRule],
+            'name' => ['required', 'string', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:100'],
+            'tier' => ['required', 'in:Enterprise,Mid-market,SMB'],
+            'applicable_frameworks' => ['nullable', 'array'],
+            'contractual_security_requirements' => ['nullable', 'string'],
             'subprocessor_notification_required' => ['boolean'],
-            'notification_lead_time_days'        => ['nullable', 'integer', 'min:1'],
-            'nda_signed_at'                      => ['nullable', 'date'],
-            'is_active'                          => ['boolean'],
+            'notification_lead_time_days' => ['nullable', 'integer', 'min:1'],
+            'nda_signed_at' => ['nullable', 'date'],
+            'is_active' => ['boolean'],
         ]);
 
         // Convert newline-delimited textarea to array for JSON storage

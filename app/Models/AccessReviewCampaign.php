@@ -22,26 +22,26 @@ class AccessReviewCampaign extends Model
     ];
 
     protected $casts = [
-        'due_date'            => 'date',
+        'due_date' => 'date',
         'review_period_start' => 'date',
-        'review_period_end'   => 'date',
-        'completed_at'        => 'datetime',
-        'total_items'         => 'integer',
-        'reviewed_items'      => 'integer',
-        'revoked_items'       => 'integer',
-        'owner_id'            => 'integer',
+        'review_period_end' => 'date',
+        'completed_at' => 'datetime',
+        'total_items' => 'integer',
+        'reviewed_items' => 'integer',
+        'revoked_items' => 'integer',
+        'owner_id' => 'integer',
     ];
 
     public const SCOPE_LABELS = [
         'all_systems' => 'Wszystkie systemy',
-        'department'  => 'Departament',
-        'system'      => 'System',
-        'role'        => 'Rola',
+        'department' => 'Departament',
+        'system' => 'System',
+        'role' => 'Rola',
     ];
 
     public const STATUS_LABELS = [
-        'draft'     => 'Szkic',
-        'active'    => 'Aktywna',
+        'draft' => 'Szkic',
+        'active' => 'Aktywna',
         'completed' => 'Zakończona',
         'cancelled' => 'Anulowana',
     ];

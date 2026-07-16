@@ -21,17 +21,17 @@ function makeRisk(array $overrides = []): Risk
     $seq++;
 
     return Risk::create(array_merge([
-        'code'                 => 'R-TEST-' . str_pad($seq, 3, '0', STR_PAD_LEFT),
-        'title'                => 'Ryzyko testowe ' . $seq,
-        'description'          => 'Opis ryzyka testowego.',
-        'category_l1'          => 'Cyber',
-        'category_l2'          => 'Confidentiality',
-        'inherent_likelihood'  => 3,
-        'inherent_impact'      => 3,
-        'residual_likelihood'  => 2,
-        'residual_impact'      => 2,
-        'review_frequency'     => 'quarterly',
-        'status'               => 'Identified',
+        'code' => 'R-TEST-'.str_pad($seq, 3, '0', STR_PAD_LEFT),
+        'title' => 'Ryzyko testowe '.$seq,
+        'description' => 'Opis ryzyka testowego.',
+        'category_l1' => 'Cyber',
+        'category_l2' => 'Confidentiality',
+        'inherent_likelihood' => 3,
+        'inherent_impact' => 3,
+        'residual_likelihood' => 2,
+        'residual_impact' => 2,
+        'review_frequency' => 'quarterly',
+        'status' => 'Identified',
     ], $overrides));
 }
 
@@ -40,18 +40,18 @@ it('creates a risk', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $response = $this->post('/risks', [
-        'code'                => 'R-WORKFLOW-001',
-        'title'               => 'Nowe ryzyko workflow test',
-        'description'         => 'Szczegółowy opis ryzyka dla testu workflow.',
-        'category_l1'         => 'Cyber',
-        'category_l2'         => 'Confidentiality',
+        'code' => 'R-WORKFLOW-001',
+        'title' => 'Nowe ryzyko workflow test',
+        'description' => 'Szczegółowy opis ryzyka dla testu workflow.',
+        'category_l1' => 'Cyber',
+        'category_l2' => 'Confidentiality',
         'inherent_likelihood' => 4,
-        'inherent_impact'     => 4,
+        'inherent_impact' => 4,
         'residual_likelihood' => 2,
-        'residual_impact'     => 2,
-        'review_frequency'    => 'quarterly',
-        'status'              => 'Identified',
-        'owner_id'            => $userId,
+        'residual_impact' => 2,
+        'review_frequency' => 'quarterly',
+        'status' => 'Identified',
+        'owner_id' => $userId,
     ]);
 
     $response->assertRedirect();
@@ -68,9 +68,9 @@ it('proposes risk acceptance', function (): void {
     $countBefore = RiskAcceptance::count();
 
     $response = $this->post("/risks/{$risk->id}/acceptance", [
-        'rationale'              => 'Ryzyko akceptowane ze względu na niski koszt remediacji vs koszt wdrożenia zabezpieczeń.',
-        'expiry_date'            => now()->addYear()->toDateString(),
-        'compensating_controls'  => '',
+        'rationale' => 'Ryzyko akceptowane ze względu na niski koszt remediacji vs koszt wdrożenia zabezpieczeń.',
+        'expiry_date' => now()->addYear()->toDateString(),
+        'compensating_controls' => '',
     ]);
 
     $response->assertRedirect();
@@ -93,12 +93,12 @@ it('approves risk acceptance', function (): void {
 
     // Acceptance proposed by admin, approved by ciso
     $acceptance = RiskAcceptance::create([
-        'risk_id'     => $risk->id,
+        'risk_id' => $risk->id,
         'proposed_by' => User::where('email', 'admin@grc.local')->value('id'),
         'proposed_at' => now(),
-        'rationale'   => 'Uzasadnienie akceptacji ryzyka na poziomie zarządu.',
+        'rationale' => 'Uzasadnienie akceptacji ryzyka na poziomie zarządu.',
         'expiry_date' => now()->addYear()->toDateString(),
-        'status'      => 'Pending',
+        'status' => 'Pending',
     ]);
 
     // Switch to the ciso user to approve (SoD: different user)
@@ -115,12 +115,12 @@ it('rejects risk acceptance', function (): void {
     $risk = makeRisk();
 
     $acceptance = RiskAcceptance::create([
-        'risk_id'     => $risk->id,
+        'risk_id' => $risk->id,
         'proposed_by' => User::where('email', 'admin@grc.local')->value('id'),
         'proposed_at' => now(),
-        'rationale'   => 'Uzasadnienie do odrzucenia.',
+        'rationale' => 'Uzasadnienie do odrzucenia.',
         'expiry_date' => now()->addYear()->toDateString(),
-        'status'      => 'Pending',
+        'status' => 'Pending',
     ]);
 
     $response = $this->post("/risk-acceptances/{$acceptance->id}/reject", [
@@ -136,14 +136,14 @@ it('revokes risk acceptance', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $acceptance = RiskAcceptance::create([
-        'risk_id'     => $risk->id,
+        'risk_id' => $risk->id,
         'proposed_by' => $userId,
         'proposed_at' => now(),
         'accepted_by' => $userId,
         'accepted_at' => now(),
-        'rationale'   => 'Zaakceptowane wcześniej.',
+        'rationale' => 'Zaakceptowane wcześniej.',
         'expiry_date' => now()->addYear()->toDateString(),
-        'status'      => 'Approved',
+        'status' => 'Approved',
     ]);
 
     $response = $this->post("/risk-acceptances/{$acceptance->id}/revoke", [
@@ -162,8 +162,8 @@ it('creates risk treatment plan', function (): void {
 
     $response = $this->post("/risks/{$risk->id}/rtp", [
         'target_residual_score' => 4,
-        'target_date'           => now()->addMonths(6)->toDateString(),
-        'review_cadence'        => 'monthly',
+        'target_date' => now()->addMonths(6)->toDateString(),
+        'review_cadence' => 'monthly',
     ]);
 
     $response->assertRedirect();
@@ -184,17 +184,17 @@ it('adds action to risk treatment plan', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $plan = RiskTreatmentPlan::create([
-        'risk_id'               => $risk->id,
+        'risk_id' => $risk->id,
         'target_residual_score' => 3,
-        'target_date'           => now()->addMonths(3)->toDateString(),
-        'review_cadence'        => 'monthly',
-        'status'                => 'Draft',
+        'target_date' => now()->addMonths(3)->toDateString(),
+        'review_cadence' => 'monthly',
+        'status' => 'Draft',
     ]);
 
     $countBefore = RtpAction::count();
 
     $response = $this->post("/rtp/{$plan->id}/action", [
-        'title'    => 'Wdrożenie MFA dla kont uprzywilejowanych',
+        'title' => 'Wdrożenie MFA dla kont uprzywilejowanych',
         'owner_id' => $userId,
         'due_date' => now()->addDays(45)->toDateString(),
     ]);

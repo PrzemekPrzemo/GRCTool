@@ -41,9 +41,9 @@ class DpiaController extends Controller
             : null;
 
         return view('dpia.form', [
-            'dpia'               => null,
-            'users'              => User::orderBy('name')->get(),
-            'activities'         => ProcessingActivity::where('status', 'active')->orderBy('name')->get(),
+            'dpia' => null,
+            'users' => User::orderBy('name')->get(),
+            'activities' => ProcessingActivity::where('status', 'active')->orderBy('name')->get(),
             'preselectedActivity' => $preselectedActivity,
         ]);
     }
@@ -75,9 +75,9 @@ class DpiaController extends Controller
         abort_unless(auth()->user()->can('dpia.update'), 403);
 
         return view('dpia.form', [
-            'dpia'               => $dpia,
-            'users'              => User::orderBy('name')->get(),
-            'activities'         => ProcessingActivity::where('status', 'active')->orderBy('name')->get(),
+            'dpia' => $dpia,
+            'users' => User::orderBy('name')->get(),
+            'activities' => ProcessingActivity::where('status', 'active')->orderBy('name')->get(),
             'preselectedActivity' => null,
         ]);
     }
@@ -98,7 +98,7 @@ class DpiaController extends Controller
         abort_unless(auth()->user()->can('dpia.update'), 403);
 
         $dpia->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'reviewed_by' => auth()->id(),
             'reviewed_at' => now(),
         ]);
@@ -111,27 +111,27 @@ class DpiaController extends Controller
     private function validateDpia(Request $request): array
     {
         return $request->validate([
-            'title'                          => 'required|string|max:255',
-            'description'                    => 'nullable|string',
-            'processing_activity_id'         => 'nullable|exists:processing_activities,id',
-            'conducted_by'                   => 'nullable|exists:users,id',
-            'assessment_date'                => 'nullable|date',
-            'necessity_assessment'           => 'nullable|string',
-            'proportionality_assessment'     => 'nullable|string',
-            'identified_risks'               => 'nullable|array',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'processing_activity_id' => 'nullable|exists:processing_activities,id',
+            'conducted_by' => 'nullable|exists:users,id',
+            'assessment_date' => 'nullable|date',
+            'necessity_assessment' => 'nullable|string',
+            'proportionality_assessment' => 'nullable|string',
+            'identified_risks' => 'nullable|array',
             'identified_risks.*.description' => 'required|string',
-            'identified_risks.*.likelihood'  => 'required|in:low,medium,high',
-            'identified_risks.*.impact'      => 'required|in:low,medium,high',
-            'overall_risk_level'             => 'nullable|in:low,medium,high,very_high',
-            'mitigation_measures'            => 'nullable|array',
-            'dpo_consulted'                  => 'boolean',
-            'dpo_opinion'                    => 'nullable|string',
-            'dpo_consulted_at'               => 'nullable|date',
+            'identified_risks.*.likelihood' => 'required|in:low,medium,high',
+            'identified_risks.*.impact' => 'required|in:low,medium,high',
+            'overall_risk_level' => 'nullable|in:low,medium,high,very_high',
+            'mitigation_measures' => 'nullable|array',
+            'dpo_consulted' => 'boolean',
+            'dpo_opinion' => 'nullable|string',
+            'dpo_consulted_at' => 'nullable|date',
             'authority_consultation_required' => 'boolean',
-            'authority_consulted_at'         => 'nullable|date',
-            'authority_response'             => 'nullable|string',
-            'status'                         => 'required|in:draft,in_review,approved,rejected',
-            'review_notes'                   => 'nullable|string',
+            'authority_consulted_at' => 'nullable|date',
+            'authority_response' => 'nullable|string',
+            'status' => 'required|in:draft,in_review,approved,rejected',
+            'review_notes' => 'nullable|string',
         ]);
     }
 

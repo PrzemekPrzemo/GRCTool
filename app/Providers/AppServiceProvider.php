@@ -4,11 +4,12 @@ namespace App\Providers;
 
 use App\Services\SystemAlertsService;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\View as ViewInstance;
-use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Azure\AzureExtendSocialite;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +20,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Event::listen(SocialiteWasCalled::class, AzureExtendSocialite::class . '@handle');
+        if ($this->app->environment('prod', 'production', 'staging')) {
+            URL::forceScheme('https');
+        }
+        Event::listen(SocialiteWasCalled::class, AzureExtendSocialite::class.'@handle');
 
         View::composer('layouts.app', function (ViewInstance $view): void {
             $user = auth()->user();

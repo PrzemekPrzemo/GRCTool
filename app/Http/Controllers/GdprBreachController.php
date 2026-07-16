@@ -41,8 +41,8 @@ class GdprBreachController extends Controller
         abort_unless(auth()->user()->can('gdpr_breach.create'), 403);
 
         return view('gdpr_breach.form', [
-            'breach'    => null,
-            'users'     => User::orderBy('name')->get(),
+            'breach' => null,
+            'users' => User::orderBy('name')->get(),
             'incidents' => Incident::whereIn('status', ['New', 'Investigating', 'Containment', 'Eradication'])
                 ->orderByDesc('created_at')->get(),
         ]);
@@ -55,7 +55,7 @@ class GdprBreachController extends Controller
         $data = $this->validateBreach($request);
         $data['code'] = $this->generateCode();
 
-        if (!empty($data['discovered_at']) && !empty($data['notification_required'])) {
+        if (! empty($data['discovered_at']) && ! empty($data['notification_required'])) {
             $data['uodo_notification_deadline'] = Carbon::parse($data['discovered_at'])->addHours(72);
         }
 
@@ -79,8 +79,8 @@ class GdprBreachController extends Controller
         abort_unless(auth()->user()->can('gdpr_breach.update'), 403);
 
         return view('gdpr_breach.form', [
-            'breach'    => $gdprBreach,
-            'users'     => User::orderBy('name')->get(),
+            'breach' => $gdprBreach,
+            'users' => User::orderBy('name')->get(),
             'incidents' => Incident::orderByDesc('created_at')->get(),
         ]);
     }
@@ -91,7 +91,7 @@ class GdprBreachController extends Controller
 
         $data = $this->validateBreach($request);
 
-        if (!empty($data['discovered_at']) && !empty($data['notification_required']) && !$gdprBreach->uodo_notification_deadline) {
+        if (! empty($data['discovered_at']) && ! empty($data['notification_required']) && ! $gdprBreach->uodo_notification_deadline) {
             $data['uodo_notification_deadline'] = Carbon::parse($data['discovered_at'])->addHours(72);
         }
 
@@ -120,9 +120,9 @@ class GdprBreachController extends Controller
         ]);
 
         $gdprBreach->update([
-            'uodo_notified_at'      => now(),
+            'uodo_notified_at' => now(),
             'uodo_reference_number' => $request->uodo_reference_number,
-            'status'                => 'reported',
+            'status' => 'reported',
         ]);
 
         AuditLogger::log('gdpr_breach.uodo_notified', $gdprBreach);
@@ -133,30 +133,30 @@ class GdprBreachController extends Controller
     private function validateBreach(Request $request): array
     {
         return $request->validate([
-            'title'                             => 'required|string|max:255',
-            'description'                       => 'nullable|string',
-            'breach_type'                       => 'nullable|in:confidentiality,integrity,availability',
-            'occurred_at'                       => 'nullable|date',
-            'discovered_at'                     => 'nullable|date',
-            'contained_at'                      => 'nullable|date',
-            'incident_id'                       => 'nullable|exists:incidents,id',
-            'data_categories_affected'          => 'nullable|array',
-            'special_categories_affected'       => 'nullable|array',
-            'data_subjects_count'               => 'nullable|integer|min:0',
-            'data_subjects_types'               => 'nullable|array',
-            'risk_level'                        => 'nullable|in:low,medium,high,very_high',
-            'risk_description'                  => 'nullable|string',
-            'notification_required'             => 'boolean',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'breach_type' => 'nullable|in:confidentiality,integrity,availability',
+            'occurred_at' => 'nullable|date',
+            'discovered_at' => 'nullable|date',
+            'contained_at' => 'nullable|date',
+            'incident_id' => 'nullable|exists:incidents,id',
+            'data_categories_affected' => 'nullable|array',
+            'special_categories_affected' => 'nullable|array',
+            'data_subjects_count' => 'nullable|integer|min:0',
+            'data_subjects_types' => 'nullable|array',
+            'risk_level' => 'nullable|in:low,medium,high,very_high',
+            'risk_description' => 'nullable|string',
+            'notification_required' => 'boolean',
             'data_subject_notification_required' => 'boolean',
-            'uodo_reference_number'             => 'nullable|string|max:64',
-            'uodo_notified_at'                  => 'nullable|date',
-            'data_subjects_notified'            => 'boolean',
-            'data_subjects_notified_at'         => 'nullable|date',
-            'remediation_actions'               => 'nullable|string',
-            'preventive_measures'               => 'nullable|string',
-            'responsible_user_id'               => 'nullable|exists:users,id',
-            'status'                            => 'required|in:open,contained,closed,reported',
-            'notes'                             => 'nullable|string',
+            'uodo_reference_number' => 'nullable|string|max:64',
+            'uodo_notified_at' => 'nullable|date',
+            'data_subjects_notified' => 'boolean',
+            'data_subjects_notified_at' => 'nullable|date',
+            'remediation_actions' => 'nullable|string',
+            'preventive_measures' => 'nullable|string',
+            'responsible_user_id' => 'nullable|exists:users,id',
+            'status' => 'required|in:open,contained,closed,reported',
+            'notes' => 'nullable|string',
         ]);
     }
 

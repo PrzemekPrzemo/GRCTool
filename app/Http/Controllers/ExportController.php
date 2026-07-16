@@ -8,7 +8,6 @@ use App\Models\Incident;
 use App\Models\Risk;
 use App\Models\Vulnerability;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
@@ -41,7 +40,7 @@ class ExportController extends Controller
                     $risk->id,
                     $risk->code,
                     $risk->title,
-                    trim($risk->category_l1 . ' / ' . $risk->category_l2, ' /'),
+                    trim($risk->category_l1.' / '.$risk->category_l2, ' /'),
                     $risk->owner?->name ?? '—',
                     $risk->inherent_score,
                     $risk->residual_score,
@@ -52,7 +51,7 @@ class ExportController extends Controller
             }
 
             fclose($output);
-        }, 'ryzyka_' . now()->format('Ymd_His') . '.csv', [
+        }, 'ryzyka_'.now()->format('Ymd_His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
@@ -98,7 +97,7 @@ class ExportController extends Controller
             }
 
             fclose($output);
-        }, 'kontrolki_' . now()->format('Ymd_His') . '.csv', [
+        }, 'kontrolki_'.now()->format('Ymd_His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
@@ -142,7 +141,7 @@ class ExportController extends Controller
             }
 
             fclose($output);
-        }, 'podatnosci_' . now()->format('Ymd_His') . '.csv', [
+        }, 'podatnosci_'.now()->format('Ymd_His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
@@ -184,7 +183,7 @@ class ExportController extends Controller
             }
 
             fclose($output);
-        }, 'findingi_' . now()->format('Ymd_His') . '.csv', [
+        }, 'findingi_'.now()->format('Ymd_His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
@@ -228,7 +227,7 @@ class ExportController extends Controller
             }
 
             fclose($output);
-        }, 'incydenty_' . now()->format('Ymd_His') . '.csv', [
+        }, 'incydenty_'.now()->format('Ymd_His').'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }

@@ -14,12 +14,12 @@ class CommentController extends Controller
 
         $data = $request->validate([
             'commentable_type' => ['required', 'string', 'in:App\\Models\\Risk,App\\Models\\Incident,App\\Models\\CorrectiveActionPlan,App\\Models\\Finding'],
-            'commentable_id'   => ['required', 'integer'],
-            'body'             => ['required', 'string', 'max:4000'],
-            'is_internal'      => ['boolean'],
+            'commentable_id' => ['required', 'integer'],
+            'body' => ['required', 'string', 'max:4000'],
+            'is_internal' => ['boolean'],
         ]);
 
-        $data['user_id']     = auth()->id();
+        $data['user_id'] = auth()->id();
         $data['is_internal'] = $request->boolean('is_internal');
 
         Comment::create($data);

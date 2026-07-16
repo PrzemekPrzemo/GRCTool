@@ -1,0 +1,164 @@
+
+[tools]
+terraform = "1.15.7"
+
+[tasks."ecr:login"]
+description = "Log in to AWS ECR using Docker"
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+ECR_URL=$(terraform -chdir=terraform/base output -raw ecr_repository_url)
+REGISTRY=$(echo "$ECR_URL" | cut -d/ -f1)
+AWS_REGION=$(echo "$REGISTRY" | cut -d. -f4)
+echo "Logging into ECR Registry: $REGISTRY ($AWS_REGION)..."
+aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REGISTRY"
+"""
+
+[tasks."ecr:build"]
+description = "Build production Docker image (linux/amd64)"
+depends = ["ecr:login"]
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+ECR_URL=$(terraform -chdir=terraform/base output -raw ecr_repository_url)
+echo "Building AMD64 image for $ECR_URL:latest..."
+docker build --platform linux/amd64 -f Dockerfile.prod -t "$ECR_URL:latest" .
+"""
+
+[tasks."ecr:push"]
+description = "Build and push production Docker image to ECR"
+depends = ["ecr:build"]
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+ECR_URL=$(terraform -chdir=terraform/base output -raw ecr_repository_url)
+echo "Pushing image $ECR_URL:latest to ECR..."
+docker push "$ECR_URL:latest"
+echo "Successfully deployed image to ECR!"
+"""
+
+[tasks."db:migrate"]
+description = "Run Laravel database migrations on production AWS RDS via ECS Fargate task"
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+CLUSTER=$(terraform -chdir=terraform/services output -raw ecs_cluster_name 2>/dev/null || echo "grctool-prod-cluster")
+SERVICE="migration"
+
+echo "Fetching network configuration from ECS service '$SERVICE' in cluster '$CLUSTER'..."
+NET_CONFIG=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --query "services[0].networkConfiguration" --output json)
+TASK_DEF=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --query "services[0].taskDefinition" --output text)
+
+if [ -z "$TASK_DEF" ] || [ "$TASK_DEF" = "None" ]; then
+  echo "Error: Could not find task definition for service '$SERVICE' in cluster '$CLUSTER'."
+  exit 1
+fi
+
+echo "Launching one-off migration task using definition: $TASK_DEF..."
+TASK_ARN=$(aws ecs run-task \
+  --cluster "$CLUSTER" \
+  --task-definition "$TASK_DEF" \
+  --launch-type FARGATE \
+  --network-configuration "$NET_CONFIG" \
+  --query "tasks[0].taskArn" --output text)
+
+echo "Migration task launched successfully!"
+echo "Task ARN: $TASK_ARN"
+echo "Waiting for migration task to complete (this usually takes ~15-30s)..."
+aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK_ARN"
+
+TASK_ID="${TASK_ARN##*/}"
+LOG_GROUP="/aws/ecs/migration/migration"
+LOG_STREAM="ecs/migration/$TASK_ID"
+
+echo ""
+echo "📜 --- MIGRATION LOGS ---"
+aws logs get-log-events --log-group-name "$LOG_GROUP" --log-stream-name "$LOG_STREAM" --query "events[*].message" --output text 2>/dev/null || echo "(Could not fetch log stream $LOG_STREAM from $LOG_GROUP)"
+echo "-------------------------"
+echo ""
+
+EXIT_CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK_ARN" --query "tasks[0].containers[0].exitCode" --output text)
+if [ "$EXIT_CODE" = "0" ]; then
+  echo "✅ Database migrations completed successfully!"
+else
+  echo "❌ Database migrations failed with exit code: $EXIT_CODE"
+  echo "Check CloudWatch logs under $LOG_GROUP (stream: $LOG_STREAM) for details."
+  exit 1
+fi
+"""
+
+[tasks."db:seed"]
+description = "Run Laravel database seeders on production AWS RDS via ECS Fargate task"
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+CLUSTER=$(terraform -chdir=terraform/services output -raw ecs_cluster_name 2>/dev/null || echo "grctool-prod-cluster")
+SERVICE="migration"
+
+echo "Fetching network configuration from ECS service '$SERVICE' in cluster '$CLUSTER'..."
+NET_CONFIG=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --query "services[0].networkConfiguration" --output json)
+TASK_DEF=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --query "services[0].taskDefinition" --output text)
+
+if [ -z "$TASK_DEF" ] || [ "$TASK_DEF" = "None" ]; then
+  echo "Error: Could not find task definition for service '$SERVICE' in cluster '$CLUSTER'."
+  exit 1
+fi
+
+echo "Launching one-off database seeder task using definition: $TASK_DEF..."
+TASK_ARN=$(aws ecs run-task \
+  --cluster "$CLUSTER" \
+  --task-definition "$TASK_DEF" \
+  --launch-type FARGATE \
+  --network-configuration "$NET_CONFIG" \
+  --overrides '{"containerOverrides": [{"name": "migration", "command": ["php", "artisan", "db:seed", "--force"]}]}' \
+  --query "tasks[0].taskArn" --output text)
+
+echo "Seeder task launched successfully!"
+echo "Task ARN: $TASK_ARN"
+echo "Waiting for seeder task to complete (this usually takes ~15-30s)..."
+aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK_ARN"
+
+TASK_ID="${TASK_ARN##*/}"
+LOG_GROUP="/aws/ecs/migration/migration"
+LOG_STREAM="ecs/migration/$TASK_ID"
+
+echo ""
+echo "📜 --- SEEDER LOGS ---"
+aws logs get-log-events --log-group-name "$LOG_GROUP" --log-stream-name "$LOG_STREAM" --query "events[*].message" --output text 2>/dev/null || echo "(Could not fetch log stream $LOG_STREAM from $LOG_GROUP)"
+echo "----------------------"
+echo ""
+
+EXIT_CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK_ARN" --query "tasks[0].containers[0].exitCode" --output text)
+if [ "$EXIT_CODE" = "0" ]; then
+  echo "✅ Database seeders completed successfully!"
+else
+  echo "❌ Database seeders failed with exit code: $EXIT_CODE"
+  echo "Check CloudWatch logs under $LOG_GROUP (stream: $LOG_STREAM) for details."
+  exit 1
+fi
+"""
+
+[tasks."ecs:redeploy"]
+
+description = "Force a new deployment across all running ECS services (web, queue, scheduler)"
+run = """
+#!/usr/bin/env bash
+set -eo pipefail
+CLUSTER=$(terraform -chdir=terraform/services output -raw ecs_cluster_name 2>/dev/null || echo "grctool-prod-cluster")
+echo "Fetching active services in cluster '$CLUSTER'..."
+SERVICES=$(aws ecs list-services --cluster "$CLUSTER" --query "serviceArns[*]" --output text)
+
+if [ -z "$SERVICES" ]; then
+  echo "No services found in cluster '$CLUSTER'."
+  exit 0
+fi
+
+for SERVICE_ARN in $SERVICES; do
+  SERVICE_NAME=$(echo "$SERVICE_ARN" | awk -F'/' '{print $NF}')
+  echo "🚀 Forcing new deployment for service: $SERVICE_NAME..."
+  aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE_NAME" --force-new-deployment > /dev/null
+done
+
+echo "✅ Successfully initiated new deployments across all services in '$CLUSTER'!"
+echo "Check progress in AWS Console or run: aws ecs list-services --cluster $CLUSTER"
+"""

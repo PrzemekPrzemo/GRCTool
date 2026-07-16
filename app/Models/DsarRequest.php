@@ -25,38 +25,38 @@ class DsarRequest extends Model
     ];
 
     protected $casts = [
-        'received_at'            => 'datetime',
-        'deadline_at'            => 'datetime',
-        'extended_deadline_at'   => 'datetime',
-        'completed_at'           => 'datetime',
-        'requester_notified_at'  => 'datetime',
-        'deadline_extended'      => 'boolean',
-        'identity_verified'      => 'boolean',
-        'requester_notified'     => 'boolean',
+        'received_at' => 'datetime',
+        'deadline_at' => 'datetime',
+        'extended_deadline_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'requester_notified_at' => 'datetime',
+        'deadline_extended' => 'boolean',
+        'identity_verified' => 'boolean',
+        'requester_notified' => 'boolean',
     ];
 
     const REQUEST_TYPES = [
-        'access'           => 'Prawo dostępu (Art. 15)',
-        'rectification'    => 'Prawo do sprostowania (Art. 16)',
-        'erasure'          => 'Prawo do usunięcia (Art. 17)',
-        'restriction'      => 'Prawo do ograniczenia (Art. 18)',
-        'portability'      => 'Prawo do przenoszenia (Art. 20)',
-        'objection'        => 'Prawo sprzeciwu (Art. 21)',
+        'access' => 'Prawo dostępu (Art. 15)',
+        'rectification' => 'Prawo do sprostowania (Art. 16)',
+        'erasure' => 'Prawo do usunięcia (Art. 17)',
+        'restriction' => 'Prawo do ograniczenia (Art. 18)',
+        'portability' => 'Prawo do przenoszenia (Art. 20)',
+        'objection' => 'Prawo sprzeciwu (Art. 21)',
         'withdraw_consent' => 'Wycofanie zgody (Art. 7 ust. 3)',
     ];
 
     const OUTCOMES = [
-        'fulfilled'              => 'Spełniono',
-        'partially_fulfilled'    => 'Częściowo spełniono',
-        'rejected_no_data'       => 'Odmowa — brak danych',
-        'rejected_identity'      => 'Odmowa — weryfikacja tożsamości',
-        'rejected_legal'         => 'Odmowa — podstawa prawna',
+        'fulfilled' => 'Spełniono',
+        'partially_fulfilled' => 'Częściowo spełniono',
+        'rejected_no_data' => 'Odmowa — brak danych',
+        'rejected_identity' => 'Odmowa — weryfikacja tożsamości',
+        'rejected_legal' => 'Odmowa — podstawa prawna',
     ];
 
     protected static function booted(): void
     {
         static::creating(function (DsarRequest $dsar): void {
-            if ($dsar->received_at && !$dsar->deadline_at) {
+            if ($dsar->received_at && ! $dsar->deadline_at) {
                 $dsar->deadline_at = Carbon::parse($dsar->received_at)->addDays(30);
             }
         });
@@ -73,13 +73,13 @@ class DsarRequest extends Model
 
         return $deadline
             && $deadline->isPast()
-            && !in_array($this->status, ['completed', 'rejected', 'withdrawn']);
+            && ! in_array($this->status, ['completed', 'rejected', 'withdrawn']);
     }
 
     public function daysUntilDeadline(): ?int
     {
         $deadline = $this->deadline_extended ? $this->extended_deadline_at : $this->deadline_at;
-        if (!$deadline) {
+        if (! $deadline) {
             return null;
         }
 

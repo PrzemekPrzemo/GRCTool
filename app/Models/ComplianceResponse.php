@@ -14,7 +14,7 @@ class ComplianceResponse extends Model
     ];
 
     protected $casts = [
-        'target_date'  => 'date',
+        'target_date' => 'date',
         'responded_at' => 'datetime',
     ];
 

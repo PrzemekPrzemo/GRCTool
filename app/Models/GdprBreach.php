@@ -29,37 +29,37 @@ class GdprBreach extends Model
     ];
 
     protected $casts = [
-        'occurred_at'                        => 'datetime',
-        'discovered_at'                      => 'datetime',
-        'contained_at'                       => 'datetime',
-        'uodo_notified_at'                   => 'datetime',
-        'uodo_notification_deadline'         => 'datetime',
-        'data_subjects_notified_at'          => 'datetime',
-        'data_categories_affected'           => 'array',
-        'special_categories_affected'        => 'array',
-        'data_subjects_types'                => 'array',
-        'notification_required'              => 'boolean',
+        'occurred_at' => 'datetime',
+        'discovered_at' => 'datetime',
+        'contained_at' => 'datetime',
+        'uodo_notified_at' => 'datetime',
+        'uodo_notification_deadline' => 'datetime',
+        'data_subjects_notified_at' => 'datetime',
+        'data_categories_affected' => 'array',
+        'special_categories_affected' => 'array',
+        'data_subjects_types' => 'array',
+        'notification_required' => 'boolean',
         'data_subject_notification_required' => 'boolean',
-        'data_subjects_notified'             => 'boolean',
+        'data_subjects_notified' => 'boolean',
     ];
 
     const BREACH_TYPES = [
         'confidentiality' => 'Poufność — nieautoryzowany dostęp / ujawnienie',
-        'integrity'       => 'Integralność — nieautoryzowana modyfikacja',
-        'availability'    => 'Dostępność — utrata dostępu do danych',
+        'integrity' => 'Integralność — nieautoryzowana modyfikacja',
+        'availability' => 'Dostępność — utrata dostępu do danych',
     ];
 
     const RISK_LEVELS = [
-        'low'       => 'Niskie',
-        'medium'    => 'Średnie',
-        'high'      => 'Wysokie',
+        'low' => 'Niskie',
+        'medium' => 'Średnie',
+        'high' => 'Wysokie',
         'very_high' => 'Bardzo wysokie',
     ];
 
     protected static function booted(): void
     {
         static::saving(function (GdprBreach $breach): void {
-            if ($breach->discovered_at && $breach->notification_required && !$breach->uodo_notification_deadline) {
+            if ($breach->discovered_at && $breach->notification_required && ! $breach->uodo_notification_deadline) {
                 $breach->uodo_notification_deadline = Carbon::parse($breach->discovered_at)->addHours(72);
             }
         });
@@ -79,15 +79,16 @@ class GdprBreach extends Model
     {
         return $this->notification_required
             && $this->uodo_notification_deadline
-            && !$this->uodo_notified_at
+            && ! $this->uodo_notified_at
             && $this->uodo_notification_deadline->isPast();
     }
 
     public function hoursUntilDeadline(): ?float
     {
-        if (!$this->uodo_notification_deadline || $this->uodo_notified_at) {
+        if (! $this->uodo_notification_deadline || $this->uodo_notified_at) {
             return null;
         }
+
         return round(now()->diffInMinutes($this->uodo_notification_deadline, false) / 60, 1);
     }
 

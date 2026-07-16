@@ -27,8 +27,8 @@ class ThirdPartyController extends Controller
         if ($request->filled('q')) {
             $query->where(function ($q) use ($request): void {
                 $q->where('name', 'like', "%{$request->q}%")
-                  ->orWhere('code', 'like', "%{$request->q}%")
-                  ->orWhere('service_provided', 'like', "%{$request->q}%");
+                    ->orWhere('code', 'like', "%{$request->q}%")
+                    ->orWhere('service_provided', 'like', "%{$request->q}%");
             });
         }
 
@@ -97,19 +97,19 @@ class ThirdPartyController extends Controller
     private function validateParty(Request $request): array
     {
         return $request->validate([
-            'name'                  => 'required|string|max:255',
-            'service_provided'      => 'nullable|string|max:255',
-            'data_categories'       => 'nullable|array',
+            'name' => 'required|string|max:255',
+            'service_provided' => 'nullable|string|max:255',
+            'data_categories' => 'nullable|array',
             'country_of_processing' => 'nullable|string|max:64',
-            'legal_basis'           => 'nullable|string|max:128',
-            'transfer_mechanism'    => 'nullable|string|max:32',
-            'dpa_url'               => 'nullable|url|max:1024',
-            'certifications'        => 'nullable|array',
-            'tier'                  => 'required|in:Critical,High,Medium,Low',
-            'last_assessment_date'  => 'nullable|date',
-            'next_assessment_due'   => 'nullable|date',
-            'security_rating'       => 'nullable|integer|min:0|max:100',
-            'is_active'             => 'boolean',
+            'legal_basis' => 'nullable|string|max:128',
+            'transfer_mechanism' => 'nullable|string|max:32',
+            'dpa_url' => 'nullable|url|max:1024',
+            'certifications' => 'nullable|array',
+            'tier' => 'required|in:Critical,High,Medium,Low',
+            'last_assessment_date' => 'nullable|date',
+            'next_assessment_due' => 'nullable|date',
+            'security_rating' => 'nullable|integer|min:0|max:100',
+            'is_active' => 'boolean',
         ]);
     }
 

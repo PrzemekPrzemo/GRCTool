@@ -29,9 +29,9 @@ it('creates an evidence object', function (): void {
     $countBefore = EvidenceObject::count();
 
     $response = $this->post('/evidence', [
-        'title'          => 'Raport z audytu Q1 2026',
+        'title' => 'Raport z audytu Q1 2026',
         'classification' => 'Confidential',
-        'is_immutable'   => '0',
+        'is_immutable' => '0',
     ]);
 
     $response->assertRedirect();
@@ -44,15 +44,15 @@ it('creates an evidence object', function (): void {
 
 it('shows evidence detail', function (): void {
     $evidence = EvidenceObject::create([
-        'title'             => 'Dowód testowy',
-        'classification'    => 'Internal',
+        'title' => 'Dowód testowy',
+        'classification' => 'Internal',
         'original_filename' => 'test.pdf',
-        'storage_path'      => 'manual/test-path',
-        'mime_type'         => 'application/pdf',
-        'size_bytes'        => 1024,
-        'sha256'            => str_repeat('a', 64),
-        'retention_until'   => now()->addYears(7)->toDateString(),
-        'uploaded_by'       => User::where('email', 'admin@grc.local')->value('id'),
+        'storage_path' => 'manual/test-path',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 1024,
+        'sha256' => str_repeat('a', 64),
+        'retention_until' => now()->addYears(7)->toDateString(),
+        'uploaded_by' => User::where('email', 'admin@grc.local')->value('id'),
     ]);
 
     $this->get("/evidence/{$evidence->id}")
@@ -65,16 +65,16 @@ it('shows evidence detail', function (): void {
 
 it('blocks editing of immutable evidence', function (): void {
     $evidence = EvidenceObject::create([
-        'title'             => 'Dowód niezmienialny',
-        'classification'    => 'Restricted',
-        'is_immutable'      => true,
+        'title' => 'Dowód niezmienialny',
+        'classification' => 'Restricted',
+        'is_immutable' => true,
         'original_filename' => 'immutable.pdf',
-        'storage_path'      => 'manual/immutable-path',
-        'mime_type'         => 'application/pdf',
-        'size_bytes'        => 512,
-        'sha256'            => str_repeat('b', 64),
-        'retention_until'   => now()->addYears(7)->toDateString(),
-        'uploaded_by'       => User::where('email', 'admin@grc.local')->value('id'),
+        'storage_path' => 'manual/immutable-path',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 512,
+        'sha256' => str_repeat('b', 64),
+        'retention_until' => now()->addYears(7)->toDateString(),
+        'uploaded_by' => User::where('email', 'admin@grc.local')->value('id'),
     ]);
 
     // EvidenceController::edit() redirects back to show with error when is_immutable
@@ -84,16 +84,16 @@ it('blocks editing of immutable evidence', function (): void {
 
 it('allows editing mutable evidence', function (): void {
     $evidence = EvidenceObject::create([
-        'title'             => 'Dowód modyfikowalny',
-        'classification'    => 'Internal',
-        'is_immutable'      => false,
+        'title' => 'Dowód modyfikowalny',
+        'classification' => 'Internal',
+        'is_immutable' => false,
         'original_filename' => 'mutable.pdf',
-        'storage_path'      => 'manual/mutable-path',
-        'mime_type'         => 'application/pdf',
-        'size_bytes'        => 2048,
-        'sha256'            => str_repeat('c', 64),
-        'retention_until'   => now()->addYears(7)->toDateString(),
-        'uploaded_by'       => User::where('email', 'admin@grc.local')->value('id'),
+        'storage_path' => 'manual/mutable-path',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 2048,
+        'sha256' => str_repeat('c', 64),
+        'retention_until' => now()->addYears(7)->toDateString(),
+        'uploaded_by' => User::where('email', 'admin@grc.local')->value('id'),
     ]);
 
     $this->get("/evidence/{$evidence->id}/edit")
@@ -102,16 +102,16 @@ it('allows editing mutable evidence', function (): void {
 
 it('blocks deleting immutable evidence', function (): void {
     $evidence = EvidenceObject::create([
-        'title'             => 'Dowód chroniony przed usunięciem',
-        'classification'    => 'Restricted',
-        'is_immutable'      => true,
+        'title' => 'Dowód chroniony przed usunięciem',
+        'classification' => 'Restricted',
+        'is_immutable' => true,
         'original_filename' => 'protected.pdf',
-        'storage_path'      => 'manual/protected-path',
-        'mime_type'         => 'application/pdf',
-        'size_bytes'        => 4096,
-        'sha256'            => str_repeat('d', 64),
-        'retention_until'   => now()->addYears(7)->toDateString(),
-        'uploaded_by'       => User::where('email', 'admin@grc.local')->value('id'),
+        'storage_path' => 'manual/protected-path',
+        'mime_type' => 'application/pdf',
+        'size_bytes' => 4096,
+        'sha256' => str_repeat('d', 64),
+        'retention_until' => now()->addYears(7)->toDateString(),
+        'uploaded_by' => User::where('email', 'admin@grc.local')->value('id'),
     ]);
 
     $this->delete("/evidence/{$evidence->id}")
@@ -135,12 +135,12 @@ it('ciso can create a scenario template', function (): void {
     $countBefore = ScenarioTemplate::count();
 
     $response = $this->post('/scenarios', [
-        'code'        => 'SCN-TEST-001',
-        'name'        => 'Scenariusz testowy ransomware',
+        'code' => 'SCN-TEST-001',
+        'name' => 'Scenariusz testowy ransomware',
         'category_l1' => 'Cyber',
         'category_l2' => 'Ransomware',
         'description' => 'Opis scenariusza testowego.',
-        'is_active'   => '1',
+        'is_active' => '1',
     ]);
 
     $response->assertRedirect();
@@ -166,8 +166,8 @@ it('risk_owner cannot create scenario', function (): void {
     $this->actingAs($admin->fresh());
 
     $this->post('/scenarios', [
-        'code'        => 'SCN-BLOCKED-001',
-        'name'        => 'Scenariusz zablokowany',
+        'code' => 'SCN-BLOCKED-001',
+        'name' => 'Scenariusz zablokowany',
         'category_l1' => 'Cyber',
         'category_l2' => 'DDoS',
     ])->assertForbidden();
@@ -175,12 +175,12 @@ it('risk_owner cannot create scenario', function (): void {
 
 it('ciso can edit scenario', function (): void {
     $scenario = ScenarioTemplate::create([
-        'code'        => 'SCN-EDIT-001',
-        'name'        => 'Scenariusz do edycji',
+        'code' => 'SCN-EDIT-001',
+        'name' => 'Scenariusz do edycji',
         'description' => 'Opis scenariusza do edycji.',
         'category_l1' => 'Operational',
         'category_l2' => 'Human Error',
-        'is_active'   => true,
+        'is_active' => true,
     ]);
 
     $this->get("/scenarios/{$scenario->id}/edit")
@@ -193,12 +193,12 @@ it('admin can edit scenario', function (): void {
     $this->actingAs($admin->fresh());
 
     $scenario = ScenarioTemplate::create([
-        'code'        => 'SCN-ADMIN-001',
-        'name'        => 'Scenariusz edycja admin',
+        'code' => 'SCN-ADMIN-001',
+        'name' => 'Scenariusz edycja admin',
         'description' => 'Opis scenariusza admin.',
         'category_l1' => 'Compliance',
         'category_l2' => 'GDPR',
-        'is_active'   => true,
+        'is_active' => true,
     ]);
 
     $this->get("/scenarios/{$scenario->id}/edit")

@@ -23,45 +23,45 @@ class Nis2Assessment extends Model
     ];
 
     protected $casts = [
-        'assessment_date'           => 'date',
-        'reviewed_at'               => 'datetime',
-        'annual_turnover_eur'       => 'decimal:2',
-        'balance_sheet_eur'         => 'decimal:2',
-        'is_public_administration'  => 'boolean',
-        'is_critical_infrastructure'=> 'boolean',
-        'provides_dns'              => 'boolean',
-        'provides_tld'              => 'boolean',
-        'provides_ixp'              => 'boolean',
-        'provides_cloud'            => 'boolean',
-        'provides_datacentre'       => 'boolean',
-        'provides_cdn'              => 'boolean',
-        'provides_trust_services'   => 'boolean',
-        'provides_msp_mssp'         => 'boolean',
-        'provides_ecomms'           => 'boolean',
+        'assessment_date' => 'date',
+        'reviewed_at' => 'datetime',
+        'annual_turnover_eur' => 'decimal:2',
+        'balance_sheet_eur' => 'decimal:2',
+        'is_public_administration' => 'boolean',
+        'is_critical_infrastructure' => 'boolean',
+        'provides_dns' => 'boolean',
+        'provides_tld' => 'boolean',
+        'provides_ixp' => 'boolean',
+        'provides_cloud' => 'boolean',
+        'provides_datacentre' => 'boolean',
+        'provides_cdn' => 'boolean',
+        'provides_trust_services' => 'boolean',
+        'provides_msp_mssp' => 'boolean',
+        'provides_ecomms' => 'boolean',
     ];
 
     public const ANNEX_I_SECTORS = [
-        'energy'                 => 'Energia (elektryczność, ropa, gaz, wodór)',
-        'transport'              => 'Transport (lotniczy, kolejowy, wodny, drogowy)',
-        'banking'                => 'Bankowość',
-        'financial_market'       => 'Infrastruktury rynków finansowych',
-        'health'                 => 'Ochrona zdrowia',
-        'drinking_water'         => 'Woda pitna',
-        'waste_water'            => 'Ścieki',
+        'energy' => 'Energia (elektryczność, ropa, gaz, wodór)',
+        'transport' => 'Transport (lotniczy, kolejowy, wodny, drogowy)',
+        'banking' => 'Bankowość',
+        'financial_market' => 'Infrastruktury rynków finansowych',
+        'health' => 'Ochrona zdrowia',
+        'drinking_water' => 'Woda pitna',
+        'waste_water' => 'Ścieki',
         'digital_infrastructure' => 'Infrastruktura cyfrowa (IXP, DNS, TLD, chmura, DC, CDN, zaufanie, łączność)',
         'ict_service_management' => 'Zarządzanie usługami ICT (MSP/MSSP)',
-        'public_administration'  => 'Administracja publiczna',
-        'space'                  => 'Przestrzeń kosmiczna',
+        'public_administration' => 'Administracja publiczna',
+        'space' => 'Przestrzeń kosmiczna',
     ];
 
     public const ANNEX_II_SECTORS = [
-        'postal'           => 'Pocztowe i kurierskie',
+        'postal' => 'Pocztowe i kurierskie',
         'waste_management' => 'Gospodarka odpadami',
-        'chemicals'        => 'Produkcja i dystrybucja chemikaliów',
-        'food'             => 'Produkcja i dystrybucja żywności',
-        'manufacturing'    => 'Produkcja (urządzenia med., elektronika, maszyny, pojazdy)',
-        'digital_providers'=> 'Dostawcy cyfrowi (marketplace, wyszukiwarki, social media)',
-        'research'         => 'Organizacje badawcze',
+        'chemicals' => 'Produkcja i dystrybucja chemikaliów',
+        'food' => 'Produkcja i dystrybucja żywności',
+        'manufacturing' => 'Produkcja (urządzenia med., elektronika, maszyny, pojazdy)',
+        'digital_providers' => 'Dostawcy cyfrowi (marketplace, wyszukiwarki, social media)',
+        'research' => 'Organizacje badawcze',
     ];
 
     public function conductedBy(): BelongsTo
@@ -81,21 +81,21 @@ class Nis2Assessment extends Model
 
     public function resultLabel(): string
     {
-        return match($this->result) {
-            'not_subject'      => 'Nie podlega pod NIS2',
+        return match ($this->result) {
+            'not_subject' => 'Nie podlega pod NIS2',
             'important_entity' => 'Podmiot Ważny (Annex II)',
             'essential_entity' => 'Podmiot Kluczowy (Annex I)',
-            default            => '—',
+            default => '—',
         };
     }
 
     public function annexLabel(): string
     {
-        return match($this->annex_classification) {
-            'annex_i'       => 'Załącznik I',
-            'annex_ii'      => 'Załącznik II',
-            'not_applicable'=> 'Nie dotyczy',
-            default         => '—',
+        return match ($this->annex_classification) {
+            'annex_i' => 'Załącznik I',
+            'annex_ii' => 'Załącznik II',
+            'not_applicable' => 'Nie dotyczy',
+            default => '—',
         };
     }
 

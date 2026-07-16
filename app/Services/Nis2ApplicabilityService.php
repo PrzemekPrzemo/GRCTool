@@ -34,10 +34,10 @@ class Nis2ApplicabilityService
         foreach (self::ALWAYS_ESSENTIAL_FLAGS as $flag) {
             if (! empty($data[$flag])) {
                 return [
-                    'entity_size'        => $this->classifySize($data),
-                    'result'             => 'essential_entity',
+                    'entity_size' => $this->classifySize($data),
+                    'result' => 'essential_entity',
                     'annex_classification' => 'annex_i',
-                    'justification'      => $this->buildJustification($data, 'always_essential', $flag),
+                    'justification' => $this->buildJustification($data, 'always_essential', $flag),
                 ];
             }
         }
@@ -48,10 +48,10 @@ class Nis2ApplicabilityService
         // Step 3a: Insufficient data — cannot determine applicability
         if ($size === 'unknown') {
             return [
-                'entity_size'          => 'unknown',
-                'result'               => 'not_subject',
+                'entity_size' => 'unknown',
+                'result' => 'not_subject',
                 'annex_classification' => 'not_applicable',
-                'justification'        => $this->buildJustification($data, 'insufficient_data', null),
+                'justification' => $this->buildJustification($data, 'insufficient_data', null),
             ];
         }
 
@@ -62,18 +62,18 @@ class Nis2ApplicabilityService
                 $annex = $this->getSectorAnnex($data['sector'] ?? null);
 
                 return [
-                    'entity_size'        => $size,
-                    'result'             => 'important_entity',
+                    'entity_size' => $size,
+                    'result' => 'important_entity',
                     'annex_classification' => $annex,
-                    'justification'      => $this->buildJustification($data, 'small_critical', null),
+                    'justification' => $this->buildJustification($data, 'small_critical', null),
                 ];
             }
 
             return [
-                'entity_size'        => $size,
-                'result'             => 'not_subject',
+                'entity_size' => $size,
+                'result' => 'not_subject',
                 'annex_classification' => 'not_applicable',
-                'justification'      => $this->buildJustification($data, 'too_small', null),
+                'justification' => $this->buildJustification($data, 'too_small', null),
             ];
         }
 
@@ -82,37 +82,37 @@ class Nis2ApplicabilityService
 
         if (! empty($data['is_public_administration'])) {
             return [
-                'entity_size'        => $size,
-                'result'             => 'essential_entity',
+                'entity_size' => $size,
+                'result' => 'essential_entity',
                 'annex_classification' => 'annex_i',
-                'justification'      => $this->buildJustification($data, 'public_administration', null),
+                'justification' => $this->buildJustification($data, 'public_administration', null),
             ];
         }
 
         if (in_array($sector, self::ANNEX_I, true)) {
             return [
-                'entity_size'        => $size,
-                'result'             => 'essential_entity',
+                'entity_size' => $size,
+                'result' => 'essential_entity',
                 'annex_classification' => 'annex_i',
-                'justification'      => $this->buildJustification($data, 'annex_i_sector', $sector),
+                'justification' => $this->buildJustification($data, 'annex_i_sector', $sector),
             ];
         }
 
         if (in_array($sector, self::ANNEX_II, true)) {
             return [
-                'entity_size'        => $size,
-                'result'             => 'important_entity',
+                'entity_size' => $size,
+                'result' => 'important_entity',
                 'annex_classification' => 'annex_ii',
-                'justification'      => $this->buildJustification($data, 'annex_ii_sector', $sector),
+                'justification' => $this->buildJustification($data, 'annex_ii_sector', $sector),
             ];
         }
 
         // Step 5: Medium/large but sector not in NIS2 scope
         return [
-            'entity_size'        => $size,
-            'result'             => 'not_subject',
+            'entity_size' => $size,
+            'result' => 'not_subject',
             'annex_classification' => 'not_applicable',
-            'justification'      => $this->buildJustification($data, 'out_of_scope', $sector),
+            'justification' => $this->buildJustification($data, 'out_of_scope', $sector),
         ];
     }
 
@@ -126,8 +126,8 @@ class Nis2ApplicabilityService
     public function classifySize(array $data): string
     {
         $employees = (int) ($data['employee_count'] ?? 0);
-        $turnover  = isset($data['annual_turnover_eur']) ? (float) $data['annual_turnover_eur'] : null;
-        $balance   = isset($data['balance_sheet_eur'])   ? (float) $data['balance_sheet_eur']   : null;
+        $turnover = isset($data['annual_turnover_eur']) ? (float) $data['annual_turnover_eur'] : null;
+        $balance = isset($data['balance_sheet_eur']) ? (float) $data['balance_sheet_eur'] : null;
 
         if ($employees === 0 && $turnover === null) {
             return 'unknown';
@@ -177,34 +177,27 @@ class Nis2ApplicabilityService
     private function buildJustification(array $data, string $reason, ?string $detail): string
     {
         $employees = $data['employee_count'] ?? '?';
-        $turnover  = isset($data['annual_turnover_eur']) ? number_format((float) $data['annual_turnover_eur'] / 1_000_000, 1) . ' M€' : '?';
-        $size      = $this->classifySize($data);
+        $turnover = isset($data['annual_turnover_eur']) ? number_format((float) $data['annual_turnover_eur'] / 1_000_000, 1).' M€' : '?';
+        $size = $this->classifySize($data);
 
-        return match($reason) {
-            'always_essential' =>
-                "Organizacja świadczy usługi kwalifikowane jako infrastruktura cyfrowa ($detail), " .
-                "które podlegają pod NIS2 niezależnie od rozmiaru. Kategoria: Podmiot Kluczowy (Załącznik I).",
-            'small_critical' =>
-                "Organizacja jest klasyfikowana jako '$size' ($employees pracowników, obrót $turnover), " .
-                "jednak jest wyznaczona jako operator infrastruktury krytycznej, co włącza ją w zakres NIS2.",
-            'too_small' =>
-                "Organizacja jest klasyfikowana jako '$size' ($employees pracowników, obrót $turnover). " .
-                "Mikroprzedsiębiorstwa i małe firmy (poniżej 50 pracowników i 10 M€ obrotu) są generalnie wyłączone z NIS2, " .
-                "chyba że świadczą usługi krytycznej infrastruktury cyfrowej.",
-            'public_administration' =>
-                "Organizacja działa jako podmiot administracji publicznej, który jest objęty zakresem NIS2 " .
-                "niezależnie od rozmiaru (Załącznik I — administracja publiczna). Kategoria: Podmiot Kluczowy.",
-            'annex_i_sector' =>
-                "Organizacja jest klasyfikowana jako '$size' ($employees pracowników) i działa w sektorze " .
+        return match ($reason) {
+            'always_essential' => "Organizacja świadczy usługi kwalifikowane jako infrastruktura cyfrowa ($detail), ".
+                'które podlegają pod NIS2 niezależnie od rozmiaru. Kategoria: Podmiot Kluczowy (Załącznik I).',
+            'small_critical' => "Organizacja jest klasyfikowana jako '$size' ($employees pracowników, obrót $turnover), ".
+                'jednak jest wyznaczona jako operator infrastruktury krytycznej, co włącza ją w zakres NIS2.',
+            'too_small' => "Organizacja jest klasyfikowana jako '$size' ($employees pracowników, obrót $turnover). ".
+                'Mikroprzedsiębiorstwa i małe firmy (poniżej 50 pracowników i 10 M€ obrotu) są generalnie wyłączone z NIS2, '.
+                'chyba że świadczą usługi krytycznej infrastruktury cyfrowej.',
+            'public_administration' => 'Organizacja działa jako podmiot administracji publicznej, który jest objęty zakresem NIS2 '.
+                'niezależnie od rozmiaru (Załącznik I — administracja publiczna). Kategoria: Podmiot Kluczowy.',
+            'annex_i_sector' => "Organizacja jest klasyfikowana jako '$size' ($employees pracowników) i działa w sektorze ".
                 "objętym Załącznikiem I NIS2 (sektor: $detail). Spełnia kryteria Podmiotu Kluczowego.",
-            'annex_ii_sector' =>
-                "Organizacja jest klasyfikowana jako '$size' ($employees pracowników) i działa w sektorze " .
+            'annex_ii_sector' => "Organizacja jest klasyfikowana jako '$size' ($employees pracowników) i działa w sektorze ".
                 "objętym Załącznikiem II NIS2 (sektor: $detail). Spełnia kryteria Podmiotu Ważnego.",
-            'out_of_scope' =>
-                "Organizacja jest klasyfikowana jako '$size' ($employees pracowników), jednak jej sektor działalności " .
-                ($detail ? "('$detail') " : '') .
-                "nie jest wymieniony w Załącznikach I ani II NIS2. Organizacja nie podlega obowiązkom NIS2. " .
-                "Uwaga: krajowe przepisy implementacyjne (KSC) mogą rozszerzyć zakres.",
+            'out_of_scope' => "Organizacja jest klasyfikowana jako '$size' ($employees pracowników), jednak jej sektor działalności ".
+                ($detail ? "('$detail') " : '').
+                'nie jest wymieniony w Załącznikach I ani II NIS2. Organizacja nie podlega obowiązkom NIS2. '.
+                'Uwaga: krajowe przepisy implementacyjne (KSC) mogą rozszerzyć zakres.',
             default => 'Brak wystarczających danych do oceny.',
         };
     }

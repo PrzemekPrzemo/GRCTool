@@ -18,23 +18,23 @@ class SdlcThreatModel extends Model
 
     protected $casts = [
         'threats_identified' => 'integer',
-        'threats_mitigated'  => 'integer',
-        'conducted_by'       => 'integer',
-        'reviewed_by'        => 'integer',
-        'reviewed_at'        => 'datetime',
+        'threats_mitigated' => 'integer',
+        'conducted_by' => 'integer',
+        'reviewed_by' => 'integer',
+        'reviewed_at' => 'datetime',
     ];
 
     public const METHODOLOGY_LABELS = [
-        'stride'   => 'STRIDE',
-        'pasta'    => 'PASTA',
-        'linddun'  => 'LINDDUN',
-        'other'    => 'Inne',
+        'stride' => 'STRIDE',
+        'pasta' => 'PASTA',
+        'linddun' => 'LINDDUN',
+        'other' => 'Inne',
     ];
 
     public const STATUS_LABELS = [
-        'draft'     => 'Szkic',
+        'draft' => 'Szkic',
         'in_review' => 'W przeglądzie',
-        'approved'  => 'Zatwierdzony',
+        'approved' => 'Zatwierdzony',
     ];
 
     public function project(): BelongsTo

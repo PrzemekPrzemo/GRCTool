@@ -29,6 +29,7 @@ class OrgMetricsController extends Controller
             $m = $ind->latestMeasurement;
             if (! $m) {
                 $ragCounts['no_data']++;
+
                 continue;
             }
             $status = $ind->classify((float) $m->value);

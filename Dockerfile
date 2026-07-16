@@ -3,7 +3,7 @@ FROM php:8.5-fpm-alpine AS base
 RUN apk add --no-cache \
     bash git curl unzip libzip-dev libpng-dev libxml2-dev oniguruma-dev icu-dev tzdata \
     && docker-php-ext-install \
-       pdo_mysql mbstring tokenizer xml zip gd intl opcache bcmath \
+       pdo_mysql zip gd intl bcmath \
     && rm -rf /var/cache/apk/*
 
 ENV TZ=Europe/Warsaw

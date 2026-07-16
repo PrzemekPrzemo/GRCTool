@@ -5,6 +5,7 @@ use App\Models\ComplianceAssessment;
 use App\Models\ComplianceFramework;
 use App\Models\EvidenceObject;
 use App\Models\Incident;
+use App\Models\ReportInstance;
 use App\Models\ReportTemplate;
 use App\Models\ThirdParty;
 use App\Models\Training;
@@ -169,7 +170,7 @@ it('generates the compliance coverage report with posture and control-mapping da
     $response->assertRedirect();
     $response->assertSessionHas('status');
 
-    $instance = \App\Models\ReportInstance::where('template_id', $template->id)->latest('generated_at')->firstOrFail();
+    $instance = ReportInstance::where('template_id', $template->id)->latest('generated_at')->firstOrFail();
     $this->get("/reports/{$instance->id}/download")->assertOk();
 });
 

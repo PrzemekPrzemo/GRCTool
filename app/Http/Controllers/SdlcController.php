@@ -94,19 +94,19 @@ class SdlcController extends Controller
         abort_unless(auth()->user()->can('sdlc.update'), 403);
 
         $data = $request->validate([
-            'phase'          => ['required', 'in:requirements,design,development,pre_release,production'],
-            'gate_type'      => ['required', 'in:threat_model,sast,dast,pentest,code_review,dependency_scan,secrets_scan,container_scan'],
-            'status'         => ['required', 'in:pending,passed,failed,waived'],
-            'tool'           => ['nullable', 'string', 'max:128'],
-            'report_url'     => ['nullable', 'url', 'max:512'],
+            'phase' => ['required', 'in:requirements,design,development,pre_release,production'],
+            'gate_type' => ['required', 'in:threat_model,sast,dast,pentest,code_review,dependency_scan,secrets_scan,container_scan'],
+            'status' => ['required', 'in:pending,passed,failed,waived'],
+            'tool' => ['nullable', 'string', 'max:128'],
+            'report_url' => ['nullable', 'url', 'max:512'],
             'result_summary' => ['nullable', 'string'],
-            'waiver_reason'  => ['nullable', 'string'],
+            'waiver_reason' => ['nullable', 'string'],
             'critical_count' => ['nullable', 'integer', 'min:0'],
-            'high_count'     => ['nullable', 'integer', 'min:0'],
-            'medium_count'   => ['nullable', 'integer', 'min:0'],
-            'low_count'      => ['nullable', 'integer', 'min:0'],
-            'conducted_by'   => ['nullable', 'exists:users,id'],
-            'conducted_at'   => ['nullable', 'date'],
+            'high_count' => ['nullable', 'integer', 'min:0'],
+            'medium_count' => ['nullable', 'integer', 'min:0'],
+            'low_count' => ['nullable', 'integer', 'min:0'],
+            'conducted_by' => ['nullable', 'exists:users,id'],
+            'conducted_at' => ['nullable', 'date'],
         ]);
 
         $data['project_id'] = $sdlc->id;
@@ -122,19 +122,19 @@ class SdlcController extends Controller
         abort_unless($gate->project_id === $sdlc->id, 404);
 
         $data = $request->validate([
-            'phase'          => ['required', 'in:requirements,design,development,pre_release,production'],
-            'gate_type'      => ['required', 'in:threat_model,sast,dast,pentest,code_review,dependency_scan,secrets_scan,container_scan'],
-            'status'         => ['required', 'in:pending,passed,failed,waived'],
-            'tool'           => ['nullable', 'string', 'max:128'],
-            'report_url'     => ['nullable', 'url', 'max:512'],
+            'phase' => ['required', 'in:requirements,design,development,pre_release,production'],
+            'gate_type' => ['required', 'in:threat_model,sast,dast,pentest,code_review,dependency_scan,secrets_scan,container_scan'],
+            'status' => ['required', 'in:pending,passed,failed,waived'],
+            'tool' => ['nullable', 'string', 'max:128'],
+            'report_url' => ['nullable', 'url', 'max:512'],
             'result_summary' => ['nullable', 'string'],
-            'waiver_reason'  => ['nullable', 'string'],
+            'waiver_reason' => ['nullable', 'string'],
             'critical_count' => ['nullable', 'integer', 'min:0'],
-            'high_count'     => ['nullable', 'integer', 'min:0'],
-            'medium_count'   => ['nullable', 'integer', 'min:0'],
-            'low_count'      => ['nullable', 'integer', 'min:0'],
-            'conducted_by'   => ['nullable', 'exists:users,id'],
-            'conducted_at'   => ['nullable', 'date'],
+            'high_count' => ['nullable', 'integer', 'min:0'],
+            'medium_count' => ['nullable', 'integer', 'min:0'],
+            'low_count' => ['nullable', 'integer', 'min:0'],
+            'conducted_by' => ['nullable', 'exists:users,id'],
+            'conducted_at' => ['nullable', 'date'],
         ]);
 
         $gate->update($data);
@@ -148,16 +148,16 @@ class SdlcController extends Controller
         abort_unless(auth()->user()->can('sdlc.update'), 403);
 
         $data = $request->validate([
-            'title'               => ['required', 'string', 'max:255'],
-            'methodology'         => ['required', 'in:stride,pasta,linddun,other'],
-            'status'              => ['required', 'in:draft,in_review,approved'],
-            'threats_identified'  => ['nullable', 'integer', 'min:0'],
-            'threats_mitigated'   => ['nullable', 'integer', 'min:0'],
-            'document_url'        => ['nullable', 'url', 'max:512'],
-            'notes'               => ['nullable', 'string'],
-            'conducted_by'        => ['nullable', 'exists:users,id'],
-            'reviewed_by'         => ['nullable', 'exists:users,id'],
-            'reviewed_at'         => ['nullable', 'date'],
+            'title' => ['required', 'string', 'max:255'],
+            'methodology' => ['required', 'in:stride,pasta,linddun,other'],
+            'status' => ['required', 'in:draft,in_review,approved'],
+            'threats_identified' => ['nullable', 'integer', 'min:0'],
+            'threats_mitigated' => ['nullable', 'integer', 'min:0'],
+            'document_url' => ['nullable', 'url', 'max:512'],
+            'notes' => ['nullable', 'string'],
+            'conducted_by' => ['nullable', 'exists:users,id'],
+            'reviewed_by' => ['nullable', 'exists:users,id'],
+            'reviewed_at' => ['nullable', 'date'],
         ]);
 
         $data['project_id'] = $sdlc->id;
@@ -170,17 +170,17 @@ class SdlcController extends Controller
     private function validateProject(Request $request): array
     {
         return $request->validate([
-            'name'         => ['required', 'string', 'max:255'],
-            'team'         => ['nullable', 'string', 'max:128'],
-            'tech_stack'   => ['nullable', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'team' => ['nullable', 'string', 'max:128'],
+            'tech_stack' => ['nullable', 'string', 'max:255'],
             'project_type' => ['required', 'in:webapp,api,mobile,infra,internal_tool'],
-            'status'       => ['required', 'in:active,completed,archived'],
-            'risk_level'   => ['nullable', 'in:low,medium,high,critical'],
-            'owner_id'     => ['nullable', 'exists:users,id'],
-            'repo_url'     => ['nullable', 'url', 'max:512'],
-            'prod_url'     => ['nullable', 'url', 'max:512'],
-            'description'  => ['nullable', 'string'],
-            'notes'        => ['nullable', 'string'],
+            'status' => ['required', 'in:active,completed,archived'],
+            'risk_level' => ['nullable', 'in:low,medium,high,critical'],
+            'owner_id' => ['nullable', 'exists:users,id'],
+            'repo_url' => ['nullable', 'url', 'max:512'],
+            'prod_url' => ['nullable', 'url', 'max:512'],
+            'description' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
         ]);
     }
 }

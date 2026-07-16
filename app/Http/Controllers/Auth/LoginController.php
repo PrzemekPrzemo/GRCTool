@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserSession;
 use App\Services\AuditLogger;
 use App\Services\MfaService;
 use App\Services\TrustedDeviceService;
@@ -52,7 +53,7 @@ class LoginController extends Controller
         // Block SSO-only users from using password login
         if (in_array($user->auth_provider, ['google', 'microsoft'], true)) {
             $label = $user->auth_provider === 'microsoft' ? 'Microsoft' : 'Google';
-            AuditLogger::log('login_failed', $user, ['reason' => $user->auth_provider . '_account_use_oauth']);
+            AuditLogger::log('login_failed', $user, ['reason' => $user->auth_provider.'_account_use_oauth']);
 
             return back()->withErrors(['email' => "To konto używa logowania przez {$label}. Użyj przycisku SSO na stronie logowania."]);
         }
@@ -88,12 +89,12 @@ class LoginController extends Controller
         $request->session()->regenerate();
         AuditLogger::log($auditEvent, $user);
 
-        \App\Models\UserSession::create([
-            'user_id'       => $user->id,
-            'ip_address'    => $request->ip(),
-            'user_agent'    => $request->userAgent(),
+        UserSession::create([
+            'user_id' => $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
             'auth_provider' => 'local',
-            'logged_in_at'  => now(),
+            'logged_in_at' => now(),
             'session_token' => $request->session()->getId(),
         ]);
     }
@@ -118,7 +119,7 @@ class LoginController extends Controller
             return redirect()->route('login');
         }
 
-        $mfaKey = 'mfa:' . $userId . '|' . $request->ip();
+        $mfaKey = 'mfa:'.$userId.'|'.$request->ip();
         if (RateLimiter::tooManyAttempts($mfaKey, 5)) {
             $request->session()->forget(['mfa.user_id', 'mfa.remember']);
             throw ValidationException::withMessages(['code' => 'Zbyt wiele błędnych prób. Zaloguj się ponownie.']);
@@ -146,7 +147,7 @@ class LoginController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         if (auth()->check()) {
-            \App\Models\UserSession::where('user_id', auth()->id())
+            UserSession::where('user_id', auth()->id())
                 ->whereNull('logged_out_at')
                 ->latest('logged_in_at')
                 ->first()?->update(['logged_out_at' => now()]);

@@ -19,17 +19,17 @@ class AccessReviewItem extends Model
 
     protected $casts = [
         'subject_user_id' => 'integer',
-        'reviewer_id'     => 'integer',
-        'reviewed_by'     => 'integer',
-        'last_used_at'    => 'date',
-        'reviewed_at'     => 'datetime',
+        'reviewer_id' => 'integer',
+        'reviewed_by' => 'integer',
+        'last_used_at' => 'date',
+        'reviewed_at' => 'datetime',
     ];
 
     public const STATUS_LABELS = [
-        'pending'      => 'Oczekuje',
-        'approved'     => 'Zatwierdzone',
-        'revoked'      => 'Odwołane',
-        'modified'     => 'Zmodyfikowane',
+        'pending' => 'Oczekuje',
+        'approved' => 'Zatwierdzone',
+        'revoked' => 'Odwołane',
+        'modified' => 'Zmodyfikowane',
         'not_reviewed' => 'Nieprzejrzane',
     ];
 

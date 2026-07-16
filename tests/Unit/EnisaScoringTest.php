@@ -11,7 +11,7 @@ use App\Models\Incident;
 // ─────────────────────────────────────────────────────────────────────────────
 
 it('calculates zero score when no enisa fields set', function (): void {
-    $incident = new Incident();
+    $incident = new Incident;
     $incident->calculateEnisaScore();
 
     expect($incident->enisa_severity_score)->toBeNull();
@@ -22,10 +22,10 @@ it('calculates correct score for maximum impact scenario', function (): void {
     // 3*0.25 + 3*0.25 + 3*0.20 + 3*0.20 + 3*0.10 = 0.75+0.75+0.60+0.60+0.30 = 3.00
     $incident = new Incident([
         'enisa_users_affected_band' => 'ge100k',
-        'enisa_service_impact'      => 'full',
-        'enisa_geographic_spread'   => 'cross_border',
-        'enisa_duration_hours'      => 25.0,
-        'enisa_economic_impact'     => 'severe',
+        'enisa_service_impact' => 'full',
+        'enisa_geographic_spread' => 'cross_border',
+        'enisa_duration_hours' => 25.0,
+        'enisa_economic_impact' => 'severe',
     ]);
     $incident->calculateEnisaScore();
 
@@ -39,10 +39,10 @@ it('marks incident as significant when score >= 1.5', function (): void {
     // 2*0.25 + 1*0.25 + 2*0.20 + 2*0.20 + 1*0.10 = 0.50+0.25+0.40+0.40+0.10 = 1.65
     $incident = new Incident([
         'enisa_users_affected_band' => 'lt10k',
-        'enisa_service_impact'      => 'partial',
-        'enisa_geographic_spread'   => 'national',
-        'enisa_duration_hours'      => 5.0,
-        'enisa_economic_impact'     => 'low',
+        'enisa_service_impact' => 'partial',
+        'enisa_geographic_spread' => 'national',
+        'enisa_duration_hours' => 5.0,
+        'enisa_economic_impact' => 'low',
     ]);
     $incident->calculateEnisaScore();
 
@@ -55,10 +55,10 @@ it('does not mark as significant when score < 1.5', function (): void {
     // 0*0.25 + 1*0.25 + 0*0.20 + 0*0.20 + 1*0.10 = 0.00+0.25+0.00+0.00+0.10 = 0.35
     $incident = new Incident([
         'enisa_users_affected_band' => 'lt100',
-        'enisa_service_impact'      => 'minimal',
-        'enisa_geographic_spread'   => 'local',
-        'enisa_duration_hours'      => 0.5,
-        'enisa_economic_impact'     => 'low',
+        'enisa_service_impact' => 'minimal',
+        'enisa_geographic_spread' => 'local',
+        'enisa_duration_hours' => 0.5,
+        'enisa_economic_impact' => 'low',
     ]);
     $incident->calculateEnisaScore();
 
@@ -70,13 +70,13 @@ it('sets notification deadlines when breach and significant', function (): void 
     // ge100k=3, full=3, national=2, 25h→3, severe=3
     // 3*0.25 + 3*0.25 + 2*0.20 + 3*0.20 + 3*0.10 = 0.75+0.75+0.40+0.60+0.30 = 2.80 → Critical + significant
     $incident = new Incident([
-        'is_breach'                 => true,
-        'detected_at'               => now(),
+        'is_breach' => true,
+        'detected_at' => now(),
         'enisa_users_affected_band' => 'ge100k',
-        'enisa_service_impact'      => 'full',
-        'enisa_geographic_spread'   => 'national',
-        'enisa_duration_hours'      => 25.0,
-        'enisa_economic_impact'     => 'severe',
+        'enisa_service_impact' => 'full',
+        'enisa_geographic_spread' => 'national',
+        'enisa_duration_hours' => 25.0,
+        'enisa_economic_impact' => 'severe',
     ]);
     $incident->calculateEnisaScore();
 
@@ -87,13 +87,13 @@ it('sets notification deadlines when breach and significant', function (): void 
 
 it('does not set deadlines when not a breach', function (): void {
     $incident = new Incident([
-        'is_breach'                 => false,
-        'detected_at'               => now(),
+        'is_breach' => false,
+        'detected_at' => now(),
         'enisa_users_affected_band' => 'ge100k',
-        'enisa_service_impact'      => 'full',
-        'enisa_geographic_spread'   => 'national',
-        'enisa_duration_hours'      => 25.0,
-        'enisa_economic_impact'     => 'severe',
+        'enisa_service_impact' => 'full',
+        'enisa_geographic_spread' => 'national',
+        'enisa_duration_hours' => 25.0,
+        'enisa_economic_impact' => 'severe',
     ]);
     $incident->calculateEnisaScore();
 

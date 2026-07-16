@@ -28,7 +28,7 @@ class ProjectController extends Controller
         }
 
         $projects = $query->paginate(25)->withQueryString();
-        $clients  = Client::orderBy('name')->get(['id', 'name']);
+        $clients = Client::orderBy('name')->get(['id', 'name']);
 
         return view('projects.index', compact('projects', 'clients'));
     }
@@ -44,7 +44,7 @@ class ProjectController extends Controller
     {
         abort_unless(auth()->user()->can('project.create'), 403);
 
-        $data    = $this->validateProject($request);
+        $data = $this->validateProject($request);
         $project = Project::create($data);
         AuditLogger::log('project.created', $project);
 
@@ -80,27 +80,27 @@ class ProjectController extends Controller
 
     private function validateProject(Request $request, ?int $ignoreId = null): array
     {
-        $uniqueRule = 'unique:projects,code' . ($ignoreId ? ",{$ignoreId}" : '');
+        $uniqueRule = 'unique:projects,code'.($ignoreId ? ",{$ignoreId}" : '');
 
         return $request->validate([
-            'code'             => ['required', 'string', 'max:32', $uniqueRule],
-            'name'             => ['required', 'string', 'max:255'],
-            'client_id'        => ['nullable', 'exists:clients,id'],
+            'code' => ['required', 'string', 'max:32', $uniqueRule],
+            'name' => ['required', 'string', 'max:255'],
+            'client_id' => ['nullable', 'exists:clients,id'],
             'business_unit_id' => ['nullable', 'exists:business_units,id'],
-            'owner_id'         => ['nullable', 'exists:users,id'],
-            'status'           => ['required', 'in:active,archived,on_hold'],
-            'start_date'       => ['nullable', 'date'],
-            'end_date'         => ['nullable', 'date', 'after_or_equal:start_date'],
+            'owner_id' => ['nullable', 'exists:users,id'],
+            'status' => ['required', 'in:active,archived,on_hold'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
         ]);
     }
 
     private function formData(Project $project): array
     {
         return [
-            'project'       => $project,
-            'clients'       => Client::where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']),
+            'project' => $project,
+            'clients' => Client::where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']),
             'businessUnits' => BusinessUnit::where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']),
-            'users'         => User::orderBy('name')->get(['id', 'name', 'email']),
+            'users' => User::orderBy('name')->get(['id', 'name', 'email']),
         ];
     }
 }

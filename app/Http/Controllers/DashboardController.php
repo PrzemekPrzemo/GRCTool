@@ -16,21 +16,21 @@ use App\Models\GdprBreach;
 use App\Models\Incident;
 use App\Models\Indicator;
 use App\Models\Risk;
-use App\Models\Training;
+use App\Models\RtpAction;
 use App\Models\UserTrainingCompletion;
+use App\Models\VendorAssessment;
 use App\Models\Vulnerability;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        $user       = auth()->user();
-        $userRoles  = $user->getRoleNames()->toArray();
-        $stats      = $this->buildStats();
-        $heatmap    = $this->buildRiskHeatmap();
-        $topRisks   = Risk::orderByDesc('residual_score')->limit(10)->get();
+        $user = auth()->user();
+        $userRoles = $user->getRoleNames()->toArray();
+        $stats = $this->buildStats();
+        $heatmap = $this->buildRiskHeatmap();
+        $topRisks = Risk::orderByDesc('residual_score')->limit(10)->get();
         $indicators = Indicator::where('is_active', true)
             ->with(['latestMeasurement'])
             ->orderBy('type')
@@ -48,10 +48,10 @@ class DashboardController extends Controller
     {
         abort_unless(auth()->user()->can('report.generate'), 403);
 
-        $stats    = $this->buildStats();
-        $heatmap  = $this->buildRiskHeatmap();
+        $stats = $this->buildStats();
+        $heatmap = $this->buildRiskHeatmap();
         $topRisks = Risk::orderByDesc('residual_score')->limit(10)->get();
-        $trends   = $this->buildTrends();
+        $trends = $this->buildTrends();
 
         return view('dashboard.export', compact('stats', 'heatmap', 'topRisks', 'trends'));
     }
@@ -83,12 +83,12 @@ class DashboardController extends Controller
             'exceptions_pending' => ComplianceException::where('status', 'pending_approval')->count(),
             'trainings_completion_pct' => (function () {
                 $total = UserTrainingCompletion::whereIn('status', ['pending', 'completed', 'expired'])->count();
-                $done  = UserTrainingCompletion::where('status', 'completed')->count();
+                $done = UserTrainingCompletion::where('status', 'completed')->count();
 
                 return $total > 0 ? round($done / $total * 100) : 0;
             })(),
             'evidence_expiring_30d' => EvidenceObject::expiringSoon(30)->count(),
-            'rtp_actions_overdue'   => \App\Models\RtpAction::whereNotIn('status', ['Completed', 'Cancelled'])->whereDate('due_date', '<', now())->count(),
+            'rtp_actions_overdue' => RtpAction::whereNotIn('status', ['Completed', 'Cancelled'])->whereDate('due_date', '<', now())->count(),
         ];
     }
 
@@ -156,7 +156,7 @@ class DashboardController extends Controller
         }
 
         if ($is('control_owner')) {
-            $widgets['my_controls'] = \App\Models\Control::where('owner_id', auth()->id())
+            $widgets['my_controls'] = Control::where('owner_id', auth()->id())
                 ->where('effectiveness_status', '!=', 'Effective')
                 ->limit(8)->get();
         }
@@ -169,25 +169,25 @@ class DashboardController extends Controller
         }
 
         if ($is('compliance_officer')) {
-            $widgets['compliance_assessments'] = \App\Models\ComplianceAssessment::whereIn('status', ['draft', 'in_progress'])
+            $widgets['compliance_assessments'] = ComplianceAssessment::whereIn('status', ['draft', 'in_progress'])
                 ->orderByDesc('created_at')->limit(5)->get();
             $widgets['trainings_pending'] = UserTrainingCompletion::where('status', 'pending')
                 ->with('user', 'training')->limit(8)->get();
         }
 
         if ($is('vendor_manager')) {
-            $widgets['vendor_assessments'] = \App\Models\VendorAssessment::whereIn('status', ['Sent', 'In Review'])
+            $widgets['vendor_assessments'] = VendorAssessment::whereIn('status', ['Sent', 'In Review'])
                 ->orderByDesc('created_at')->limit(5)->get();
         }
 
         if ($is('board_viewer')) {
             $widgets['board_summary'] = [
-                'risk_score_avg'    => round(Risk::whereNotIn('status', ['Closed'])->avg('residual_score') ?? 0, 1),
-                'controls_effective_pct' => \App\Models\Control::count() > 0
-                    ? round(\App\Models\Control::where('effectiveness_status', 'Effective')->count() / \App\Models\Control::count() * 100)
+                'risk_score_avg' => round(Risk::whereNotIn('status', ['Closed'])->avg('residual_score') ?? 0, 1),
+                'controls_effective_pct' => Control::count() > 0
+                    ? round(Control::where('effectiveness_status', 'Effective')->count() / Control::count() * 100)
                     : 0,
-                'open_incidents'    => Incident::whereNotIn('status', ['Closed'])->count(),
-                'compliance_scores' => \App\Models\ComplianceAssessment::where('status', 'completed')
+                'open_incidents' => Incident::whereNotIn('status', ['Closed'])->count(),
+                'compliance_scores' => ComplianceAssessment::where('status', 'completed')
                     ->orderByDesc('assessment_date')->limit(3)->get(['framework_id', 'overall_score', 'assessment_date']),
             ];
         }

@@ -30,12 +30,12 @@ class BusinessUnitController extends Controller
         abort_unless(auth()->user()->can('business_unit.create'), 403);
 
         $parents = BusinessUnit::orderBy('name')->get(['id', 'code', 'name']);
-        $users   = User::orderBy('name')->get(['id', 'name', 'email']);
+        $users = User::orderBy('name')->get(['id', 'name', 'email']);
 
         return view('business-units.form', [
-            'unit'    => null,
+            'unit' => null,
             'parents' => $parents,
-            'users'   => $users,
+            'users' => $users,
         ]);
     }
 
@@ -65,12 +65,12 @@ class BusinessUnitController extends Controller
 
         // Exclude self from parent options
         $parents = BusinessUnit::where('id', '!=', $businessUnit->id)->orderBy('name')->get(['id', 'code', 'name']);
-        $users   = User::orderBy('name')->get(['id', 'name', 'email']);
+        $users = User::orderBy('name')->get(['id', 'name', 'email']);
 
         return view('business-units.form', [
-            'unit'    => $businessUnit,
+            'unit' => $businessUnit,
             'parents' => $parents,
-            'users'   => $users,
+            'users' => $users,
         ]);
     }
 
@@ -87,15 +87,15 @@ class BusinessUnitController extends Controller
 
     private function validateUnit(Request $request, ?int $ignoreId = null): array
     {
-        $uniqueRule = 'unique:business_units,code' . ($ignoreId ? ",{$ignoreId}" : '');
+        $uniqueRule = 'unique:business_units,code'.($ignoreId ? ",{$ignoreId}" : '');
 
         return $request->validate([
-            'code'        => ['required', 'string', 'max:32', $uniqueRule],
-            'name'        => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:32', $uniqueRule],
+            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'parent_id'   => ['nullable', 'exists:business_units,id'],
-            'owner_id'    => ['nullable', 'exists:users,id'],
-            'is_active'   => ['boolean'],
+            'parent_id' => ['nullable', 'exists:business_units,id'],
+            'owner_id' => ['nullable', 'exists:users,id'],
+            'is_active' => ['boolean'],
         ]);
     }
 }

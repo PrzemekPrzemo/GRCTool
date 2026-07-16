@@ -1,0 +1,116 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: grctool/app-aws:latest
+    container_name: grctool-aws-web
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "true"
+      APP_KEY: ${APP_KEY:-base64:c3VwZXJzZWNyZXRsYXJhdmVsa2V5MzJjaGFyc2xvbmdrZXk=}
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: grctool
+      DB_USERNAME: grctool
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      SESSION_DRIVER: database
+      SESSION_SECURE_COOKIE: "false"
+      SESSION_SAME_SITE: lax
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+    volumes:
+      - app-storage:/var/www/html/storage
+      - evidence-vault:/var/grc/evidence
+    networks:
+      - grctool
+
+  mysql:
+    image: mysql:8.4
+    container_name: grctool-aws-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: grctool
+      MYSQL_USER: grctool
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data-aws:/var/lib/mysql
+    networks:
+      - grctool
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "grctool", "-p${DB_PASSWORD:-secret}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+
+  queue:
+    image: grctool/app-aws:latest
+    container_name: grctool-aws-queue
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      APP_KEY: ${APP_KEY:-base64:c3VwZXJzZWNyZXRsYXJhdmVsa2V5MzJjaGFyc2xvbmdrZXk=}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: grctool
+      DB_USERNAME: grctool
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - app-storage:/var/www/html/storage
+      - evidence-vault:/var/grc/evidence
+    networks:
+      - grctool
+
+  scheduler:
+    image: grctool/app-aws:latest
+    container_name: grctool-aws-scheduler
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      APP_KEY: ${APP_KEY:-base64:c3VwZXJzZWNyZXRsYXJhdmVsa2V5MzJjaGFyc2xvbmdrZXk=}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: grctool
+      DB_USERNAME: grctool
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      LOG_CHANNEL: stderr
+    command: php artisan schedule:work
+    volumes:
+      - app-storage:/var/www/html/storage
+      - evidence-vault:/var/grc/evidence
+    networks:
+      - grctool
+
+volumes:
+  app-storage:
+  evidence-vault:
+  mysql-data-aws:
+
+networks:
+  grctool:
+    driver: bridge

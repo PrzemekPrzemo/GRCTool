@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ComplianceException;
-use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
