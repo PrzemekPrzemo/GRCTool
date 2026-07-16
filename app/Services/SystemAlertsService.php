@@ -10,6 +10,7 @@ use App\Models\Incident;
 use App\Models\QuestionnaireQuestion;
 use App\Models\User;
 use App\Models\Vulnerability;
+use Illuminate\Support\Str;
 
 /**
  * Zbiorczy, żywy widok tego, co w SendGrcAlerts trafia tylko do maila raz
@@ -201,7 +202,7 @@ class SystemAlertsService
             'count' => $q->count(),
             'viewAllUrl' => route('questionnaires.index'),
             'items' => $q->limit(5)->get()->filter(fn (QuestionnaireQuestion $qq) => $qq->questionnaire !== null)->map(fn (QuestionnaireQuestion $qq) => [
-                'title' => \Illuminate\Support\Str::limit($qq->original_text, 60),
+                'title' => Str::limit($qq->original_text, 60),
                 'detail' => $qq->questionnaire->code.($qq->flagged_at ? ' · zgłoszone '.$qq->flagged_at->format('Y-m-d') : ''),
                 'url' => route('questionnaires.show', $qq->questionnaire),
             ])->values()->all(),

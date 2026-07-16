@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -30,7 +29,7 @@ class RoleController extends Controller
     {
         abort_unless(auth()->user()->hasRole('admin'), 403);
 
-        $role = new Role();
+        $role = new Role;
 
         return view('admin.roles.form', compact('role'));
     }
@@ -49,7 +48,7 @@ class RoleController extends Controller
         $role->syncPermissions($data['permissions'] ?? []);
 
         return redirect()->route('admin.roles.index')
-            ->with('status', 'Utworzono rolę "' . $role->name . '".');
+            ->with('status', 'Utworzono rolę "'.$role->name.'".');
     }
 
     public function edit(Role $role): View
@@ -73,7 +72,7 @@ class RoleController extends Controller
         $role->syncPermissions($data['permissions'] ?? []);
 
         return redirect()->route('admin.roles.index')
-            ->with('status', 'Zaktualizowano uprawnienia roli "' . $role->name . '".');
+            ->with('status', 'Zaktualizowano uprawnienia roli "'.$role->name.'".');
     }
 
     public function destroy(Role $role): RedirectResponse
@@ -94,6 +93,6 @@ class RoleController extends Controller
         $role->delete();
 
         return redirect()->route('admin.roles.index')
-            ->with('status', 'Usunięto rolę "' . $role->name . '".');
+            ->with('status', 'Usunięto rolę "'.$role->name.'".');
     }
 }

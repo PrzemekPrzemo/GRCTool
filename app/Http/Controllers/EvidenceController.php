@@ -7,8 +7,8 @@ use App\Models\EvidenceObject;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class EvidenceController extends Controller
 {
@@ -24,26 +24,26 @@ class EvidenceController extends Controller
 
         if ($expiryStatus = $request->string('expiry_status')->toString()) {
             match ($expiryStatus) {
-                'valid'         => $q->where(function ($sub) {
+                'valid' => $q->where(function ($sub) {
                     $sub->whereNull('valid_until')
                         ->orWhere('valid_until', '>', now()->addDays(30));
                 }),
                 'expiring_soon' => $q->expiringSoon(30),
-                'expired'       => $q->expired(),
-                default         => null,
+                'expired' => $q->expired(),
+                default => null,
             };
         }
 
         if ($search = $request->string('search')->toString()) {
-            $q->where('title', 'like', '%' . $search . '%');
+            $q->where('title', 'like', '%'.$search.'%');
         }
 
         $evidence = $q->orderByDesc('created_at')->paginate(25)->withQueryString();
 
         $stats = [
-            'total'         => EvidenceObject::count(),
+            'total' => EvidenceObject::count(),
             'expiring_soon' => EvidenceObject::expiringSoon(30)->count(),
-            'expired'       => EvidenceObject::expired()->count(),
+            'expired' => EvidenceObject::expired()->count(),
         ];
 
         return view('evidence.index', compact('evidence', 'stats'));
@@ -57,7 +57,7 @@ class EvidenceController extends Controller
 
         return view('evidence.form', [
             'evidence' => new EvidenceObject,
-            'clients'  => $clients,
+            'clients' => $clients,
         ]);
     }
 
@@ -67,20 +67,20 @@ class EvidenceController extends Controller
 
         $this->mergeTagsFromRaw($request);
         $data = $this->validateEvidence($request);
-        $data['uuid']              = (string) Str::uuid();
-        $data['uploaded_by']       = auth()->id();
+        $data['uuid'] = (string) Str::uuid();
+        $data['uploaded_by'] = auth()->id();
         $data['original_filename'] ??= 'manual_entry';
-        $data['storage_path']      = 'manual/' . $data['uuid'];
-        $data['mime_type']         ??= 'application/octet-stream';
-        $data['size_bytes']        ??= 0;
-        $data['sha256']            ??= str_repeat('0', 64);
-        $data['retention_until']   ??= now()->addYears(7)->toDateString();
+        $data['storage_path'] = 'manual/'.$data['uuid'];
+        $data['mime_type'] ??= 'application/octet-stream';
+        $data['size_bytes'] ??= 0;
+        $data['sha256'] ??= str_repeat('0', 64);
+        $data['retention_until'] ??= now()->addYears(7)->toDateString();
 
         $evidence = EvidenceObject::create($data);
         AuditLogger::log('evidence.uploaded', $evidence);
 
         return redirect()->route('evidence.show', $evidence)
-            ->with('status', 'Dowód „' . $evidence->title . '" został dodany.');
+            ->with('status', 'Dowód „'.$evidence->title.'" został dodany.');
     }
 
     public function show(EvidenceObject $evidence): View
@@ -105,7 +105,7 @@ class EvidenceController extends Controller
 
         return view('evidence.form', [
             'evidence' => $evidence,
-            'clients'  => $clients,
+            'clients' => $clients,
         ]);
     }
 
@@ -149,7 +149,7 @@ class EvidenceController extends Controller
     private function mergeTagsFromRaw(Request $request): void
     {
         if ($request->has('tags_raw')) {
-            $raw  = $request->string('tags_raw')->toString();
+            $raw = $request->string('tags_raw')->toString();
             $tags = array_values(array_filter(array_map('trim', explode(',', $raw))));
             $request->merge(['tags' => $tags]);
         }
@@ -158,18 +158,18 @@ class EvidenceController extends Controller
     private function validateEvidence(Request $request): array
     {
         return $request->validate([
-            'title'           => ['required', 'string', 'max:255'],
-            'description'     => ['nullable', 'string'],
-            'classification'  => ['required', 'in:Public,Internal,Confidential,Restricted'],
-            'tags'            => ['nullable', 'array'],
-            'tags.*'          => ['string'],
-            'valid_from'      => ['nullable', 'date'],
-            'valid_until'     => ['nullable', 'date', 'after_or_equal:valid_from'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'classification' => ['required', 'in:Public,Internal,Confidential,Restricted'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string'],
+            'valid_from' => ['nullable', 'date'],
+            'valid_until' => ['nullable', 'date', 'after_or_equal:valid_from'],
             'retention_until' => ['nullable', 'date'],
-            'client_id'       => ['nullable', 'exists:clients,id'],
+            'client_id' => ['nullable', 'exists:clients,id'],
             'original_filename' => ['nullable', 'string', 'max:255'],
-            'sha256'          => ['nullable', 'string', 'max:64'],
-            'is_immutable'    => ['boolean'],
+            'sha256' => ['nullable', 'string', 'max:64'],
+            'is_immutable' => ['boolean'],
         ]);
     }
 }

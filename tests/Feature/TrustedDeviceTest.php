@@ -4,6 +4,7 @@ use App\Models\TrustedDevice;
 use App\Models\User;
 use App\Services\MfaService;
 use App\Services\TrustedDeviceService;
+use PragmaRX\Google2FA\Google2FA;
 
 function setUpMfaUser(): array
 {
@@ -18,7 +19,7 @@ function setUpMfaUser(): array
 
 function currentOtp(string $secret): string
 {
-    return app(PragmaRX\Google2FA\Google2FA::class)->getCurrentOtp($secret);
+    return app(Google2FA::class)->getCurrentOtp($secret);
 }
 
 function extractCookie($response, string $name): ?string

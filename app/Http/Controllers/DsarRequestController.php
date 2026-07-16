@@ -34,7 +34,7 @@ class DsarRequestController extends Controller
         $requests = $query->paginate(25)->withQueryString();
 
         return view('dsar.index', [
-            'requests'     => $requests,
+            'requests' => $requests,
             'requestTypes' => DsarRequest::REQUEST_TYPES,
         ]);
     }
@@ -44,8 +44,8 @@ class DsarRequestController extends Controller
         abort_unless(auth()->user()->can('dsar.create'), 403);
 
         return view('dsar.form', [
-            'dsar'         => null,
-            'users'        => User::orderBy('name')->get(),
+            'dsar' => null,
+            'users' => User::orderBy('name')->get(),
             'requestTypes' => DsarRequest::REQUEST_TYPES,
         ]);
     }
@@ -57,7 +57,7 @@ class DsarRequestController extends Controller
         $data = $this->validateDsar($request);
         $data['code'] = $this->generateCode();
 
-        if (!empty($data['received_at'])) {
+        if (! empty($data['received_at'])) {
             $data['deadline_at'] = Carbon::parse($data['received_at'])->addDays(30);
         }
 
@@ -81,8 +81,8 @@ class DsarRequestController extends Controller
         abort_unless(auth()->user()->can('dsar.update'), 403);
 
         return view('dsar.form', [
-            'dsar'         => $dsar,
-            'users'        => User::orderBy('name')->get(),
+            'dsar' => $dsar,
+            'users' => User::orderBy('name')->get(),
             'requestTypes' => DsarRequest::REQUEST_TYPES,
         ]);
     }
@@ -103,13 +103,13 @@ class DsarRequestController extends Controller
         abort_unless(auth()->user()->can('dsar.update'), 403);
 
         $request->validate([
-            'outcome'       => 'required|in:fulfilled,partially_fulfilled,rejected_no_data,rejected_identity,rejected_legal',
+            'outcome' => 'required|in:fulfilled,partially_fulfilled,rejected_no_data,rejected_identity,rejected_legal',
             'outcome_notes' => 'nullable|string',
         ]);
 
         $dsar->update([
-            'status'       => 'completed',
-            'outcome'      => $request->outcome,
+            'status' => 'completed',
+            'outcome' => $request->outcome,
             'outcome_notes' => $request->outcome_notes,
             'completed_at' => now(),
         ]);
@@ -126,9 +126,9 @@ class DsarRequestController extends Controller
         $request->validate(['extension_reason' => 'required|string|max:500']);
 
         $dsar->update([
-            'deadline_extended'   => true,
+            'deadline_extended' => true,
             'extended_deadline_at' => Carbon::parse($dsar->received_at)->addDays(90),
-            'extension_reason'    => $request->extension_reason,
+            'extension_reason' => $request->extension_reason,
         ]);
 
         AuditLogger::log('dsar.extended', $dsar);
@@ -139,16 +139,16 @@ class DsarRequestController extends Controller
     private function validateDsar(Request $request): array
     {
         return $request->validate([
-            'request_type'               => 'required|in:access,rectification,erasure,restriction,portability,objection,withdraw_consent',
-            'requester_name'             => 'required|string|max:255',
-            'requester_email'            => 'nullable|email|max:255',
-            'requester_details'          => 'nullable|string',
-            'request_description'        => 'required|string',
-            'received_at'                => 'required|date',
-            'assigned_to'                => 'nullable|exists:users,id',
-            'status'                     => 'required|in:pending,in_progress,on_hold,completed,rejected,withdrawn',
-            'handling_notes'             => 'nullable|string',
-            'identity_verified'          => 'boolean',
+            'request_type' => 'required|in:access,rectification,erasure,restriction,portability,objection,withdraw_consent',
+            'requester_name' => 'required|string|max:255',
+            'requester_email' => 'nullable|email|max:255',
+            'requester_details' => 'nullable|string',
+            'request_description' => 'required|string',
+            'received_at' => 'required|date',
+            'assigned_to' => 'nullable|exists:users,id',
+            'status' => 'required|in:pending,in_progress,on_hold,completed,rejected,withdrawn',
+            'handling_notes' => 'nullable|string',
+            'identity_verified' => 'boolean',
             'identity_verification_notes' => 'nullable|string',
         ]);
     }

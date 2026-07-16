@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Incident;
 use App\Models\Risk;
 use App\Models\User;
 
@@ -20,17 +19,17 @@ it('renders search page', function (): void {
 
 it('searches for risks', function (): void {
     Risk::create([
-        'code'                  => 'R-SRCH-001',
-        'title'                 => 'Ryzyko unikalny tytul wyszukiwania XYZ123',
-        'description'           => 'Opis ryzyka do testu wyszukiwania',
-        'category_l1'           => 'Cyber',
-        'category_l2'           => 'Confidentiality',
-        'inherent_likelihood'   => 2,
-        'inherent_impact'       => 2,
-        'residual_likelihood'   => 1,
-        'residual_impact'       => 1,
-        'review_frequency'      => 'annual',
-        'status'                => 'Identified',
+        'code' => 'R-SRCH-001',
+        'title' => 'Ryzyko unikalny tytul wyszukiwania XYZ123',
+        'description' => 'Opis ryzyka do testu wyszukiwania',
+        'category_l1' => 'Cyber',
+        'category_l2' => 'Confidentiality',
+        'inherent_likelihood' => 2,
+        'inherent_impact' => 2,
+        'residual_likelihood' => 1,
+        'residual_impact' => 1,
+        'review_frequency' => 'annual',
+        'status' => 'Identified',
     ]);
 
     $this->get('/search?q=XYZ123')

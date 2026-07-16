@@ -84,14 +84,14 @@ it('dashboard shows risk count', function (): void {
     $this->admin->syncRoles(['ciso']);
 
     Risk::create([
-        'code'                 => 'RSK-TEST-001',
-        'title'                => 'Test risk for dashboard',
-        'description'          => 'Dashboard smoke test risk.',
-        'category_l1'          => 'Operational',
-        'category_l2'          => 'IT',
-        'status'               => 'Open',
-        'residual_likelihood'  => 2,
-        'residual_impact'      => 3,
+        'code' => 'RSK-TEST-001',
+        'title' => 'Test risk for dashboard',
+        'description' => 'Dashboard smoke test risk.',
+        'category_l1' => 'Operational',
+        'category_l2' => 'IT',
+        'status' => 'Open',
+        'residual_likelihood' => 2,
+        'residual_impact' => 3,
     ]);
 
     $this->actingAs($this->admin->fresh())

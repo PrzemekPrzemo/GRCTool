@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\GdprBreach;
 use App\Models\Dpia;
 use App\Models\DsarRequest;
+use App\Models\GdprBreach;
 use App\Models\ProcessingActivity;
 use App\Models\ThirdParty;
 use App\Models\User;
@@ -23,13 +23,13 @@ it('renders RCP index page', function (): void {
 
 it('creates a processing activity and redirects to show', function (): void {
     $response = $this->post('/rcp', [
-        'name'                  => 'Przetwarzanie danych pracowników',
-        'legal_basis'           => 'legal_obligation',
-        'data_categories'       => ['identification', 'employment'],
-        'data_subjects'         => ['employees'],
-        'status'                => 'active',
+        'name' => 'Przetwarzanie danych pracowników',
+        'legal_basis' => 'legal_obligation',
+        'data_categories' => ['identification', 'employment'],
+        'data_subjects' => ['employees'],
+        'status' => 'active',
         'cross_border_transfer' => '0',
-        'dpia_required'         => '0',
+        'dpia_required' => '0',
     ]);
 
     $response->assertRedirect();
@@ -41,12 +41,12 @@ it('creates a processing activity and redirects to show', function (): void {
 
 it('shows processing activity detail page', function (): void {
     $activity = ProcessingActivity::create([
-        'code'                  => 'RCP-TEST-001',
-        'name'                  => 'Test czynność',
-        'status'                => 'active',
-        'legal_basis'           => 'consent',
+        'code' => 'RCP-TEST-001',
+        'name' => 'Test czynność',
+        'status' => 'active',
+        'legal_basis' => 'consent',
         'cross_border_transfer' => false,
-        'dpia_required'         => false,
+        'dpia_required' => false,
     ]);
 
     $this->get("/rcp/{$activity->id}")->assertOk()->assertSee('Test czynność');
@@ -54,13 +54,13 @@ it('shows processing activity detail page', function (): void {
 
 it('processing activity with special categories shows Art. 9 badge on index', function (): void {
     ProcessingActivity::create([
-        'code'                  => 'RCP-TEST-002',
-        'name'                  => 'Dane zdrowotne',
-        'status'                => 'active',
-        'legal_basis'           => 'legal_obligation',
-        'special_categories'    => ['health'],
+        'code' => 'RCP-TEST-002',
+        'name' => 'Dane zdrowotne',
+        'status' => 'active',
+        'legal_basis' => 'legal_obligation',
+        'special_categories' => ['health'],
         'cross_border_transfer' => false,
-        'dpia_required'         => true,
+        'dpia_required' => true,
     ]);
 
     $this->get('/rcp')->assertOk()->assertSee('Art. 9');
@@ -68,17 +68,17 @@ it('processing activity with special categories shows Art. 9 badge on index', fu
 
 it('links third party to processing activity via pivot', function (): void {
     $activity = ProcessingActivity::create([
-        'code'                  => 'RCP-TEST-003',
-        'name'                  => 'Czynność z podmiotem',
-        'status'                => 'active',
+        'code' => 'RCP-TEST-003',
+        'name' => 'Czynność z podmiotem',
+        'status' => 'active',
         'cross_border_transfer' => false,
-        'dpia_required'         => false,
+        'dpia_required' => false,
     ]);
 
     $tp = ThirdParty::create([
-        'code'     => 'TP-TEST-0001',
-        'name'     => 'Dostawca testowy',
-        'tier'     => 'Medium',
+        'code' => 'TP-TEST-0001',
+        'name' => 'Dostawca testowy',
+        'tier' => 'Medium',
         'is_active' => true,
     ]);
 
@@ -98,14 +98,14 @@ it('creates a GDPR breach and auto-calculates 72h UODO deadline', function (): v
     $discoveredAt = now()->subHours(10);
 
     $response = $this->post('/gdpr-breaches', [
-        'title'                => 'Wyciek bazy klientów',
-        'breach_type'          => 'confidentiality',
-        'discovered_at'        => $discoveredAt->format('Y-m-d\TH:i'),
-        'risk_level'           => 'high',
+        'title' => 'Wyciek bazy klientów',
+        'breach_type' => 'confidentiality',
+        'discovered_at' => $discoveredAt->format('Y-m-d\TH:i'),
+        'risk_level' => 'high',
         'notification_required' => '1',
         'data_subject_notification_required' => '0',
         'data_subjects_notified' => '0',
-        'status'               => 'open',
+        'status' => 'open',
     ]);
 
     $response->assertRedirect();
@@ -120,11 +120,11 @@ it('creates a GDPR breach and auto-calculates 72h UODO deadline', function (): v
 
 it('GdprBreach isOverdue() returns true when deadline passed and not yet reported', function (): void {
     $breach = GdprBreach::create([
-        'code'                      => 'BREACH-TEST-001',
-        'title'                     => 'Test breach',
-        'notification_required'     => true,
+        'code' => 'BREACH-TEST-001',
+        'title' => 'Test breach',
+        'notification_required' => true,
         'uodo_notification_deadline' => now()->subHours(5),
-        'status'                    => 'open',
+        'status' => 'open',
     ]);
 
     expect($breach->isOverdue())->toBeTrue();
@@ -132,12 +132,12 @@ it('GdprBreach isOverdue() returns true when deadline passed and not yet reporte
 
 it('GdprBreach isOverdue() returns false when reported', function (): void {
     $breach = GdprBreach::create([
-        'code'                      => 'BREACH-TEST-002',
-        'title'                     => 'Test breach reported',
-        'notification_required'     => true,
+        'code' => 'BREACH-TEST-002',
+        'title' => 'Test breach reported',
+        'notification_required' => true,
         'uodo_notification_deadline' => now()->subHours(5),
-        'uodo_notified_at'          => now()->subHours(3),
-        'status'                    => 'reported',
+        'uodo_notified_at' => now()->subHours(3),
+        'status' => 'reported',
     ]);
 
     expect($breach->isOverdue())->toBeFalse();
@@ -151,20 +151,20 @@ it('renders DPIA index page', function (): void {
 
 it('creates a DPIA linked to a processing activity', function (): void {
     $activity = ProcessingActivity::create([
-        'code'                  => 'RCP-TEST-DPIA',
-        'name'                  => 'Analiza behawioralna',
-        'status'                => 'active',
-        'dpia_required'         => true,
+        'code' => 'RCP-TEST-DPIA',
+        'name' => 'Analiza behawioralna',
+        'status' => 'active',
+        'dpia_required' => true,
         'cross_border_transfer' => false,
     ]);
 
     $response = $this->post('/dpias', [
-        'title'                  => 'DPIA dla analizy behawioralnej',
+        'title' => 'DPIA dla analizy behawioralnej',
         'processing_activity_id' => $activity->id,
-        'assessment_date'        => now()->format('Y-m-d'),
-        'overall_risk_level'     => 'high',
-        'status'                 => 'draft',
-        'dpo_consulted'          => '0',
+        'assessment_date' => now()->format('Y-m-d'),
+        'overall_risk_level' => 'high',
+        'status' => 'draft',
+        'dpo_consulted' => '0',
         'authority_consultation_required' => '0',
     ]);
 
@@ -178,10 +178,10 @@ it('creates a DPIA linked to a processing activity', function (): void {
 
 it('approving a DPIA sets status to approved and records reviewer', function (): void {
     $dpia = Dpia::create([
-        'code'               => 'DPIA-TEST-001',
-        'title'              => 'Test DPIA',
-        'status'             => 'in_review',
-        'dpo_consulted'      => false,
+        'code' => 'DPIA-TEST-001',
+        'title' => 'Test DPIA',
+        'status' => 'in_review',
+        'dpo_consulted' => false,
         'authority_consultation_required' => false,
     ]);
 
@@ -202,13 +202,13 @@ it('creates a DSAR request and auto-sets 30-day deadline', function (): void {
     $receivedAt = now();
 
     $response = $this->post('/dsar', [
-        'request_type'        => 'erasure',
-        'requester_name'      => 'Jan Kowalski',
-        'requester_email'     => 'jan@example.com',
+        'request_type' => 'erasure',
+        'requester_name' => 'Jan Kowalski',
+        'requester_email' => 'jan@example.com',
         'request_description' => 'Proszę o usunięcie wszystkich moich danych osobowych.',
-        'received_at'         => $receivedAt->format('Y-m-d\TH:i'),
-        'status'              => 'pending',
-        'identity_verified'   => '0',
+        'received_at' => $receivedAt->format('Y-m-d\TH:i'),
+        'status' => 'pending',
+        'identity_verified' => '0',
     ]);
 
     $response->assertRedirect();
@@ -221,13 +221,13 @@ it('creates a DSAR request and auto-sets 30-day deadline', function (): void {
 
 it('DsarRequest isOverdue() returns true for pending request past deadline', function (): void {
     $dsar = DsarRequest::create([
-        'code'                => 'DSAR-TEST-001',
-        'request_type'        => 'access',
-        'requester_name'      => 'Test User',
+        'code' => 'DSAR-TEST-001',
+        'request_type' => 'access',
+        'requester_name' => 'Test User',
         'request_description' => 'Test',
-        'received_at'         => now()->subDays(35),
-        'deadline_at'         => now()->subDays(5),
-        'status'              => 'pending',
+        'received_at' => now()->subDays(35),
+        'deadline_at' => now()->subDays(5),
+        'status' => 'pending',
     ]);
 
     expect($dsar->isOverdue())->toBeTrue();
@@ -236,13 +236,13 @@ it('DsarRequest isOverdue() returns true for pending request past deadline', fun
 it('DsarRequest deadline extension sets 90-day deadline', function (): void {
     $receivedAt = now()->subDays(25);
     $dsar = DsarRequest::create([
-        'code'                => 'DSAR-TEST-002',
-        'request_type'        => 'access',
-        'requester_name'      => 'Test User',
+        'code' => 'DSAR-TEST-002',
+        'request_type' => 'access',
+        'requester_name' => 'Test User',
         'request_description' => 'Test',
-        'received_at'         => $receivedAt,
-        'deadline_at'         => $receivedAt->copy()->addDays(30),
-        'status'              => 'in_progress',
+        'received_at' => $receivedAt,
+        'deadline_at' => $receivedAt->copy()->addDays(30),
+        'status' => 'in_progress',
     ]);
 
     $this->post("/dsar/{$dsar->id}/extend", [
@@ -263,12 +263,12 @@ it('renders third parties index page', function (): void {
 
 it('creates a third party and redirects to show', function (): void {
     $response = $this->post('/third-parties', [
-        'name'                  => 'Cloudflare Inc.',
-        'service_provided'      => 'CDN i ochrona DDoS',
+        'name' => 'Cloudflare Inc.',
+        'service_provided' => 'CDN i ochrona DDoS',
         'country_of_processing' => 'US',
-        'transfer_mechanism'    => 'SCC',
-        'tier'                  => 'High',
-        'is_active'             => '1',
+        'transfer_mechanism' => 'SCC',
+        'tier' => 'High',
+        'is_active' => '1',
     ]);
 
     $response->assertRedirect();

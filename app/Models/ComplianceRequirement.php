@@ -15,8 +15,8 @@ class ComplianceRequirement extends Model
 
     protected $casts = [
         'is_mandatory' => 'boolean',
-        'is_custom'    => 'boolean',
-        'sort_order'   => 'integer',
+        'is_custom' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public function domain(): BelongsTo

@@ -25,12 +25,12 @@ class AccessReviewController extends Controller
         $campaigns = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
 
         // Stats for header row
-        $activeCount  = AccessReviewCampaign::where('status', 'active')->count();
+        $activeCount = AccessReviewCampaign::where('status', 'active')->count();
         $overdueCount = AccessReviewCampaign::where('status', 'active')
             ->whereNotNull('due_date')
             ->where('due_date', '<', now()->toDateString())
             ->count();
-        $pendingItems = \App\Models\AccessReviewItem::where('status', 'pending')->count();
+        $pendingItems = AccessReviewItem::where('status', 'pending')->count();
 
         return view('access-reviews.index', compact('campaigns', 'activeCount', 'overdueCount', 'pendingItems'));
     }
@@ -68,12 +68,12 @@ class AccessReviewController extends Controller
             ->get();
         $users = User::orderBy('name')->get();
 
-        $tab          = request('tab', 'all');
+        $tab = request('tab', 'all');
         $filteredItems = match ($tab) {
-            'pending'  => $items->where('status', 'pending'),
+            'pending' => $items->where('status', 'pending'),
             'approved' => $items->where('status', 'approved'),
-            'revoked'  => $items->where('status', 'revoked'),
-            default    => $items,
+            'revoked' => $items->where('status', 'revoked'),
+            default => $items,
         };
 
         return view('access-reviews.show', compact('campaign', 'items', 'filteredItems', 'users', 'tab'));
@@ -136,13 +136,13 @@ class AccessReviewController extends Controller
 
         $data = $request->validate([
             'subject_user_id' => ['nullable', 'exists:users,id'],
-            'subject_name'    => ['nullable', 'string', 'max:255'],
-            'reviewer_id'     => ['nullable', 'exists:users,id'],
-            'system_name'     => ['required', 'string', 'max:255'],
-            'access_role'     => ['required', 'string', 'max:255'],
-            'access_scope'    => ['nullable', 'string', 'max:255'],
-            'last_used_at'    => ['nullable', 'date'],
-            'justification'   => ['nullable', 'string'],
+            'subject_name' => ['nullable', 'string', 'max:255'],
+            'reviewer_id' => ['nullable', 'exists:users,id'],
+            'system_name' => ['required', 'string', 'max:255'],
+            'access_role' => ['required', 'string', 'max:255'],
+            'access_scope' => ['nullable', 'string', 'max:255'],
+            'last_used_at' => ['nullable', 'date'],
+            'justification' => ['nullable', 'string'],
         ]);
 
         $data['campaign_id'] = $campaign->id;
@@ -159,17 +159,17 @@ class AccessReviewController extends Controller
         abort_unless($item->campaign_id === $campaign->id, 404);
 
         $data = $request->validate([
-            'status'        => ['required', 'in:approved,revoked,modified'],
+            'status' => ['required', 'in:approved,revoked,modified'],
             'decision_note' => ['nullable', 'string'],
         ]);
 
         $wasRevoked = $data['status'] === 'revoked';
 
         $item->update([
-            'status'        => $data['status'],
+            'status' => $data['status'],
             'decision_note' => $data['decision_note'] ?? null,
-            'reviewed_at'   => now(),
-            'reviewed_by'   => auth()->id(),
+            'reviewed_at' => now(),
+            'reviewed_by' => auth()->id(),
         ]);
 
         $campaign->increment('reviewed_items');
@@ -195,7 +195,7 @@ class AccessReviewController extends Controller
         $count = 0;
         foreach ($pendingItems as $item) {
             $item->update([
-                'status'      => 'approved',
+                'status' => 'approved',
                 'reviewed_at' => now(),
                 'reviewed_by' => $userId,
             ]);
@@ -211,15 +211,15 @@ class AccessReviewController extends Controller
     private function validateCampaign(Request $request): array
     {
         return $request->validate([
-            'title'               => ['required', 'string', 'max:255'],
-            'description'         => ['nullable', 'string'],
-            'scope'               => ['required', 'in:all_systems,department,system,role'],
-            'scope_value'         => ['nullable', 'string', 'max:255'],
-            'owner_id'            => ['nullable', 'exists:users,id'],
-            'due_date'            => ['nullable', 'date'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'scope' => ['required', 'in:all_systems,department,system,role'],
+            'scope_value' => ['nullable', 'string', 'max:255'],
+            'owner_id' => ['nullable', 'exists:users,id'],
+            'due_date' => ['nullable', 'date'],
             'review_period_start' => ['nullable', 'date'],
-            'review_period_end'   => ['nullable', 'date'],
-            'notes'               => ['nullable', 'string'],
+            'review_period_end' => ['nullable', 'date'],
+            'notes' => ['nullable', 'string'],
         ]);
     }
 }

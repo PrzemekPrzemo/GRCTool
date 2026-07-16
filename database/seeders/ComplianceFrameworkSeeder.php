@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ComplianceFramework;
+use App\Models\ComplianceRequirement;
 use App\Models\ComplianceRequirementMapping;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -36,15 +37,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedIso27001(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'ISO27001',
-            'name'        => 'ISO/IEC 27001:2022',
-            'short_name'  => 'ISO27001',
-            'version'     => '2022',
-            'issuer'      => 'ISO/IEC',
-            'region'      => 'Global',
+            'code' => 'ISO27001',
+            'name' => 'ISO/IEC 27001:2022',
+            'short_name' => 'ISO27001',
+            'version' => '2022',
+            'issuer' => 'ISO/IEC',
+            'region' => 'Global',
             'description' => 'Międzynarodowa norma zarządzania bezpieczeństwem informacji. Annex A zawiera 93 zabezpieczenia podzielone na 4 tematy.',
-            'is_active'   => true,
-            'sort_order'  => 1,
+            'is_active' => true,
+            'sort_order' => 1,
         ]);
 
         // Domain A.5 — Organizational controls (37)
@@ -179,15 +180,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedNis2(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'NIS2',
-            'name'        => 'Dyrektywa NIS2 (EU) 2022/2555',
-            'short_name'  => 'NIS2',
-            'version'     => '2022',
-            'issuer'      => 'Parlament Europejski i Rada UE',
-            'region'      => 'EU',
+            'code' => 'NIS2',
+            'name' => 'Dyrektywa NIS2 (EU) 2022/2555',
+            'short_name' => 'NIS2',
+            'version' => '2022',
+            'issuer' => 'Parlament Europejski i Rada UE',
+            'region' => 'EU',
             'description' => 'Dyrektywa w sprawie środków na rzecz wysokiego wspólnego poziomu cyberbezpieczeństwa w Unii.',
-            'is_active'   => true,
-            'sort_order'  => 2,
+            'is_active' => true,
+            'sort_order' => 2,
         ]);
 
         $d1 = $fw->domains()->create(['code' => 'Art.20', 'name' => 'Art. 20 — Zarządzanie', 'sort_order' => 1]);
@@ -232,15 +233,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedDora(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'DORA',
-            'name'        => 'DORA — Digital Operational Resilience Act',
-            'short_name'  => 'DORA',
-            'version'     => '2022/2554',
-            'issuer'      => 'Parlament Europejski i Rada UE',
-            'region'      => 'EU',
+            'code' => 'DORA',
+            'name' => 'DORA — Digital Operational Resilience Act',
+            'short_name' => 'DORA',
+            'version' => '2022/2554',
+            'issuer' => 'Parlament Europejski i Rada UE',
+            'region' => 'EU',
             'description' => 'Rozporządzenie w sprawie operacyjnej odporności cyfrowej sektora finansowego.',
-            'is_active'   => true,
-            'sort_order'  => 3,
+            'is_active' => true,
+            'sort_order' => 3,
         ]);
 
         $domains = [
@@ -291,15 +292,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedPciDss(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'PCI-DSS',
-            'name'        => 'PCI DSS v4.0',
-            'short_name'  => 'PCI-DSS',
-            'version'     => '4.0',
-            'issuer'      => 'PCI Security Standards Council',
-            'region'      => 'US',
+            'code' => 'PCI-DSS',
+            'name' => 'PCI DSS v4.0',
+            'short_name' => 'PCI-DSS',
+            'version' => '4.0',
+            'issuer' => 'PCI Security Standards Council',
+            'region' => 'US',
             'description' => 'Standard bezpieczeństwa danych dla przemysłu kart płatniczych.',
-            'is_active'   => true,
-            'sort_order'  => 4,
+            'is_active' => true,
+            'sort_order' => 4,
         ]);
 
         $domains = [
@@ -385,15 +386,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedNistCsf(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'NIST-CSF',
-            'name'        => 'NIST Cybersecurity Framework 2.0',
-            'short_name'  => 'NIST-CSF',
-            'version'     => '2.0',
-            'issuer'      => 'National Institute of Standards and Technology',
-            'region'      => 'US',
+            'code' => 'NIST-CSF',
+            'name' => 'NIST Cybersecurity Framework 2.0',
+            'short_name' => 'NIST-CSF',
+            'version' => '2.0',
+            'issuer' => 'National Institute of Standards and Technology',
+            'region' => 'US',
             'description' => 'Ramowe podejście do zarządzania ryzykiem cyberbezpieczeństwa.',
-            'is_active'   => true,
-            'sort_order'  => 5,
+            'is_active' => true,
+            'sort_order' => 5,
         ]);
 
         $domains = [
@@ -447,15 +448,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedSoc2(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'SOC2',
-            'name'        => 'SOC 2 — Trust Services Criteria',
-            'short_name'  => 'SOC2',
-            'version'     => '2017',
-            'issuer'      => 'AICPA',
-            'region'      => 'US',
+            'code' => 'SOC2',
+            'name' => 'SOC 2 — Trust Services Criteria',
+            'short_name' => 'SOC2',
+            'version' => '2017',
+            'issuer' => 'AICPA',
+            'region' => 'US',
             'description' => 'Standardy Service Organization Control 2 dotyczące bezpieczeństwa, dostępności, integralności przetwarzania, poufności i prywatności.',
-            'is_active'   => true,
-            'sort_order'  => 6,
+            'is_active' => true,
+            'sort_order' => 6,
         ]);
 
         $domains = [
@@ -507,15 +508,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedOwaspAsvs(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'OWASP-ASVS',
-            'name'        => 'OWASP Application Security Verification Standard v4.0',
-            'short_name'  => 'OWASP-ASVS',
-            'version'     => '4.0',
-            'issuer'      => 'OWASP Foundation',
-            'region'      => 'Global',
+            'code' => 'OWASP-ASVS',
+            'name' => 'OWASP Application Security Verification Standard v4.0',
+            'short_name' => 'OWASP-ASVS',
+            'version' => '4.0',
+            'issuer' => 'OWASP Foundation',
+            'region' => 'Global',
             'description' => 'Standard weryfikacji bezpieczeństwa aplikacji webowych.',
-            'is_active'   => true,
-            'sort_order'  => 7,
+            'is_active' => true,
+            'sort_order' => 7,
         ]);
 
         $domains = [
@@ -587,15 +588,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedIso22301(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'ISO22301',
-            'name'        => 'ISO 22301:2019 — Ciągłość działania',
-            'short_name'  => 'ISO22301',
-            'version'     => '2019',
-            'issuer'      => 'ISO',
-            'region'      => 'Global',
+            'code' => 'ISO22301',
+            'name' => 'ISO 22301:2019 — Ciągłość działania',
+            'short_name' => 'ISO22301',
+            'version' => '2019',
+            'issuer' => 'ISO',
+            'region' => 'Global',
             'description' => 'Norma zarządzania ciągłością działania — wymagania dotyczące planowania, ustanawiania, wdrażania, obsługi, monitorowania, przeglądu i doskonalenia BCMS.',
-            'is_active'   => true,
-            'sort_order'  => 8,
+            'is_active' => true,
+            'sort_order' => 8,
         ]);
 
         $domains = [
@@ -651,15 +652,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedIso27017(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'ISO27017',
-            'name'        => 'ISO/IEC 27017:2015 — Zabezpieczenia dla usług chmurowych',
-            'short_name'  => 'ISO27017',
-            'version'     => '2015',
-            'issuer'      => 'ISO/IEC',
-            'region'      => 'Global',
+            'code' => 'ISO27017',
+            'name' => 'ISO/IEC 27017:2015 — Zabezpieczenia dla usług chmurowych',
+            'short_name' => 'ISO27017',
+            'version' => '2015',
+            'issuer' => 'ISO/IEC',
+            'region' => 'Global',
             'description' => 'Wytyczne dotyczące zabezpieczeń dla usług chmurowych oparte na ISO 27002.',
-            'is_active'   => true,
-            'sort_order'  => 9,
+            'is_active' => true,
+            'sort_order' => 9,
         ]);
 
         $domains = [
@@ -713,15 +714,15 @@ class ComplianceFrameworkSeeder extends Seeder
     private function seedNcaEcc(): void
     {
         $fw = ComplianceFramework::create([
-            'code'        => 'NCA-ECC',
-            'name'        => 'NCA ECC — Essential Cybersecurity Controls (KSA)',
-            'short_name'  => 'NCA-ECC',
-            'version'     => '1.0',
-            'issuer'      => 'National Cybersecurity Authority (Saudi Arabia)',
-            'region'      => 'KSA',
+            'code' => 'NCA-ECC',
+            'name' => 'NCA ECC — Essential Cybersecurity Controls (KSA)',
+            'short_name' => 'NCA-ECC',
+            'version' => '1.0',
+            'issuer' => 'National Cybersecurity Authority (Saudi Arabia)',
+            'region' => 'KSA',
             'description' => 'Saudyjskie podstawowe kontrole cyberbezpieczeństwa opracowane przez Narodowe Centrum Cyberbezpieczeństwa.',
-            'is_active'   => true,
-            'sort_order'  => 10,
+            'is_active' => true,
+            'sort_order' => 10,
         ]);
 
         $domains = [
@@ -773,7 +774,7 @@ class ComplianceFrameworkSeeder extends Seeder
     {
         // Helper to find requirement by code
         $req = function (string $code): ?int {
-            return \App\Models\ComplianceRequirement::where('code', $code)->value('id');
+            return ComplianceRequirement::where('code', $code)->value('id');
         };
 
         $mappings = [
@@ -822,10 +823,10 @@ class ComplianceFrameworkSeeder extends Seeder
                     ->exists();
                 if (! $exists) {
                     ComplianceRequirementMapping::create([
-                        'requirement_id'        => $srcId,
+                        'requirement_id' => $srcId,
                         'mapped_requirement_id' => $dstId,
-                        'mapping_type'          => $type,
-                        'notes'                 => $notes,
+                        'mapping_type' => $type,
+                        'notes' => $notes,
                     ]);
                 }
             }

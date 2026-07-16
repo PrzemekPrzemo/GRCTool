@@ -19,37 +19,37 @@ class SdlcSecurityGate extends Model
 
     protected $casts = [
         'critical_count' => 'integer',
-        'high_count'     => 'integer',
-        'medium_count'   => 'integer',
-        'low_count'      => 'integer',
-        'conducted_by'   => 'integer',
-        'conducted_at'   => 'datetime',
+        'high_count' => 'integer',
+        'medium_count' => 'integer',
+        'low_count' => 'integer',
+        'conducted_by' => 'integer',
+        'conducted_at' => 'datetime',
     ];
 
     public const PHASE_LABELS = [
         'requirements' => 'Wymagania',
-        'design'       => 'Projektowanie',
-        'development'  => 'Implementacja',
-        'pre_release'  => 'Pre-release',
-        'production'   => 'Produkcja',
+        'design' => 'Projektowanie',
+        'development' => 'Implementacja',
+        'pre_release' => 'Pre-release',
+        'production' => 'Produkcja',
     ];
 
     public const GATE_TYPE_LABELS = [
-        'threat_model'    => 'Threat Model',
-        'sast'            => 'SAST',
-        'dast'            => 'DAST',
-        'pentest'         => 'Pentest',
-        'code_review'     => 'Code Review',
+        'threat_model' => 'Threat Model',
+        'sast' => 'SAST',
+        'dast' => 'DAST',
+        'pentest' => 'Pentest',
+        'code_review' => 'Code Review',
         'dependency_scan' => 'Dependency Scan',
-        'secrets_scan'    => 'Secrets Scan',
-        'container_scan'  => 'Container Scan',
+        'secrets_scan' => 'Secrets Scan',
+        'container_scan' => 'Container Scan',
     ];
 
     public const STATUS_LABELS = [
         'pending' => 'Oczekuje',
-        'passed'  => 'Zaliczony',
-        'failed'  => 'Niezaliczony',
-        'waived'  => 'Zwolniony',
+        'passed' => 'Zaliczony',
+        'failed' => 'Niezaliczony',
+        'waived' => 'Zwolniony',
     ];
 
     public function project(): BelongsTo

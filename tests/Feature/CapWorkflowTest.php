@@ -16,9 +16,9 @@ it('creates a CAP', function (): void {
     $countBefore = CorrectiveActionPlan::count();
 
     $response = $this->post('/cap', [
-        'title'       => 'Plan naprawczy testowy',
+        'title' => 'Plan naprawczy testowy',
         'description' => 'Opis planu naprawczego dla testu.',
-        'status'      => 'Draft',
+        'status' => 'Draft',
     ]);
 
     $response->assertRedirect();
@@ -32,8 +32,8 @@ it('creates a CAP', function (): void {
 
 it('shows CAP detail', function (): void {
     $cap = CorrectiveActionPlan::create([
-        'code'   => 'CAP-' . now()->year . '-00099',
-        'title'  => 'Widoczny plan',
+        'code' => 'CAP-'.now()->year.'-00099',
+        'title' => 'Widoczny plan',
         'status' => 'Draft',
     ]);
 
@@ -43,8 +43,8 @@ it('shows CAP detail', function (): void {
 
 it('approves a CAP', function (): void {
     $cap = CorrectiveActionPlan::create([
-        'code'   => 'CAP-' . now()->year . '-00098',
-        'title'  => 'Plan do zatwierdzenia',
+        'code' => 'CAP-'.now()->year.'-00098',
+        'title' => 'Plan do zatwierdzenia',
         'status' => 'Draft',
     ]);
 
@@ -60,19 +60,19 @@ it('adds action to CAP', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $cap = CorrectiveActionPlan::create([
-        'code'   => 'CAP-' . now()->year . '-00097',
-        'title'  => 'Plan z akcjami',
+        'code' => 'CAP-'.now()->year.'-00097',
+        'title' => 'Plan z akcjami',
         'status' => 'Draft',
     ]);
 
     $countBefore = CapAction::count();
 
     $response = $this->post("/cap/{$cap->id}/action", [
-        'title'       => 'Akcja naprawcza testowa',
+        'title' => 'Akcja naprawcza testowa',
         'description' => 'Opis akcji.',
-        'owner_id'    => $userId,
-        'due_date'    => now()->addDays(30)->toDateString(),
-        'status'      => 'Open',
+        'owner_id' => $userId,
+        'due_date' => now()->addDays(30)->toDateString(),
+        'status' => 'Open',
     ]);
 
     $response->assertRedirect();
@@ -87,17 +87,17 @@ it('updates CAP action status', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $cap = CorrectiveActionPlan::create([
-        'code'   => 'CAP-' . now()->year . '-00096',
-        'title'  => 'Plan ze statusem',
+        'code' => 'CAP-'.now()->year.'-00096',
+        'title' => 'Plan ze statusem',
         'status' => 'Draft',
     ]);
 
     $action = CapAction::create([
-        'cap_id'   => $cap->id,
-        'title'    => 'Akcja do aktualizacji',
+        'cap_id' => $cap->id,
+        'title' => 'Akcja do aktualizacji',
         'owner_id' => $userId,
         'due_date' => now()->addDays(15)->toDateString(),
-        'status'   => 'Open',
+        'status' => 'Open',
     ]);
 
     $response = $this->patch("/cap-actions/{$action->id}", [
@@ -112,32 +112,32 @@ it('CAP progress reflects completed actions', function (): void {
     $userId = User::where('email', 'admin@grc.local')->value('id');
 
     $cap = CorrectiveActionPlan::create([
-        'code'   => 'CAP-' . now()->year . '-00095',
-        'title'  => 'Plan z progresem',
+        'code' => 'CAP-'.now()->year.'-00095',
+        'title' => 'Plan z progresem',
         'status' => 'In Progress',
     ]);
 
     CapAction::create([
-        'cap_id'           => $cap->id,
-        'title'            => 'Akcja 1 — ukończona',
-        'owner_id'         => $userId,
-        'due_date'         => now()->addDays(10)->toDateString(),
-        'status'           => 'Completed',
+        'cap_id' => $cap->id,
+        'title' => 'Akcja 1 — ukończona',
+        'owner_id' => $userId,
+        'due_date' => now()->addDays(10)->toDateString(),
+        'status' => 'Completed',
         'progress_percent' => 100,
-        'completed_at'     => now()->toDateString(),
+        'completed_at' => now()->toDateString(),
     ]);
 
     CapAction::create([
-        'cap_id'           => $cap->id,
-        'title'            => 'Akcja 2 — otwarta',
-        'owner_id'         => $userId,
-        'due_date'         => now()->addDays(20)->toDateString(),
-        'status'           => 'Open',
+        'cap_id' => $cap->id,
+        'title' => 'Akcja 2 — otwarta',
+        'owner_id' => $userId,
+        'due_date' => now()->addDays(20)->toDateString(),
+        'status' => 'Open',
         'progress_percent' => 0,
     ]);
 
     $totalProgress = $cap->actions()->sum('progress_percent');
-    $actionCount   = $cap->actions()->count();
+    $actionCount = $cap->actions()->count();
 
     expect($actionCount)->toBe(2);
     expect($totalProgress)->toBeGreaterThan(0);

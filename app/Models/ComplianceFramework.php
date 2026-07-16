@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class ComplianceFramework extends Model
 {
@@ -14,8 +13,8 @@ class ComplianceFramework extends Model
     ];
 
     protected $casts = [
-        'is_active'  => 'boolean',
-        'is_custom'  => 'boolean',
+        'is_active' => 'boolean',
+        'is_custom' => 'boolean',
         'sort_order' => 'integer',
     ];
 

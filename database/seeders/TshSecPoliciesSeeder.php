@@ -8,13 +8,10 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 /**
- * Import pełnej treści 20 polityk TSH-SEC-POL-001..020 (dostarczonych przez CSO,
- * ostatnio skonsolidowanych w TSH-SEC-POL-MANUAL v3.1 z 2026-07-14; realne
- * dokumenty v1.0-v2.4, obowiązujące od 2025-01-01, POL-016 przypisany od v3.1
- * do nowej treści (Change Management, zastępuje wcześniejszą Operational Risk
- * Policy pod tym samym kodem — proces zarządzania ryzykiem operacyjnym nadal
- * obowiązuje przez POL-001+PROC-213+REG-011, bez osobnej polityki), POL-019 i
- * POL-020 nowe od v3.1 — nie szkice). Te polityki merytorycznie zastępują
+ * Import pełnej treści 18 polityk TSH-SEC-POL-001..018 (dostarczonych przez CSO,
+ * ostatnio skonsolidowanych w TSH-SEC-POL-MANUAL v3.0 z 2026-07-13; realne
+ * dokumenty v1.0-v2.4, obowiązujące od 2025-01-01, POL-018 nowa od 2026-07-13
+ * — nie szkice). Te polityki merytorycznie zastępują
  * starsze, szkieletowe POL-XX zaimportowane wcześniej z tsh_grc_policies.yaml,
  * ale obie wersje są zachowywane jako osobne rekordy: supersedes_policy_id
  * na nowej polityce wskazuje na starą, którą zastępuje.
@@ -152,16 +149,14 @@ class TshSecPoliciesSeeder extends Seeder
                 'code' => 'TSH-SEC-POL-009',
                 'title' => 'Privacy & Data Protection Policy',
                 'supersedes' => 'POL-11',
-                'version' => 'v2.1',
-                'framework_mappings' => ['GDPR', 'PDPL', 'ISO27002', 'CCPA'],
+                'version' => 'v2.0',
+                'framework_mappings' => ['GDPR', 'PDPL', 'ISO27002'],
                 'controls' => [
                     ['title' => 'TSH jako Administrator (dane HR/marketing) i Procesor (dane klienta); KSA PDPL dla rezydentów Arabii Saudyjskiej', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
                     ['title' => 'Powiadomienie klienta o naruszeniu w 24h; UODO 72h; SDAIA 72h', 'control_type' => 'corrective', 'implementation_type' => 'procedural'],
                     ['title' => 'Dane klienta zwracane/usuwane w ciągu 30 dni od zamknięcia projektu', 'control_type' => 'corrective', 'implementation_type' => 'procedural'],
                     ['title' => 'Wnioski o realizację praw osób, których dane dotyczą — odpowiedź w 30 dni', 'control_type' => 'directive', 'implementation_type' => 'procedural'],
                     ['title' => 'Dane UE przetwarzane domyślnie w UE; SCC dla transferów poza EOG; dane KSA nie transferowane poza KSA bez zgody SDAIA', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
-                    ['title' => '[v2.1] Wymagania regionalne KSA: PDPL/SDAIA Art.19-21 (naruszenia), NDMO Data Classification (POL-002-ANX), NCA CCC-1:2020 hosting chmurowy (CLT-409)', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
-                    ['title' => '[v2.1] Wymagania regionalne USA: CCPA/CPRA + prawa stanowe, HIPAA BAA dla PHI (CLT-403), GLBA Safeguards Rule dla klientów finansowych (CLT-404)', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
                 ],
             ],
             [
@@ -248,25 +243,25 @@ class TshSecPoliciesSeeder extends Seeder
             ],
             [
                 'code' => 'TSH-SEC-POL-016',
-                'title' => 'Change Management Policy',
+                'title' => 'Operational Risk Policy',
                 'supersedes' => null,
                 'version' => 'v1.0',
-                'framework_mappings' => ['ISO27001', 'NIST_CSF', 'SOC2'],
+                'framework_mappings' => ['ISO27001', 'DORA', 'NIS2', 'SOC2'],
                 'controls' => [
-                    ['title' => 'Kategorie zmian: Standard (pre-zatwierdzona, bez dodatkowego zatwierdzenia), Normalna (przegląd IT Lead/Tech Lead, REG-006), Pilna/Emergency (zatwierdzenie CSO, przegląd post-wdrożeniowy w 48h)', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
-                    ['title' => 'Każda zmiana wymaga opisu, oceny ryzyka bezpieczeństwa i planu wycofania (rollback)', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
-                    ['title' => 'Testowanie w środowisku niższym przed wdrożeniem produkcyjnym; wyjątek: Emergency za zgodą CSO', 'control_type' => 'preventive', 'implementation_type' => 'technical'],
-                    ['title' => 'Dokumentacja w REG-006; przegląd po wdrożeniu dla zmian normalnych i pilnych', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
+                    ['title' => 'Macierz ryzyka 5x5 (Prawdopodobieństwo x Wpływ = 1-25); Krytyczne 20-25 wymaga planu leczenia w 24h, Wysokie 12-19 w ciągu tygodnia', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
+                    ['title' => 'Zero tolerancji: niezgodność regulacyjna (GDPR/NIS2), utrata danych klienta, awarie bezpieczeństwa', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
+                    ['title' => '8 kategorii ryzyka: Proces, Ludzie, Technologia, Prawne/Regulacyjne, Strony Trzecie, Realizacja Projektu, Finansowe, Reputacyjne', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
+                    ['title' => 'Comiesięczny przegląd REG-011 przez CSO; kwartalny raport dla Zarządu; coroczna pełna ocena', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
                 ],
             ],
             [
                 'code' => 'TSH-SEC-POL-017',
-                'title' => 'Exception Management Policy',
+                'title' => 'Security Exception Policy',
                 'supersedes' => null,
                 'version' => 'v1.0',
                 'framework_mappings' => ['ISO27002', 'SOC2'],
                 'controls' => [
-                    ['title' => 'Maksymalny czas trwania wyjątku 12 miesięcy, bez możliwości autoodnowienia; każdy wymaga pisemnego zatwierdzenia CSO (bez ustnych)', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
+                    ['title' => 'Maksymalny czas trwania wyjątku 6 miesięcy; każdy wymaga pisemnego zatwierdzenia CSO (bez ustnych)', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
                     ['title' => 'Obszary bez możliwości wyjątku: wymóg MFA, szyfrowanie danych RESTRICTED, zasady obsługi danych klienta, terminy powiadamiania o naruszeniu GDPR', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
                     ['title' => 'Wniosek przez Jira (IT-SECURITY → Security Exception Request); CSO rozpatruje w 3 dni robocze', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
                     ['title' => 'Rejestrowane w REG-012; IT Lead wysyła przypomnienie 14 dni przed wygaśnięciem; comiesięczny przegląd CSO, kwartalne podsumowanie dla Zarządu', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
@@ -274,41 +269,16 @@ class TshSecPoliciesSeeder extends Seeder
             ],
             [
                 'code' => 'TSH-SEC-POL-018',
-                'title' => 'Ethics and Anti-Corruption Policy',
+                'title' => 'Anti-Bribery & Business Ethics Policy',
                 'supersedes' => null,
                 'version' => 'v1.0',
                 'framework_mappings' => ['ISO27002'],
                 'controls' => [
-                    ['title' => 'Zero tolerancji dla przekupstwa i korupcji w każdej formie; obowiązuje pracowników, współpracowników i strony trzecie niezależnie od jurysdykcji', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
-                    ['title' => 'Progi prezentów: do 150 PLN/50 EUR/50 USD jednorazowo bez zatwierdzenia; powyżej — zgoda Zarządu; rozrywka biznesowa racjonalna i dokumentowana', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
-                    ['title' => 'Wyjątki kulturowe: KSA — Nazaha (CIB); USA — FCPA; PL/UE — ustawa antykorupcyjna', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
-                    ['title' => 'Strony trzecie: klauzule antykorupcyjne w umowach, zgodnie z due diligence POL-006', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
-                    ['title' => 'Kanał zgłoszeń anonimowy (security@tsh.io) zgodny z Dyrektywą UE 2019/1937 o ochronie sygnalistów; przegląd przez CSO + Zarząd', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
-                ],
-            ],
-            [
-                'code' => 'TSH-SEC-POL-019',
-                'title' => 'Security Training and Awareness Policy',
-                'supersedes' => null,
-                'version' => 'v1.0',
-                'framework_mappings' => ['ISO27002', 'GDPR'],
-                'controls' => [
-                    ['title' => 'Szkolenie wdrożeniowe (Moduł 1) w 5 dni od startu, przed dostępem do projektu klienta (PROC-201)', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
-                    ['title' => 'Coroczny refresh dla wszystkich (Q4); bezpieczne kodowanie OWASP dla deweloperów rocznie; Security Champions kwartalnie; szkolenie Zarządu rocznie', 'control_type' => 'preventive', 'implementation_type' => 'managerial'],
-                    ['title' => 'Symulacja phishingu kwartalnie, cel ≤5% klikalności; kliknięcie nie jest karane, skutkuje obowiązkowym mikroszkoleniem w 5 dni', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
-                    ['title' => 'Brak ukończenia szkolenia w 14 dni: eskalacja do przełożonego; po 30 dniach: ograniczenie dostępu; rejestry przechowywane 3 lata', 'control_type' => 'corrective', 'implementation_type' => 'procedural'],
-                ],
-            ],
-            [
-                'code' => 'TSH-SEC-POL-020',
-                'title' => 'Vulnerability and Patch Management Policy',
-                'supersedes' => null,
-                'version' => 'v1.0',
-                'framework_mappings' => ['ISO27002', 'NIST_CSF'],
-                'controls' => [
-                    ['title' => 'Źródła wykrywania: SCA (Dependabot+Snyk) na wszystkich repo, SAST (CodeQL+Semgrep) blokujące Critical/High na PR, secret scanning, MDE na endpointach, coroczny pentest zewnętrzny', 'control_type' => 'detective', 'implementation_type' => 'technical'],
-                    ['title' => 'SLA naprawy wg CVSS: Critical ≥9.0 w 48h, High 7.0-8.9 w 7 dni, Medium 4.0-6.9 w 30 dni, Low <4.0 w 90 dni (backlog, SBOM)', 'control_type' => 'corrective', 'implementation_type' => 'procedural'],
-                    ['title' => 'Responsible disclosure: security@tsh.io, potwierdzenie w 3 dni robocze', 'control_type' => 'directive', 'implementation_type' => 'procedural'],
+                    ['title' => 'Zero tolerancji dla przekupstwa i korupcji w każdej formie; brak wyjątków dla płatności ułatwiających czy prezentów zwyczajowych', 'control_type' => 'directive', 'implementation_type' => 'managerial'],
+                    ['title' => 'Progi prezentów: do PLN 200/SAR 200 bez zobowiązania; ujawnienie przełożonemu >PLN 100, CSO >PLN 200; gościnność >PLN 300 za wydarzenie', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
+                    ['title' => 'Podróże/zakwaterowanie i prezenty dla urzędników wyłącznie za uprzednią zgodą CEO + CSO/CFO', 'control_type' => 'preventive', 'implementation_type' => 'directive'],
+                    ['title' => 'Strony trzecie: klauzula antykorupcyjna w umowach + deklaracja ABAC w REF-019, zgodnie z due diligence POL-006', 'control_type' => 'preventive', 'implementation_type' => 'procedural'],
+                    ['title' => 'Chronione kanały zgłoszeń (CSO, CEO, anonimowo, Nazaha dla KSA); coroczne szkolenie ABAC (TRN-001)', 'control_type' => 'detective', 'implementation_type' => 'procedural'],
                 ],
             ],
         ];

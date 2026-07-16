@@ -18,13 +18,13 @@ class SlackNotifier
 
         try {
             Http::timeout(5)->post(config('slack.webhook_url'), [
-                'text'        => $text,
+                'text' => $text,
                 'attachments' => $attachments,
             ]);
         } catch (\Throwable $e) {
             Log::error('SlackNotifier: failed to send notification', [
                 'message' => $e->getMessage(),
-                'text'    => $text,
+                'text' => $text,
             ]);
         }
     }
@@ -35,8 +35,8 @@ class SlackNotifier
             "🚨 Nowy incydent: {$incident->code}",
             [
                 [
-                    'color'  => 'danger',
-                    'title'  => "Nowy incydent: {$incident->code}",
+                    'color' => 'danger',
+                    'title' => "Nowy incydent: {$incident->code}",
                     'fields' => [
                         ['title' => 'Severity', 'value' => $incident->severity ?? '—', 'short' => true],
                         ['title' => 'Status',   'value' => $incident->status ?? '—',   'short' => true],
@@ -44,7 +44,7 @@ class SlackNotifier
                         ['title' => 'Link',     'value' => url("/incidents/{$incident->id}"), 'short' => false],
                     ],
                     'footer' => 'GRC Tool',
-                    'ts'     => now()->timestamp,
+                    'ts' => now()->timestamp,
                 ],
             ]
         );
@@ -56,8 +56,8 @@ class SlackNotifier
             "🔴 BREACH: {$incident->code}",
             [
                 [
-                    'color'  => 'danger',
-                    'title'  => "BREACH: {$incident->code}",
+                    'color' => 'danger',
+                    'title' => "BREACH: {$incident->code}",
                     'fields' => [
                         [
                             'title' => 'ENISA Score',
@@ -75,7 +75,7 @@ class SlackNotifier
                         ],
                     ],
                     'footer' => 'GRC Tool',
-                    'ts'     => now()->timestamp,
+                    'ts' => now()->timestamp,
                 ],
             ]
         );
@@ -89,8 +89,8 @@ class SlackNotifier
             "⚠️ Krytyczna podatność: {$identifier}",
             [
                 [
-                    'color'  => 'warning',
-                    'title'  => "Krytyczna podatność: {$identifier}",
+                    'color' => 'warning',
+                    'title' => "Krytyczna podatność: {$identifier}",
                     'fields' => [
                         [
                             'title' => 'CVSS Score',
@@ -115,7 +115,7 @@ class SlackNotifier
                         ],
                     ],
                     'footer' => 'GRC Tool',
-                    'ts'     => now()->timestamp,
+                    'ts' => now()->timestamp,
                 ],
             ]
         );
@@ -127,8 +127,8 @@ class SlackNotifier
             "📋 Krytyczny finding: {$finding->code}",
             [
                 [
-                    'color'  => 'warning',
-                    'title'  => "Krytyczny finding: {$finding->code}",
+                    'color' => 'warning',
+                    'title' => "Krytyczny finding: {$finding->code}",
                     'fields' => [
                         ['title' => 'Severity', 'value' => $finding->severity ?? '—', 'short' => true],
                         ['title' => 'Source',   'value' => $finding->source ?? '—',   'short' => true],
@@ -141,7 +141,7 @@ class SlackNotifier
                         ],
                     ],
                     'footer' => 'GRC Tool',
-                    'ts'     => now()->timestamp,
+                    'ts' => now()->timestamp,
                 ],
             ]
         );

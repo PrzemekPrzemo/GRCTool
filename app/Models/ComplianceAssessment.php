@@ -17,22 +17,22 @@ class ComplianceAssessment extends Model
     ];
 
     protected $casts = [
-        'assessment_date'   => 'date',
-        'is_published'      => 'boolean',
-        'overall_score'     => 'decimal:2',
-        'reviewed_at'       => 'datetime',
-        'compliant_count'   => 'integer',
-        'partial_count'     => 'integer',
+        'assessment_date' => 'date',
+        'is_published' => 'boolean',
+        'overall_score' => 'decimal:2',
+        'reviewed_at' => 'datetime',
+        'compliant_count' => 'integer',
+        'partial_count' => 'integer',
         'non_compliant_count' => 'integer',
-        'na_count'          => 'integer',
+        'na_count' => 'integer',
         'not_assessed_count' => 'integer',
     ];
 
     public const STATUS_LABELS = [
-        'draft'       => 'Szkic',
+        'draft' => 'Szkic',
         'in_progress' => 'W toku',
-        'completed'   => 'Zakończona',
-        'archived'    => 'Archiwum',
+        'completed' => 'Zakończona',
+        'archived' => 'Archiwum',
     ];
 
     public function framework(): BelongsTo
@@ -58,17 +58,17 @@ class ComplianceAssessment extends Model
     public function recalculateScore(): void
     {
         $counts = $this->responses()
-            ->selectRaw("status, COUNT(*) as cnt")
+            ->selectRaw('status, COUNT(*) as cnt')
             ->groupBy('status')
             ->pluck('cnt', 'status');
 
-        $compliant    = (int) ($counts['compliant'] ?? 0);
-        $partial      = (int) ($counts['partial'] ?? 0);
+        $compliant = (int) ($counts['compliant'] ?? 0);
+        $partial = (int) ($counts['partial'] ?? 0);
         $nonCompliant = (int) ($counts['non_compliant'] ?? 0);
-        $na           = (int) ($counts['not_applicable'] ?? 0);
-        $notAssessed  = (int) ($counts['not_assessed'] ?? 0);
+        $na = (int) ($counts['not_applicable'] ?? 0);
+        $notAssessed = (int) ($counts['not_assessed'] ?? 0);
 
-        $total      = $compliant + $partial + $nonCompliant + $notAssessed;
+        $total = $compliant + $partial + $nonCompliant + $notAssessed;
         $assessable = $total; // excludes na
 
         $score = null;
@@ -77,12 +77,12 @@ class ComplianceAssessment extends Model
         }
 
         $this->update([
-            'compliant_count'     => $compliant,
-            'partial_count'       => $partial,
+            'compliant_count' => $compliant,
+            'partial_count' => $partial,
             'non_compliant_count' => $nonCompliant,
-            'na_count'            => $na,
-            'not_assessed_count'  => $notAssessed,
-            'overall_score'       => $score,
+            'na_count' => $na,
+            'not_assessed_count' => $notAssessed,
+            'overall_score' => $score,
         ]);
     }
 

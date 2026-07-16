@@ -92,7 +92,7 @@ class SendGrcAlerts extends Command
             }
 
             $daysLeft = (int) now()->diffInDays($vuln->due_date, false);
-            $vulnRef  = $vuln->code ?? $vuln->cve_id ?? "ID #{$vuln->id}";
+            $vulnRef = $vuln->code ?? $vuln->cve_id ?? "ID #{$vuln->id}";
 
             Notification::route('mail', $owner->email)
                 ->notify(new GrcAlertNotification(

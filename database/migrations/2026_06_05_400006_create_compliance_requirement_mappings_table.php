@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('mapping_type', 32)->default('equivalent'); // equivalent/related/subset/superset
             $table->text('notes')->nullable();
             $table->timestamps();
-            $table->unique(['requirement_id', 'mapped_requirement_id']);
+            $table->unique(['requirement_id', 'mapped_requirement_id'], 'crm_req_mapped_unique');
         });
     }
 

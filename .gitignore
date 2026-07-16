@@ -1,3 +1,23 @@
+# Environment files (ignore all .env and variants except examples)
+.env
+.env.*
+!.env*.example
+
+# Terraform temporary and operational files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfplan
+.terraformrc
+terraform.rc
 /.phpunit.cache
 /node_modules
 /public/build

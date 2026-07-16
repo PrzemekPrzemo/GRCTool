@@ -33,15 +33,15 @@ class MiddleEastFrameworkSeeder extends Seeder
         }
 
         $fw = ComplianceFramework::create([
-            'code'        => 'SAMA-CSF',
-            'name'        => 'SAMA Cybersecurity Framework v2.0',
-            'short_name'  => 'SAMA-CSF',
-            'version'     => '2.0',
-            'issuer'      => 'Saudi Arabian Monetary Authority',
-            'region'      => 'KSA',
+            'code' => 'SAMA-CSF',
+            'name' => 'SAMA Cybersecurity Framework v2.0',
+            'short_name' => 'SAMA-CSF',
+            'version' => '2.0',
+            'issuer' => 'Saudi Arabian Monetary Authority',
+            'region' => 'KSA',
             'description' => 'Obowiązkowe wymagania cyberbezpieczeństwa dla sektora finansowego w Arabii Saudyjskiej. Stosowany przez banki, firmy ubezpieczeniowe, fintech regulowane przez SAMA.',
-            'is_active'   => true,
-            'sort_order'  => 20,
+            'is_active' => true,
+            'sort_order' => 20,
         ]);
 
         $domains = [
@@ -91,12 +91,12 @@ class MiddleEastFrameworkSeeder extends Seeder
             $d = $fw->domains()->create(['code' => $dcode, 'name' => $dname, 'sort_order' => $dorder]);
             foreach ($reqs as $i => [$rcode, $rname, $rdesc, $rtype, $rmand]) {
                 $d->requirements()->create([
-                    'code'         => $rcode,
-                    'name'         => $rname,
-                    'description'  => $rdesc,
+                    'code' => $rcode,
+                    'name' => $rname,
+                    'description' => $rdesc,
                     'control_type' => $rtype,
                     'is_mandatory' => $rmand,
-                    'sort_order'   => $i + 1,
+                    'sort_order' => $i + 1,
                 ]);
             }
         }
@@ -112,15 +112,15 @@ class MiddleEastFrameworkSeeder extends Seeder
         }
 
         $fw = ComplianceFramework::create([
-            'code'        => 'NCA-CCC',
-            'name'        => 'NCA Cloud Cybersecurity Controls v1.0',
-            'short_name'  => 'NCA-CCC',
-            'version'     => '1.0',
-            'issuer'      => 'National Cybersecurity Authority — Kingdom of Saudi Arabia',
-            'region'      => 'KSA',
+            'code' => 'NCA-CCC',
+            'name' => 'NCA Cloud Cybersecurity Controls v1.0',
+            'short_name' => 'NCA-CCC',
+            'version' => '1.0',
+            'issuer' => 'National Cybersecurity Authority — Kingdom of Saudi Arabia',
+            'region' => 'KSA',
             'description' => 'Kontrole bezpieczeństwa cybernetycznego chmury obliczeniowej wydane przez NCA. Obowiązkowe dla podmiotów sektora publicznego i krytycznych sektorów korzystających z usług chmurowych w KSA.',
-            'is_active'   => true,
-            'sort_order'  => 21,
+            'is_active' => true,
+            'sort_order' => 21,
         ]);
 
         $domains = [
@@ -157,12 +157,12 @@ class MiddleEastFrameworkSeeder extends Seeder
             $d = $fw->domains()->create(['code' => $dcode, 'name' => $dname, 'sort_order' => $dorder]);
             foreach ($reqs as $i => [$rcode, $rname, $rdesc, $rtype, $rmand]) {
                 $d->requirements()->create([
-                    'code'         => $rcode,
-                    'name'         => $rname,
-                    'description'  => $rdesc,
+                    'code' => $rcode,
+                    'name' => $rname,
+                    'description' => $rdesc,
                     'control_type' => $rtype,
                     'is_mandatory' => $rmand,
-                    'sort_order'   => $i + 1,
+                    'sort_order' => $i + 1,
                 ]);
             }
         }
@@ -178,15 +178,15 @@ class MiddleEastFrameworkSeeder extends Seeder
         }
 
         $fw = ComplianceFramework::create([
-            'code'        => 'UAE-IA',
-            'name'        => 'UAE Information Assurance Standards (TRA/NESA)',
-            'short_name'  => 'UAE-IA',
-            'version'     => '2.0',
-            'issuer'      => 'UAE Telecommunications and Digital Government Regulatory Authority (TDRA)',
-            'region'      => 'ME',
+            'code' => 'UAE-IA',
+            'name' => 'UAE Information Assurance Standards (TRA/NESA)',
+            'short_name' => 'UAE-IA',
+            'version' => '2.0',
+            'issuer' => 'UAE Telecommunications and Digital Government Regulatory Authority (TDRA)',
+            'region' => 'ME',
             'description' => 'Standardy bezpieczeństwa informacji Emiratów Arabskich. Obowiązkowe dla operatorów infrastruktury krytycznej i podmiotów sektora publicznego w ZEA. Zarządza TDRA (dawniej TRA/NESA).',
-            'is_active'   => true,
-            'sort_order'  => 30,
+            'is_active' => true,
+            'sort_order' => 30,
         ]);
 
         $domains = [
@@ -232,12 +232,12 @@ class MiddleEastFrameworkSeeder extends Seeder
             $d = $fw->domains()->create(['code' => $dcode, 'name' => $dname, 'sort_order' => $dorder]);
             foreach ($reqs as $i => [$rcode, $rname, $rdesc, $rtype, $rmand]) {
                 $d->requirements()->create([
-                    'code'         => $rcode,
-                    'name'         => $rname,
-                    'description'  => $rdesc,
+                    'code' => $rcode,
+                    'name' => $rname,
+                    'description' => $rdesc,
                     'control_type' => $rtype,
                     'is_mandatory' => $rmand,
-                    'sort_order'   => $i + 1,
+                    'sort_order' => $i + 1,
                 ]);
             }
         }
@@ -253,15 +253,15 @@ class MiddleEastFrameworkSeeder extends Seeder
         }
 
         $fw = ComplianceFramework::create([
-            'code'        => 'QATAR-NIAS',
-            'name'        => 'Qatar National Information Assurance Standards',
-            'short_name'  => 'NIAS',
-            'version'     => '1.0',
-            'issuer'      => 'Ministry of Transport and Communications — State of Qatar',
-            'region'      => 'ME',
+            'code' => 'QATAR-NIAS',
+            'name' => 'Qatar National Information Assurance Standards',
+            'short_name' => 'NIAS',
+            'version' => '1.0',
+            'issuer' => 'Ministry of Transport and Communications — State of Qatar',
+            'region' => 'ME',
             'description' => 'Krajowe standardy bezpieczeństwa informacji Kataru. Regulują wymagania dla podmiotów sektora publicznego i infrastruktury krytycznej w Państwie Katar.',
-            'is_active'   => true,
-            'sort_order'  => 31,
+            'is_active' => true,
+            'sort_order' => 31,
         ]);
 
         $domains = [
@@ -293,12 +293,12 @@ class MiddleEastFrameworkSeeder extends Seeder
             $d = $fw->domains()->create(['code' => $dcode, 'name' => $dname, 'sort_order' => $dorder]);
             foreach ($reqs as $i => [$rcode, $rname, $rdesc, $rtype, $rmand]) {
                 $d->requirements()->create([
-                    'code'         => $rcode,
-                    'name'         => $rname,
-                    'description'  => $rdesc,
+                    'code' => $rcode,
+                    'name' => $rname,
+                    'description' => $rdesc,
                     'control_type' => $rtype,
                     'is_mandatory' => $rmand,
-                    'sort_order'   => $i + 1,
+                    'sort_order' => $i + 1,
                 ]);
             }
         }
@@ -314,15 +314,15 @@ class MiddleEastFrameworkSeeder extends Seeder
         }
 
         $fw = ComplianceFramework::create([
-            'code'        => 'BH-PDL',
-            'name'        => 'Bahrain Personal Data Protection Law (PDPL)',
-            'short_name'  => 'BH-PDL',
-            'version'     => '2019',
-            'issuer'      => 'Personal Data Protection Authority — Kingdom of Bahrain',
-            'region'      => 'ME',
+            'code' => 'BH-PDL',
+            'name' => 'Bahrain Personal Data Protection Law (PDPL)',
+            'short_name' => 'BH-PDL',
+            'version' => '2019',
+            'issuer' => 'Personal Data Protection Authority — Kingdom of Bahrain',
+            'region' => 'ME',
             'description' => 'Bahrajńska ustawa o ochronie danych osobowych (Ustawa nr 30 z 2018 r.). Reguluje przetwarzanie danych osobowych w Bahrajnie. Podobna w strukturze do GDPR, stosowana przez podmioty przetwarzające dane obywateli Bahrajnu.',
-            'is_active'   => true,
-            'sort_order'  => 32,
+            'is_active' => true,
+            'sort_order' => 32,
         ]);
 
         $domains = [
@@ -358,12 +358,12 @@ class MiddleEastFrameworkSeeder extends Seeder
             $d = $fw->domains()->create(['code' => $dcode, 'name' => $dname, 'sort_order' => $dorder]);
             foreach ($reqs as $i => [$rcode, $rname, $rdesc, $rtype, $rmand]) {
                 $d->requirements()->create([
-                    'code'         => $rcode,
-                    'name'         => $rname,
-                    'description'  => $rdesc,
+                    'code' => $rcode,
+                    'name' => $rname,
+                    'description' => $rdesc,
                     'control_type' => $rtype,
                     'is_mandatory' => $rmand,
-                    'sort_order'   => $i + 1,
+                    'sort_order' => $i + 1,
                 ]);
             }
         }
@@ -410,10 +410,10 @@ class MiddleEastFrameworkSeeder extends Seeder
                     ->exists();
                 if (! $exists) {
                     ComplianceRequirementMapping::create([
-                        'requirement_id'        => $srcId,
+                        'requirement_id' => $srcId,
                         'mapped_requirement_id' => $dstId,
-                        'mapping_type'          => $type,
-                        'notes'                 => $notes,
+                        'mapping_type' => $type,
+                        'notes' => $notes,
                     ]);
                 }
             }

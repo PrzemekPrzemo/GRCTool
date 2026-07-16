@@ -8,10 +8,7 @@ use Illuminate\Notifications\Notification;
 class GrcAlertNotification extends Notification
 {
     /**
-     * @param  string        $subject
-     * @param  array<string> $bodyLines
-     * @param  string|null   $actionUrl
-     * @param  string|null   $actionLabel
+     * @param  array<string>  $bodyLines
      */
     public function __construct(
         private readonly string $subject,
@@ -21,7 +18,6 @@ class GrcAlertNotification extends Notification
     ) {}
 
     /**
-     * @param  mixed $notifiable
      * @return array<string>
      */
     public function via(mixed $notifiable): array

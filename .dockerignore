@@ -1,0 +1,34 @@
+# Infrastructure & Git
+terraform
+.git
+.github
+.gitignore
+.gitattributes
+
+# Dependencies (installed inside build stages)
+node_modules
+vendor
+
+# Environment & Local Secrets
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Logs and Cache
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+
+# Testing & Documentation
+tests
+docs
+*.md
+phpunit.xml
+docker-compose*.yml
+mise.toml
