@@ -9,11 +9,28 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Import wewnętrznego katalogu kontroli (Control) z Macierzy Mapowania Kontroli
- * TSH-SEC-REF-MAPPING v3.0 (2026-07-13) — 58 kontroli w 11 domenach (Governance,
- * Access Control, Endpoint, Network, Secure Development, Incident Management,
- * Business Continuity, Data Protection, Supply Chain, People, Physical),
- * dostarczone przez CSO. Katalog Control był dotąd pusty — to pierwsze
- * rzeczywiste dane w tej tabeli.
+ * TSH-SEC-Control-Mapping-Matrix, dostarczone przez CSO. Katalog Control był
+ * dotąd pusty — to pierwsze rzeczywiste dane w tej tabeli.
+ *
+ * Historia importu:
+ * - v3.0 (2026-07-13): 58 kontroli w 11 domenach (Governance, Access Control,
+ *   Endpoint, Network, Secure Development, Incident Management, Business
+ *   Continuity, Data Protection, Supply Chain, People, Physical).
+ * - v3.1 (2026-07-14): matryca zreorganizowana na 66 wierszy / 13 domen
+ *   (dodano m.in. Vulnerability Management, Privacy & Data Protection oraz
+ *   Regional & Jurisdictional Compliance KSA/USA; kolumny KSA-Specific
+ *   Reference i US-Specific Reference). Zastosowano scalenie nieniszczące
+ *   (decyzja CSO): wszystkie 58 istniejących kodów CTRL-* zachowane bez zmian
+ *   (ciągłość powiązanych Findings/Evidence/Testów), dodano 16 nowych kontroli
+ *   (CTRL-GOV-010, CTRL-NET-005/006, CTRL-VULN-001, CTRL-DATA-006/007/008,
+ *   CTRL-PPL-006/007, CTRL-INTL-001..007) dla pozycji nieobecnych we
+ *   wcześniejszym katalogu. Domena "Physical Security" (CTRL-PHYS-001..003)
+ *   zniknęła z matrycy v3.1 mimo że POL-011/POL-012 nadal obowiązują — te 3
+ *   kontrole NIE są kasowane (kaskadowo usunęłoby powiązane Findings/Evidence/
+ *   Testy), tylko oznaczone is_applicable=false z wyjaśnieniem w
+ *   applicability_statement. CTRL-GOV-003/007 zaktualizowane — POL-016 w
+ *   Podręczniku Polityk v3.1 oznacza teraz Change Management, nie Operational
+ *   Risk, więc referencje do POL-016 usunięto z ich opisów.
  *
  * Odwzorowania na ramy (ISO/IEC 27001 Annex A, NIST SP 800-53, NIST CSF 2.0,
  * NCA ECC-1:2018, ISO/IEC 27701) są zapisane czytelnie w polu description —
@@ -58,14 +75,14 @@ class TshSecControlMappingSeeder extends Seeder
             [
                 'code' => 'CTRL-GOV-003',
                 'name' => 'Risk appetite and risk acceptance defined',
-                'description' => 'Risk appetite and risk acceptance defined. TSH policy/document: POL-016, REG-001. Evidence: Risk Register REG-001. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.8 · NIST SP 800-53 Rev.5 RA-2, PM-9 · NIST CSF 2.0 GV.RM 1-4.',
+                'description' => 'Risk appetite and risk acceptance defined. TSH policy/document: POL-001 v2.4, REG-001. Evidence: Risk Register REG-001. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.8 · NIST SP 800-53 Rev.5 RA-2, PM-9 · NIST CSF 2.0 GV.RM 1-4.',
                 'control_type' => 'Preventive',
                 'automation_level' => 'Manual',
                 'testing_frequency' => 'annual',
                 'testing_method' => 'Examination',
                 'effectiveness_status' => 'Effective',
-                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Governance & Risk Management".',
-                'policy_code' => 'POL-016',
+                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Governance & Policy". [v3.1] Reassigned from POL-016 to POL-001 — POL-016 now denotes Change Management, not Operational Risk.',
+                'policy_code' => 'POL-001',
             ],
             [
                 'code' => 'CTRL-GOV-004',
@@ -105,15 +122,15 @@ class TshSecControlMappingSeeder extends Seeder
             ],
             [
                 'code' => 'CTRL-GOV-007',
-                'name' => 'Operational risk management (monthly)',
-                'description' => 'Operational risk management (monthly). TSH policy/document: POL-016, PROC-213, REG-011. Evidence: REG-011 Op Risk Register. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.12 · NIST SP 800-53 Rev.5 PM-9, RA-3 · NIST CSF 2.0 ID.RM 1-4.',
+                'name' => 'Operational risk register (REG-011) — separate from ISMS risk register',
+                'description' => 'Operational risk register (REG-011), maintained separately from the ISMS risk register (REG-001). TSH policy/document: REG-011, PROC-213. Evidence: REG-011 Operational Risk Register. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.29 · NIST SP 800-53 Rev.5 CP-2 · NIST CSF 2.0 GV.RM.',
                 'control_type' => 'Preventive',
                 'automation_level' => 'Manual',
                 'testing_frequency' => 'monthly',
                 'testing_method' => 'Examination',
                 'effectiveness_status' => 'Effective',
-                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Governance & Risk Management".',
-                'policy_code' => 'POL-016',
+                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Business Continuity & Resilience" (moved from Governance & Policy in v3.0). [v3.1] Reassigned from POL-016 — POL-016 now denotes Change Management, not Operational Risk; the operational risk process is now referenced only via REG-011/PROC-213, without a standalone policy.',
+                'policy_code' => null,
             ],
             [
                 'code' => 'CTRL-GOV-008',
@@ -700,8 +717,9 @@ class TshSecControlMappingSeeder extends Seeder
                 'testing_frequency' => 'annual',
                 'testing_method' => 'Examination',
                 'effectiveness_status' => 'Effective',
-                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
+                'applicability_statement' => '[v3.1] Not represented in the current Control Mapping Matrix (v3.1, 2026-07-14) — the "Physical Security" domain was dropped from the matrix. The governing policy (POL-011) remains active and unchanged; this control record is preserved for continuity (linked Findings/Evidence/Tests) but is flagged not applicable pending CSO clarification on whether it should be retired or re-added to a future matrix revision. Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
                 'policy_code' => 'POL-011',
+                'is_applicable' => false,
             ],
             [
                 'code' => 'CTRL-PHYS-002',
@@ -712,8 +730,9 @@ class TshSecControlMappingSeeder extends Seeder
                 'testing_frequency' => 'annual',
                 'testing_method' => 'Examination',
                 'effectiveness_status' => 'Effective',
-                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
+                'applicability_statement' => '[v3.1] Not represented in the current Control Mapping Matrix (v3.1, 2026-07-14) — the "Physical Security" domain was dropped from the matrix. The governing policy (POL-012) remains active and unchanged; this control record is preserved for continuity (linked Findings/Evidence/Tests) but is flagged not applicable pending CSO clarification on whether it should be retired or re-added to a future matrix revision. Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
                 'policy_code' => 'POL-012',
+                'is_applicable' => false,
             ],
             [
                 'code' => 'CTRL-PHYS-003',
@@ -724,8 +743,204 @@ class TshSecControlMappingSeeder extends Seeder
                 'testing_frequency' => 'annual',
                 'testing_method' => 'Examination',
                 'effectiveness_status' => 'Effective',
-                'applicability_statement' => 'Aligned — not certified. Client audit right: Yes (under NDA). Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
+                'applicability_statement' => '[v3.1] Not represented in the current Control Mapping Matrix (v3.1, 2026-07-14) — the "Physical Security" domain was dropped from the matrix. The governing policy (POL-011) remains active and unchanged; this control record is preserved for continuity (linked Findings/Evidence/Tests) but is flagged not applicable pending CSO clarification on whether it should be retired or re-added to a future matrix revision. Source: TSH-SEC-REF-MAPPING v3.0 (Control Mapping Matrix), domain "Physical Security".',
                 'policy_code' => 'POL-011',
+                'is_applicable' => false,
+            ],
+
+            // --- New in TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14) ---
+            [
+                'code' => 'CTRL-GOV-010',
+                'name' => 'Segregation of duties — CSO/IT/Tech Lead independence',
+                'description' => 'Segregation of duties — CSO/IT/Tech Lead independence. TSH policy/document: POL-001 v2.4. Evidence: Org chart, access reviews. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.3 · NIST SP 800-53 Rev.5 AC-5 · NIST CSF 2.0 GV.RR.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Governance & Policy".',
+                'policy_code' => 'POL-001',
+            ],
+            [
+                'code' => 'CTRL-NET-005',
+                'name' => 'Cloud security — hyperscaler-only, NCA CCC-1:2020 alignment for KSA hosting',
+                'description' => 'Cloud security — hyperscaler-only (GCP/Azure/AWS), client-managed or shared responsibility; NCA CCC-1:2020 alignment for KSA-hosted projects. TSH policy/document: POL-009 v2.1, CFG-301, CLT-409. Evidence: Cloud architecture docs under NDA; CLT-409 Data Location Statement. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.23 · NIST SP 800-53 Rev.5 SC-7, SA-9 · NIST CSF 2.0 PR.IR/GV.PO. KSA-specific: NCA CCC-1:2020.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Network & Cloud Security".',
+                'policy_code' => 'POL-009',
+            ],
+            [
+                'code' => 'CTRL-NET-006',
+                'name' => 'DNS-over-HTTPS + Enhanced Safe Browsing',
+                'description' => 'DNS-over-HTTPS + Enhanced Safe Browsing (CFG-307). TSH policy/document: CFG-307. Evidence: Chrome Enterprise policy export. Framework mapping: ISO/IEC 27001:2022 Annex A A.8.20 · NIST SP 800-53 Rev.5 SC-7 · NIST CSF 2.0 PR.IR.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Automated',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Network & Cloud Security".',
+                'policy_code' => null,
+            ],
+            [
+                'code' => 'CTRL-VULN-001',
+                'name' => 'Vulnerability management programme — tiered SLA (Critical 48h, High 7d, Medium 30d, Low 90d)',
+                'description' => 'Vulnerability management programme with CVSS-based remediation SLAs across code, infrastructure and endpoints. TSH policy/document: POL-020 v1.0, PROC-203. Evidence: Vulnerability tracker, patch reports. Framework mapping: ISO/IEC 27001:2022 Annex A A.8.8 · NIST SP 800-53 Rev.5 RA-5, SI-2 · NIST CSF 2.0 ID.RA.',
+                'control_type' => 'Corrective',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Vulnerability Management" (new domain in v3.1).',
+                'policy_code' => 'POL-020',
+            ],
+            [
+                'code' => 'CTRL-DATA-006',
+                'name' => 'Data subject rights handling — GDPR/PDPL/CCPA',
+                'description' => 'Data subject rights handling covering GDPR, PDPL and CCPA/CPRA (access, erasure, correction, portability, opt-out). TSH policy/document: POL-009 v2.1, PROC-218. Evidence: PROC-218 DSR procedure. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.34 · NIST SP 800-53 Rev.5 PT-2, PT-4 · NIST CSF 2.0 GV.PO. KSA-specific: PDPL Implementing Regulations (SDAIA). US-specific: CCPA/CPRA data subject rights.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Privacy & Data Protection" (new domain in v3.1).',
+                'policy_code' => 'POL-009',
+            ],
+            [
+                'code' => 'CTRL-DATA-007',
+                'name' => 'Privacy by design — DPIA process for high-risk processing',
+                'description' => 'Privacy by design with a DPIA process triggered for high-risk processing activities. TSH policy/document: POL-009 v2.1, PROC-218. Evidence: DPIA template. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.34 · NIST SP 800-53 Rev.5 PT-3 · NIST CSF 2.0 GV.PO.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Privacy & Data Protection" (new domain in v3.1).',
+                'policy_code' => 'POL-009',
+            ],
+            [
+                'code' => 'CTRL-DATA-008',
+                'name' => 'Cross-border data transfers — SCCs / adequacy decisions',
+                'description' => 'Cross-border personal data transfers governed by Standard Contractual Clauses or adequacy decisions. TSH policy/document: POL-009 v2.1. Evidence: CLT-403 Transfer Mechanism Annex. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.34 · NIST SP 800-53 Rev.5 PT-7 · NIST CSF 2.0 GV.PO.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Privacy & Data Protection" (new domain in v3.1).',
+                'policy_code' => 'POL-009',
+            ],
+            [
+                'code' => 'CTRL-PPL-006',
+                'name' => 'Phishing simulation programme — quarterly, ≤5% click-rate target',
+                'description' => 'Quarterly phishing simulation across all personnel; results feed the KPI dashboard. Clicking is not punished — it triggers mandatory 5-day microtraining. TSH policy/document: POL-019 v1.0, PROC-206. Evidence: Phishing platform reports, KPI (REG-013). Framework mapping: ISO/IEC 27001:2022 Annex A A.6.3 · NIST SP 800-53 Rev.5 AT-2(2) · NIST CSF 2.0 PR.AT.',
+                'control_type' => 'Detective',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'quarterly',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "People & Awareness".',
+                'policy_code' => 'POL-019',
+            ],
+            [
+                'code' => 'CTRL-PPL-007',
+                'name' => 'Security Champions programme — embedded in dev teams',
+                'description' => 'Security Champions programme with a designated representative per engineering team, reviewed quarterly. TSH policy/document: POL-019 v1.0, REG-017. Evidence: Security Champions register (REG-017). Framework mapping: ISO/IEC 27001:2022 Annex A A.6.3 · NIST SP 800-53 Rev.5 AT-3 · NIST CSF 2.0 PR.AT.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'quarterly',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "People & Awareness".',
+                'policy_code' => 'POL-019',
+            ],
+            [
+                'code' => 'CTRL-INTL-001',
+                'name' => 'NCA ECC declaration for KSA engagements',
+                'description' => 'NCA ECC-1:2018 declaration covering the full domain set for Saudi engagements. TSH policy/document: CLT-NCA-001. Evidence: CLT-NCA-001 Declaration. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.36 · NIST SP 800-53 Rev.5 CA-1 · NIST CSF 2.0 GV.PO. KSA-specific: NCA ECC-1:2018 (full domain set).',
+                'control_type' => 'Directive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => null,
+            ],
+            [
+                'code' => 'CTRL-INTL-002',
+                'name' => 'State consumer privacy laws (CCPA/CPRA) — data subject rights',
+                'description' => 'US state consumer privacy law compliance (California CCPA/CPRA and comparable state laws) for data subject rights. TSH policy/document: POL-009 v2.1, CLT-403. Evidence: POL-009 + CLT-403. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.34 · NIST SP 800-53 Rev.5 PT-1, PT-2 · NIST CSF 2.0 GV.PO. US-specific: CCPA/CPRA (California); comparable state laws (VA, CO, CT, UT, etc.).',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => 'POL-009',
+            ],
+            [
+                'code' => 'CTRL-INTL-003',
+                'name' => 'SOC 2 posture — Trust Services Criteria alignment (not certified)',
+                'description' => 'SOC 2 Trust Services Criteria alignment maintained for reference, without formal certification. TSH policy/document: Control Mapping Matrix (this doc). Evidence: Control Mapping Matrix + evidence under NDA. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.1 · NIST SP 800-53 Rev.5 CA-2 · NIST CSF 2.0 GV.OC. US-specific: AICPA SOC 2 Trust Services Criteria — aligned, not certified.',
+                'control_type' => 'Directive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => null,
+            ],
+            [
+                'code' => 'CTRL-INTL-004',
+                'name' => 'GLBA / FFIEC safeguards expectations — financial-sector US clients',
+                'description' => 'GLBA Safeguards Rule and FFIEC IT Examination Handbook vendor-management expectations for US financial clients. TSH policy/document: POL-006 v2.2, CLT-404. Evidence: POL-006 + CLT-404. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.19 · NIST SP 800-53 Rev.5 SR-3 · NIST CSF 2.0 ID.SC. US-specific: GLBA Safeguards Rule; FFIEC IT Examination Handbook expectations.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => 'POL-006',
+            ],
+            [
+                'code' => 'CTRL-INTL-005',
+                'name' => 'PCI DSS — cardholder data (not applicable)',
+                'description' => 'PCI DSS scope statement: TSH does not store, process, or transmit cardholder data. TSH policy/document: POL-002 v2.2. Evidence: POL-002 — scope statement. US-specific: PCI DSS — out of scope; TSH does not store/process/transmit cardholder data.',
+                'control_type' => 'Directive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Not Applicable',
+                'applicability_statement' => 'Out of scope — TSH does not process cardholder data. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => 'POL-002',
+                'is_applicable' => false,
+            ],
+            [
+                'code' => 'CTRL-INTL-006',
+                'name' => 'State data-breach notification laws — client notification SLA',
+                'description' => 'US state data-breach notification statutes; TSH\'s 24h client notification SLA meets or exceeds typical state windows. TSH policy/document: PROC-205, PROC-217. Evidence: PROC-217 Templates + 24h client SLA. Framework mapping: ISO/IEC 27001:2022 Annex A A.5.24 · NIST SP 800-53 Rev.5 IR-6 · NIST CSF 2.0 RS.CO. US-specific: State breach-notification statutes (e.g., CA Civ. Code §1798.82 and equivalents).',
+                'control_type' => 'Corrective',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => null,
+            ],
+            [
+                'code' => 'CTRL-INTL-007',
+                'name' => 'Export control screening (EAR/OFAC) — personnel and sub-processors',
+                'description' => 'US Export Administration Regulations (EAR) / OFAC sanctions screening applied to personnel and sub-processors. TSH policy/document: POL-006 v2.2, REF-021. Evidence: REF-021 Vetting Template. Framework mapping: ISO/IEC 27001:2022 Annex A A.6.1 · NIST SP 800-53 Rev.5 PS-3 · NIST CSF 2.0 GV.RR. US-specific: US Export Administration Regulations (EAR) / OFAC sanctions screening.',
+                'control_type' => 'Preventive',
+                'automation_level' => 'Manual',
+                'testing_frequency' => 'annual',
+                'testing_method' => 'Examination',
+                'effectiveness_status' => 'Effective',
+                'applicability_statement' => 'Aligned — not certified. Source: TSH-SEC-Control-Mapping-Matrix v3.1 (2026-07-14), domain "Regional & Jurisdictional Compliance (KSA / USA)" (new domain in v3.1).',
+                'policy_code' => 'POL-006',
             ],
         ];
     }
@@ -747,7 +962,7 @@ class TshSecControlMappingSeeder extends Seeder
                         'testing_frequency' => $item['testing_frequency'],
                         'testing_method' => $item['testing_method'],
                         'effectiveness_status' => $item['effectiveness_status'],
-                        'is_applicable' => true,
+                        'is_applicable' => $item['is_applicable'] ?? true,
                         'applicability_statement' => $item['applicability_statement'],
                     ]
                 );
