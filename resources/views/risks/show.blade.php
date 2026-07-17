@@ -167,9 +167,10 @@
                             $isCurrent = ($l === $risk->residual_likelihood && $i === $risk->residual_impact);
                             $isInh = ($l === $risk->inherent_likelihood && $i === $risk->inherent_impact);
                             $isTgt = $risk->target_score && ($l*$i === $risk->target_score);
+                            $cellLabel = $isCurrent ? 'R' : ($isInh ? 'I' : ($isTgt ? 'T' : ''));
                         @endphp
                         <div class="aspect-square flex items-center justify-center rounded {{ $bg }} text-xs font-semibold {{ $isCurrent ? 'ring-2 ring-slate-900' : '' }}">
-                            @if($isCurrent)R@elseif($isInh)I@elseif($isTgt)T@endif
+                            {{ $cellLabel }}
                         </div>
                     @endfor
                 @endfor

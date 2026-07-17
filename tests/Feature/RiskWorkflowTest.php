@@ -35,6 +35,27 @@ function makeRisk(array $overrides = []): Risk
     ], $overrides));
 }
 
+it('shows the risk detail page including the heat map cell labels', function (): void {
+    // Regression test — the heat map used a single-line @if($x)R@elseif($y)I@endif
+    // chain, which Blade's compiler cannot parse when the branch content (a bare
+    // letter, no {{ }} or HTML around it) touches the next @-directive with no
+    // separator: Blade's directive regex requires a non-word character immediately
+    // before "@", so "R@elseif" silently fails to compile and 500s the page. Every
+    // combination below exercises a different branch (current/inherent/target/none)
+    // of that heat-map cell label.
+    $risk = makeRisk([
+        'inherent_likelihood' => 4, 'inherent_impact' => 4,
+        'residual_likelihood' => 2, 'residual_impact' => 2,
+        'target_score' => 6,
+    ]);
+
+    $this->get("/risks/{$risk->id}")
+        ->assertOk()
+        ->assertSee($risk->title)
+        ->assertSee('Heat map pozycja')
+        ->assertSee('R=residual, I=inherent, T=target');
+});
+
 it('creates a risk', function (): void {
     $countBefore = Risk::count();
     $userId = User::where('email', 'admin@grc.local')->value('id');
