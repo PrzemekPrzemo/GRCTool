@@ -8,9 +8,9 @@ it('has admin and ciso users seeded', function (): void {
     expect(User::where('email', 'ciso@grc.local')->exists())->toBeTrue();
 });
 
-it('has 14 RBAC roles seeded', function (): void {
-    expect(Role::count())->toBe(14);
-    expect(Role::pluck('name')->all())->toContain('admin', 'ciso', 'security_engineer', 'risk_owner', 'control_owner', 'audit_lead', 'external_auditor');
+it('has 15 RBAC roles seeded', function (): void {
+    expect(Role::count())->toBe(15);
+    expect(Role::pluck('name')->all())->toContain('admin', 'ciso', 'security_engineer', 'risk_owner', 'control_owner', 'audit_lead', 'external_auditor', 'staff');
 });
 
 it('redirects unauthenticated user from dashboard to login', function (): void {

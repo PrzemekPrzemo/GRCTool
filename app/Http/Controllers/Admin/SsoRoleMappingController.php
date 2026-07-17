@@ -21,6 +21,7 @@ class SsoRoleMappingController extends Controller
             'entra_value' => ['required', 'string', 'max:191'],
             'label' => ['nullable', 'string', 'max:191'],
             'system_role' => ['required', 'string', Rule::in(Role::pluck('name'))],
+            'grants_login' => ['nullable', 'boolean'],
         ]);
 
         $mapping = SsoRoleMapping::create([
@@ -29,9 +30,10 @@ class SsoRoleMappingController extends Controller
             'entra_value' => trim($data['entra_value']),
             'label' => $data['label'] ?? null,
             'system_role' => $data['system_role'],
+            'grants_login' => $request->boolean('grants_login'),
         ]);
 
-        AuditLogger::log('sso_role_mapping_created', null, $mapping->only(['entra_type', 'entra_value', 'system_role']));
+        AuditLogger::log('sso_role_mapping_created', null, $mapping->only(['entra_type', 'entra_value', 'system_role', 'grants_login']));
 
         return back()->with('status', 'Mapowanie dodane.');
     }

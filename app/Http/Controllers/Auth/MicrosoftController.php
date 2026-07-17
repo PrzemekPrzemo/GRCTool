@@ -10,7 +10,9 @@ use App\Services\AuditLogger;
 use App\Services\Security\EntraRoleMappingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class MicrosoftController extends Controller
@@ -61,11 +63,22 @@ class MicrosoftController extends Controller
         }
 
         $user = User::where('email', $email)->first();
+        $mapping = app(EntraRoleMappingService::class);
+        $idToken = $msUser->accessTokenResponseBody['id_token'] ?? null;
+        $claims = $mapping->decodeIdTokenClaims($idToken);
 
         if (! $user) {
-            AuditLogger::log('microsoft_login_rejected', null, ['email' => $email, 'reason' => 'not_provisioned']);
+            if (! $mapping->canAutoProvision($claims)) {
+                AuditLogger::log('microsoft_login_rejected', null, ['email' => $email, 'reason' => 'not_provisioned']);
 
-            return redirect()->route('login')->withErrors(['email' => 'Konto nieprowizjonowane. Skontaktuj się z administratorem systemu GRC.']);
+                return redirect()->route('login')->withErrors(['email' => 'Konto nieprowizjonowane. Skontaktuj się z administratorem systemu GRC.']);
+            }
+
+            $user = $this->autoProvisionUser($email, $msUser, $mapping->resolveSystemRoles($claims));
+            AuditLogger::log('microsoft_auto_provisioned', $user, [
+                'email' => $email,
+                'roles' => $user->getRoleNames()->all(),
+            ]);
         }
 
         if (! $user->is_active) {
@@ -99,7 +112,7 @@ class MicrosoftController extends Controller
             return redirect()->route('login')->withErrors(['email' => 'Weryfikacja konta Microsoft nie powiodła się. Skontaktuj się z administratorem.']);
         }
 
-        $this->syncRolesFromEntra($user, $msUser);
+        $this->syncRolesFromEntra($user, $mapping, $claims);
 
         auth()->login($user, remember: true);
         $user->forceFill(['last_login_at' => now(), 'last_login_ip' => request()->ip()])->save();
@@ -119,6 +132,42 @@ class MicrosoftController extends Controller
     }
 
     /**
+     * Zakłada konto GRCTool dla użytkownika Entra ID, który przeszedł pomyślnie
+     * OAuth i którego token zawiera App Role/grupę oznaczoną jako "grants_login"
+     * (patrz EntraRoleMappingService::canAutoProvision) — self-service provisioning,
+     * bez ręcznego tworzenia konta przez administratora. Aktywowane wyłącznie po
+     * włączeniu "Autoprowizjonowanie" w Admin → Entra ID.
+     *
+     * @param  array<int, string>  $roles
+     */
+    private function autoProvisionUser(string $email, $msUser, array $roles): User
+    {
+        $name = trim((string) $msUser->getName()) ?: explode('@', $email)[0];
+        $avatarUrl = $msUser->getAvatar();
+        $safeAvatar = (is_string($avatarUrl) && str_starts_with($avatarUrl, 'https://')) ? $avatarUrl : null;
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make(Str::password(64)),
+        ]);
+        $user->forceFill([
+            'microsoft_id' => $msUser->getId(),
+            'avatar_url' => $safeAvatar,
+            'auth_provider' => 'microsoft',
+            'is_active' => true,
+            'locale' => 'pl',
+            'email_verified_at' => now(),
+        ])->save();
+
+        if ($roles !== []) {
+            $user->syncRoles($roles);
+        }
+
+        return $user;
+    }
+
+    /**
      * Nadaje role Spatie na podstawie claimów roles/groups z id_token, wg mapowania
      * skonfigurowanego w Admin → Entra ID → Mapowanie ról (sso_role_mappings).
      * Wyłączone domyślnie (azure_role_sync_enabled=0) — role nadal nadaje wtedy
@@ -126,17 +175,15 @@ class MicrosoftController extends Controller
      * zawiera żadnej dopasowanej roli/grupy, role użytkownika NIE są dotykane
      * (nie czyścimy do zera przez błąd konfiguracji) — celowe zachowanie "fail keep",
      * nie "fail open" ani "fail closed".
+     *
+     * @param  array{roles: array<int, string>, groups: array<int, string>}  $claims
      */
-    private function syncRolesFromEntra(User $user, $msUser): void
+    private function syncRolesFromEntra(User $user, EntraRoleMappingService $mapping, array $claims): void
     {
-        $mapping = app(EntraRoleMappingService::class);
-
         if (! $mapping->isEnabled()) {
             return;
         }
 
-        $idToken = $msUser->accessTokenResponseBody['id_token'] ?? null;
-        $claims = $mapping->decodeIdTokenClaims($idToken);
         $resolvedRoles = $mapping->resolveSystemRoles($claims);
 
         if ($resolvedRoles === []) {

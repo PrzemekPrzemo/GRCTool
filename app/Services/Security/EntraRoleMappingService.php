@@ -4,6 +4,7 @@ namespace App\Services\Security;
 
 use App\Models\AppSetting;
 use App\Models\SsoRoleMapping;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Odwzorowuje App Roles / grupy Entra ID (odczytane z claimów `roles`/`groups`
@@ -56,7 +57,42 @@ class EntraRoleMappingService
      */
     public function resolveSystemRoles(array $claims): array
     {
-        $roles = SsoRoleMapping::query()
+        return $this->matchingMappings($claims)
+            ->pluck('system_role')
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    public function isAutoProvisionEnabled(): bool
+    {
+        return AppSetting::get('azure_auto_provision_enabled', '0') === '1';
+    }
+
+    /**
+     * Czy token zawiera App Role/grupę oznaczoną w mapowaniu jako "grants_login" —
+     * czyli wystarczającą do samoobsługowego założenia konta GRCTool przy pierwszym
+     * logowaniu przez Microsoft, bez ręcznego prowizjonowania przez administratora.
+     * Wymaga też włączonej opcji "Autoprowizjonowanie" (azure_auto_provision_enabled).
+     *
+     * @param  array{roles: array<int, string>, groups: array<int, string>}  $claims
+     */
+    public function canAutoProvision(array $claims): bool
+    {
+        if (! $this->isAutoProvisionEnabled()) {
+            return false;
+        }
+
+        return $this->matchingMappings($claims)->where('grants_login', true)->isNotEmpty();
+    }
+
+    /**
+     * @param  array{roles: array<int, string>, groups: array<int, string>}  $claims
+     * @return Collection<int, SsoRoleMapping>
+     */
+    private function matchingMappings(array $claims): Collection
+    {
+        return SsoRoleMapping::query()
             ->where('provider', 'azure')
             ->where(function ($q) use ($claims) {
                 $q->where(function ($q2) use ($claims) {
@@ -65,11 +101,6 @@ class EntraRoleMappingService
                     $q2->where('entra_type', 'group')->whereIn('entra_value', $claims['groups'] ?? []);
                 });
             })
-            ->pluck('system_role')
-            ->unique()
-            ->values()
-            ->all();
-
-        return $roles;
+            ->get();
     }
 }

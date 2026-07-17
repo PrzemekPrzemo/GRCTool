@@ -160,13 +160,14 @@
         <h3 class="text-sm font-semibold text-slate-900 mb-1">Mapowanie ról Entra ID → role GRCTool</h3>
         <p class="text-xs text-slate-500 mb-4">Przy każdym logowaniu przez Microsoft role użytkownika w GRCTool są nadawane na podstawie App Role lub grupy Entra ID przypisanej w tokenie logowania. Instrukcja konfiguracji po stronie Entra — patrz sekcja niżej.</p>
 
-        <form method="PUT" action="{{ route('admin.entra.update') }}" class="mb-5">
+        <form method="PUT" action="{{ route('admin.entra.update') }}" class="mb-3">
             @csrf
             @method('PUT')
             <input type="hidden" name="azure_client_id" value="{{ $settings['azure_client_id'] }}">
             <input type="hidden" name="azure_tenant_id" value="{{ $settings['azure_tenant_id'] }}">
             <input type="hidden" name="azure_enabled" value="{{ $settings['azure_enabled'] }}">
             <input type="hidden" name="azure_identity_protection_enabled" value="{{ $settings['azure_identity_protection_enabled'] }}">
+            <input type="hidden" name="azure_auto_provision_enabled" value="{{ $settings['azure_auto_provision_enabled'] }}">
 
             <label class="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" name="azure_role_sync_enabled" value="1"
@@ -175,6 +176,29 @@
                 <div>
                     <p class="text-sm font-medium text-slate-700">Włącz synchronizację ról z Entra ID</p>
                     <p class="text-xs text-slate-400">Gdy wyłączone (domyślnie): role nadaje wyłącznie administrator ręcznie w Admin → Użytkownicy, jak dotychczas. Gdy włączone i token nie zawiera dopasowanej roli/grupy, role użytkownika pozostają bez zmian (nie są czyszczone).</p>
+                </div>
+            </label>
+
+            <button type="submit" class="mt-3 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Zapisz</button>
+        </form>
+
+        {{-- Auto-provisioning --}}
+        <form method="PUT" action="{{ route('admin.entra.update') }}" class="mb-5 pt-3 border-t border-slate-100">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="azure_client_id" value="{{ $settings['azure_client_id'] }}">
+            <input type="hidden" name="azure_tenant_id" value="{{ $settings['azure_tenant_id'] }}">
+            <input type="hidden" name="azure_enabled" value="{{ $settings['azure_enabled'] }}">
+            <input type="hidden" name="azure_identity_protection_enabled" value="{{ $settings['azure_identity_protection_enabled'] }}">
+            <input type="hidden" name="azure_role_sync_enabled" value="{{ $settings['azure_role_sync_enabled'] }}">
+
+            <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="azure_auto_provision_enabled" value="1"
+                       {{ $settings['azure_auto_provision_enabled'] === '1' ? 'checked' : '' }}
+                       class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400">
+                <div>
+                    <p class="text-sm font-medium text-slate-700">Włącz autoprowizjonowanie (self-service)</p>
+                    <p class="text-xs text-slate-400">Gdy włączone: pierwsze logowanie przez Microsoft osoby, której token zawiera App Role/grupę oznaczoną poniżej jako <strong>„Wystarcza do zalogowania"</strong>, samo zakłada konto GRCTool — bez wcześniejszego ręcznego dodania w Admin → Użytkownicy. Osoby bez pasującej App Role/grupy nadal są odrzucane jako „nieprowizjonowane”. Gdy wyłączone (domyślnie): konto zawsze musi istnieć wcześniej, jak dotychczas.</p>
                 </div>
             </label>
 
@@ -194,6 +218,7 @@
                             <th class="pb-2">Wartość Entra</th>
                             <th class="pb-2">Etykieta</th>
                             <th class="pb-2">Rola GRCTool</th>
+                            <th class="pb-2">Wystarcza do zalogowania</th>
                             <th class="pb-2"></th>
                         </tr>
                     </thead>
@@ -204,6 +229,13 @@
                             <td class="py-2 font-mono text-xs text-slate-700">{{ $rm->entra_value }}</td>
                             <td class="py-2 text-slate-500">{{ $rm->label ?: '—' }}</td>
                             <td class="py-2"><span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs font-medium">{{ $rm->system_role }}</span></td>
+                            <td class="py-2">
+                                @if($rm->grants_login)
+                                    <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-medium">Tak — zakłada konto</span>
+                                @else
+                                    <span class="text-xs text-slate-400">Nie</span>
+                                @endif
+                            </td>
                             <td class="py-2 text-right">
                                 <form method="POST" action="{{ route('admin.entra.role-mappings.destroy', $rm) }}" onsubmit="return confirm('Usunąć to mapowanie?');">
                                     @csrf
@@ -217,7 +249,7 @@
                 </table>
             @endif
 
-            <form method="POST" action="{{ route('admin.entra.role-mappings.store') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-2 items-end bg-slate-50 rounded-lg p-3">
+            <form method="POST" action="{{ route('admin.entra.role-mappings.store') }}" class="grid grid-cols-1 sm:grid-cols-6 gap-2 items-end bg-slate-50 rounded-lg p-3">
                 @csrf
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Typ</label>
@@ -228,25 +260,30 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Wartość Entra</label>
-                    <input type="text" name="entra_value" required placeholder="np. CISO lub GUID grupy"
+                    <input type="text" name="entra_value" required placeholder="np. GRCTool.User lub GUID grupy"
                            class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm font-mono">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Etykieta (opcjonalnie)</label>
-                    <input type="text" name="label" placeholder="np. Zespół bezpieczeństwa"
+                    <input type="text" name="label" placeholder="np. Wszyscy pracownicy"
                            class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">Rola GRCTool</label>
                     <select name="system_role" required class="w-full px-2 py-1.5 border border-slate-300 rounded text-sm">
                         @foreach($availableRoles as $roleName)
-                            <option value="{{ $roleName }}">{{ $roleName }}</option>
+                            <option value="{{ $roleName }}" @selected($roleName === 'staff')>{{ $roleName }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="flex items-center gap-2 pb-1.5">
+                    <input type="checkbox" name="grants_login" value="1" id="grants_login_new" class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-400">
+                    <label for="grants_login_new" class="text-xs text-slate-600">Wystarcza do zalogowania</label>
                 </div>
                 <button type="submit" class="px-3 py-1.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800">Dodaj</button>
             </form>
             @error('system_role')<p class="text-red-600 text-xs mt-2">{{ $message }}</p>@enderror
+            <p class="text-xs text-slate-400 mt-2">Wskazówka: dla podstawowej grupy „każdy pracownik może się zalogować” użyj roli <code class="bg-slate-100 px-1 rounded">staff</code> (minimalny odczyt) i zaznacz „Wystarcza do zalogowania”. Dla ról podnoszących uprawnienia (np. ciso, security_engineer) możesz zostawić odznaczone — będą tylko dokładać rolę istniejącym/autoprowizjonowanym kontom.</p>
         </div>
     </div>
 
@@ -288,6 +325,21 @@
             <li>W GRCTool: dodaj mapowanie z Typ = <strong>Grupa</strong>, Wartość Entra = ten Object ID, Rola GRCTool = docelowa rola</li>
         </ol>
         <p class="text-xs text-amber-700 mt-3">Uwaga: dla dużych organizacji (użytkownik należy do wielu grup) Entra może zwrócić w tokenie wskaźnik przeciążenia zamiast pełnej listy grup — w takim wypadku Wariant A (App Roles) jest niezawodny niezależnie od liczby grup.</p>
+    </div>
+
+    {{-- Self-service provisioning setup instructions --}}
+    <div class="mt-6 bg-purple-50 border border-purple-200 rounded-xl p-5">
+        <h3 class="text-sm font-semibold text-purple-900 mb-3">Instrukcja: logowanie bez ręcznego zakładania konta (podstawowa grupa dla wszystkich)</h3>
+        <p class="text-xs text-purple-800 mb-3">Cel: każdy przypisany do jednej podstawowej App Role w Entra ID może się zalogować do GRCTool samodzielnie, przy pierwszym logowaniu — bez wcześniejszej wizyty administratora w Admin → Użytkownicy.</p>
+        <ol class="text-xs text-purple-800 space-y-1.5 list-decimal list-inside">
+            <li>App registrations → <strong>GRC Tool</strong> → App roles → Create app role. Display name: <code class="bg-purple-100 px-1 rounded">GRCTool User</code>; Allowed member types: <strong>Users/Groups</strong>; Value: <code class="bg-purple-100 px-1 rounded">GRCTool.User</code>; zapisz.</li>
+            <li>Entra ID → Groups → New group → <em>Security group</em>, np. <code class="bg-purple-100 px-1 rounded">GRCTool-AllUsers</code> → dodaj do niej wszystkich, którzy mają mieć dostęp do systemu.</li>
+            <li>Entra ID → Enterprise applications → <strong>GRC Tool</strong> → Users and groups → Add user/group → wybierz grupę <code class="bg-purple-100 px-1 rounded">GRCTool-AllUsers</code> → rola <code class="bg-purple-100 px-1 rounded">GRCTool User</code> → Assign.</li>
+            <li><strong>Ważne:</strong> Enterprise applications → <strong>GRC Tool</strong> → Properties → <strong>Assignment required? = Yes</strong>. Bez tego każdy użytkownik tenanta może próbować się zalogować (Entra go przepuści na etapie OAuth) — dopiero to ustawienie ogranicza, kto w ogóle dotrze do naszej bramki „grants_login” poniżej.</li>
+            <li>W GRCTool, w tabeli mapowań powyżej: dodaj wpis Typ = <strong>App Role</strong>, Wartość Entra = <code class="bg-purple-100 px-1 rounded">GRCTool.User</code>, Rola GRCTool = <code class="bg-purple-100 px-1 rounded">staff</code>, zaznacz <strong>„Wystarcza do zalogowania"</strong> → Dodaj.</li>
+            <li>Włącz przełącznik <strong>„Autoprowizjonowanie (self-service)"</strong> wyżej i zapisz.</li>
+        </ol>
+        <p class="text-xs text-purple-700 mt-3">Efekt: osoba w grupie <code class="bg-purple-100 px-1 rounded">GRCTool-AllUsers</code> klika "Zaloguj przez Microsoft" → konto GRCTool zakłada się automatycznie z rolą <code class="bg-purple-100 px-1 rounded">staff</code> (odczyt: dashboard, własne szkolenia/wyjątki). Podniesienie do roli operacyjnej (ciso, security_engineer, sales…) — dodaj osobną App Role/mapowanie z krokami z Wariantu A wyżej (bez zaznaczania „Wystarcza do zalogowania" — ta App Role tylko dokłada rolę, konto już istnieje) albo zmień rolę ręcznie w Admin → Użytkownicy. Osoby spoza grupy nadal widzą „Konto nieprowizjonowane" i logowanie jest odrzucane.</p>
     </div>
 
 </div>
