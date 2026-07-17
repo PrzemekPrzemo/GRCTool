@@ -26,6 +26,7 @@ class EntraIdSettingsController extends Controller
             'secret_saved' => (bool) AppSetting::get('azure_client_secret_encrypted'),
             'azure_identity_protection_enabled' => AppSetting::get('azure_identity_protection_enabled', '0'),
             'azure_role_sync_enabled' => AppSetting::get('azure_role_sync_enabled', '0'),
+            'azure_auto_provision_enabled' => AppSetting::get('azure_auto_provision_enabled', '0'),
         ];
 
         $roleMappings = SsoRoleMapping::where('provider', 'azure')->orderBy('entra_type')->orderBy('entra_value')->get();
@@ -45,6 +46,7 @@ class EntraIdSettingsController extends Controller
             'azure_enabled' => ['nullable', 'boolean'],
             'azure_identity_protection_enabled' => ['nullable', 'boolean'],
             'azure_role_sync_enabled' => ['nullable', 'boolean'],
+            'azure_auto_provision_enabled' => ['nullable', 'boolean'],
         ]);
 
         AppSetting::set('azure_client_id', $data['azure_client_id']);
@@ -52,6 +54,7 @@ class EntraIdSettingsController extends Controller
         AppSetting::set('azure_enabled', $request->boolean('azure_enabled') ? '1' : '0');
         AppSetting::set('azure_identity_protection_enabled', $request->boolean('azure_identity_protection_enabled') ? '1' : '0');
         AppSetting::set('azure_role_sync_enabled', $request->boolean('azure_role_sync_enabled') ? '1' : '0');
+        AppSetting::set('azure_auto_provision_enabled', $request->boolean('azure_auto_provision_enabled') ? '1' : '0');
 
         if (! empty($data['azure_client_secret'])) {
             AppSetting::set('azure_client_secret_encrypted', Crypt::encryptString($data['azure_client_secret']));

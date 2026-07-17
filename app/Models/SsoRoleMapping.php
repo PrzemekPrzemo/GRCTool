@@ -12,6 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 class SsoRoleMapping extends Model
 {
     protected $fillable = [
-        'provider', 'entra_type', 'entra_value', 'label', 'system_role',
+        'provider', 'entra_type', 'entra_value', 'label', 'system_role', 'grants_login',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'grants_login' => 'boolean',
+        ];
+    }
 }

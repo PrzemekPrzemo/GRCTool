@@ -163,6 +163,12 @@ class RolesAndPermissionsSeeder extends Seeder
                         '*.view', // read-only globalny
                     ],
                 ],
+                'staff' => [
+                    'description' => 'Domyślna rola dla pracowników self-service provisioned przez Entra ID (podstawowa grupa/App Role). Minimalny odczyt — dashboard, własne szkolenia/wyjątki. Podniesienie uprawnień: dedykowane mapowanie SSO (Admin → Entra ID) albo ręcznie przez admina.',
+                    'permissions' => [
+                        'training.view', 'exception.view', 'compliance.view',
+                    ],
+                ],
             ];
 
             foreach ($roleDefinitions as $name => $def) {

@@ -41,7 +41,7 @@ class UserController extends Controller
             'business_unit_id' => ['nullable', 'exists:business_units,id'],
             'is_external' => ['nullable', 'boolean'],
             'external_org' => ['nullable', 'string'],
-            'auth_provider' => ['nullable', 'in:local,google'],
+            'auth_provider' => ['nullable', 'in:local,google,microsoft'],
             'roles' => ['array'],
         ]);
 
@@ -67,6 +67,11 @@ class UserController extends Controller
         if ($authProvider === 'google') {
             return redirect()->route('admin.users.index')
                 ->with('status', "Utworzono użytkownika {$user->email}. Użytkownik będzie logował się przez Google Workspace.");
+        }
+
+        if ($authProvider === 'microsoft') {
+            return redirect()->route('admin.users.index')
+                ->with('status', "Utworzono użytkownika {$user->email}. Użytkownik będzie logował się przez Microsoft Entra ID — konto zostanie powiązane przy pierwszym logowaniu.");
         }
 
         $shortPassword = Str::password(16);
@@ -112,7 +117,7 @@ class UserController extends Controller
             'is_external' => ['nullable', 'boolean'],
             'external_org' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
-            'auth_provider' => ['nullable', 'in:local,google'],
+            'auth_provider' => ['nullable', 'in:local,google,microsoft'],
             'roles' => ['array'],
         ]);
 

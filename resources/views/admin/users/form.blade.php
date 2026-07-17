@@ -30,7 +30,7 @@
 
     <div>
         <label class="block text-sm font-medium text-slate-700 mb-1">Metoda logowania</label>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-wrap">
             <label class="flex items-center gap-2 cursor-pointer">
                 <input type="radio" name="auth_provider" value="local"
                        {{ old('auth_provider', $user->auth_provider ?? 'local') === 'local' ? 'checked' : '' }}
@@ -51,8 +51,22 @@
                     Google Workspace
                 </span>
             </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="auth_provider" value="microsoft"
+                       {{ old('auth_provider', $user->auth_provider ?? 'local') === 'microsoft' ? 'checked' : '' }}
+                       class="text-emerald-600">
+                <span class="text-sm text-slate-700 flex items-center gap-1">
+                    <svg class="w-4 h-4" viewBox="0 0 23 23">
+                        <path fill="#f25022" d="M1 1h10v10H1z"/>
+                        <path fill="#00a4ef" d="M1 12h10v10H1z"/>
+                        <path fill="#7fba00" d="M12 1h10v10H12z"/>
+                        <path fill="#ffb900" d="M12 12h10v10H12z"/>
+                    </svg>
+                    Microsoft Entra ID
+                </span>
+            </label>
         </div>
-        <p class="mt-1 text-xs text-slate-500">Konta Google Workspace logują się przez OAuth — hasło tymczasowe nie jest wysyłane.</p>
+        <p class="mt-1 text-xs text-slate-500">Konta Google Workspace / Microsoft Entra ID logują się przez OAuth — hasło tymczasowe nie jest wysyłane, konto łączy się z dostawcą przy pierwszym logowaniu.</p>
         @if($user->exists && $user->google_id)
         <div class="mt-1 flex items-center gap-2 text-sm text-blue-600">
             <svg class="w-4 h-4" viewBox="0 0 24 24">
@@ -62,6 +76,17 @@
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
             Połączono z Google ({{ $user->email }})
+        </div>
+        @endif
+        @if($user->exists && $user->microsoft_id)
+        <div class="mt-1 flex items-center gap-2 text-sm text-blue-600">
+            <svg class="w-4 h-4" viewBox="0 0 23 23">
+                <path fill="#f25022" d="M1 1h10v10H1z"/>
+                <path fill="#00a4ef" d="M1 12h10v10H1z"/>
+                <path fill="#7fba00" d="M12 1h10v10H12z"/>
+                <path fill="#ffb900" d="M12 12h10v10H12z"/>
+            </svg>
+            Połączono z Microsoft Entra ID ({{ $user->email }})
         </div>
         @endif
     </div>
